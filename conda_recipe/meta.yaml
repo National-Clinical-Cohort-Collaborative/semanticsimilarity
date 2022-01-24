@@ -16,7 +16,7 @@ requirements:
   # Any packages required to run your package
   run:
     - python 3.8.*
-    - ensmallen_graph
+    - ensmallen_graph 0.6.0
 
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt

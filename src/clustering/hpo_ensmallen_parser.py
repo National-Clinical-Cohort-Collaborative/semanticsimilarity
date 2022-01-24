@@ -1,7 +1,7 @@
 # from pyspark.sql import functions as F
 import os
-from pyspark.sql import SQLContext
-import pyspark
+# from pyspark.sql import SQLContext
+# import pyspark
 from ensmallen_graph import EnsmallenGraph
 import shutil
 

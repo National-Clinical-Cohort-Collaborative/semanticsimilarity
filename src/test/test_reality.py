@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+
 class TestReality(TestCase):
 
     def test_reality(self):
