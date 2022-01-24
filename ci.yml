@@ -1,0 +1,76 @@
+# DO NOT MODIFY OR DELETE THIS FILE.
+#
+# ANY CHANGES MAY RESULT IN SERIOUS DAMAGE
+# TO THE TECHNICAL INFRASTRUCTURE AND LOSS OF DATA!
+#
+# ACCESS TO OR USE OF PALANTIR FOUNDRY IS SUBJECT
+# TO PALANTIR’S TECHNICAL SPECIFICATIONS AVAILABLE
+# IN THE DOCUMENTATION. THIS WARNING CONSTITUTES AN
+# ADDITION TO THOSE TECHNICAL SPECIFICATIONS AND
+# NON-COMPLIANCE MAY CONSTITUTE A VIOLATION OF
+# THE FOUNDRY LICENSE AGREEMENT.
+
+env:
+  transformsGradleDistributionUrl:
+    uri-role: gradle-distribution-6-7-1
+  ORG_GRADLE_PROJECT_artifactsUri:
+    uri-role: foundry-artifacts-api
+  ORG_GRADLE_PROJECT_condaInstallerUri:
+    uri-role: conda-installer
+  ORG_GRADLE_PROJECT_condaInstallerUriPy2:
+    uri-role: conda-installer8-py2
+  ORG_GRADLE_PROJECT_condaInstallerUriPy3:
+    uri-role: conda-installer8-py3
+  ORG_GRADLE_PROJECT_condaInstallerUriPy3Mamba:
+    uri-role: conda-installer8-py3mamba
+  ORG_GRADLE_PROJECT_jemmaLogReceiverUri:
+    uri-role: log-receiver-api-jemma-alias
+  ORG_GRADLE_PROJECT_mavenProxyRepoUri:
+    uri-role: maven-repository-proxy-authz
+  ORG_GRADLE_PROJECT_transformsCondaRepositoryProxyApiUri:
+    uri-role: conda-repository-proxy-authz-api
+  ORG_GRADLE_PROJECT_transformsCondaRepositoryProxyPublicRepoUri:
+    uri-role: conda-repository-proxy-authz-public
+
+required-job-token-capabilities:
+  - python-library
+
+jobs:
+  library-publish:
+    timeout: 20 minutes
+    steps:
+    - |
+      set -euo pipefail
+
+      unset SUDO_UID SUDO_GID SUDO_USER
+
+      [[ -n "${JAVA_HOME-}" && -d "$JAVA_HOME" ]] || {
+          echo "JAVA_HOME was not set or did not point to a valid directory."
+          exit 1
+      }
+      export JAVA_OPTS="-Xmx512m -Djavax.net.ssl.trustStore=${STEMMA_DEFAULT_TRUST_STORE_PATH} -Djavax.net.ssl.trustStorePassword=${STEMMA_DEFAULT_TRUST_STORE_PASSWORD}"
+      export ORG_GRADLE_PROJECT_transformsTrustStore="${STEMMA_DEFAULT_TRUST_STORE_PATH}"
+      export ORG_GRADLE_PROJECT_bearerToken="${JOB_TOKEN}"
+      export ORG_GRADLE_PROJECT_transformsRepoRid="${STEMMA_REPO_RID}"
+      export ORG_GRADLE_PROJECT_mavenProxyRepoUri="${ORG_GRADLE_PROJECT_artifactsUri}/repositories/${STEMMA_REPO_RID}/contents/migration/maven"
+      
+      if ! grep -q condaSolveImplementation gradle.properties;
+      then
+        mambaFlagVersion=1
+        mambaMinVersion=${JEMMA_MAMBA_MIN_VERSION:-1}
+        echo "Current mamba flag version $mambaFlagVersion. Mamba min version $mambaMinVersion."
+        if [ "$mambaFlagVersion" -ge "$mambaMinVersion" ];
+        then
+          echo "Using Mamba for Conda solves."
+          export ORG_GRADLE_PROJECT_condaSolveImplementation="mamba"
+        fi
+      else
+        echo "Using condaSolveImplementation from gradle.properties file"
+      fi
+
+      if [ ! -z "${JEMMA_TAG:-}" ]; 
+      then
+        export ORG_GRADLE_PROJECT_jemmaTag="${JEMMA_TAG}"
+      fi
+      
+      ./gradleww --no-daemon --build-cache --stacktrace check patch publish

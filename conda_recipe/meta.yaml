@@ -1,0 +1,21 @@
+# If you need to modify the runtime requirements for your package,
+# update the 'requirements.run' section in this file
+
+package:
+  name: "{{ PACKAGE_NAME }}"
+  version: "{{ PACKAGE_VERSION }}"
+
+source:
+  path: ../src
+
+requirements:
+  build:
+    - python 3.8.*
+    - setuptools
+
+  # Any packages required to run your package
+  run:
+    - python 3.8.*
+
+build:
+  script: python setup.py install --single-version-externally-managed --record=record.txt

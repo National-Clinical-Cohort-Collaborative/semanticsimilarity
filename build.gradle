@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        maven {
+            credentials {
+                username ''
+                password bearerToken
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+            url project.mavenProxyRepoUri
+        }
+    }
+
+    dependencies {
+        classpath "com.palantir.transforms.python:lang-python-gradle-plugin:${transformsPythonVersion}"
+    }
+}
+
+apply plugin: 'com.palantir.transforms.lang.python-library'
+apply plugin: 'com.palantir.transforms.lang.python-library-defaults'
+
+// Apply the testing plugin
+// apply plugin: 'com.palantir.transforms.lang.pytest-defaults'
+
+// Apply the linting plugins
+// apply plugin: 'com.palantir.conda.pep8'
+// apply plugin: 'com.palantir.conda.pylint'

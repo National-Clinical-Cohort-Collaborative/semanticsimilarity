@@ -1,0 +1,13 @@
+/*
+ * (c) Copyright 2017 Palantir Technologies Inc. All rights reserved.
+ */
+
+// DO NOT MODIFY THIS FILE
+// Replace all non-alphanumeric characters with dashes, and remove repeating dashes
+rootProject.name = condaPackageName.toLowerCase().replaceAll("[^a-z0-9]", "-").replaceAll("-+", "-")
+
+rootProject.projectDir.eachDir { dir ->
+    if (file("${dir}/build.gradle").exists()) {
+        include dir.name
+    }
+}

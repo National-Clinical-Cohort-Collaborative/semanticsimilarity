@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# DO NOT MODIFY OR DELETE THIS FILE. 
+#
+# ANY CHANGES MAY RESULT IN SERIOUS DAMAGE
+# TO THE TECHNICAL INFRASTRUCTURE AND LOSS OF DATA!
+#
+# ACCESS TO OR USE OF PALANTIR FOUNDRY IS SUBJECT
+# TO PALANTIR’S TECHNICAL SPECIFICATIONS AVAILABLE
+# IN THE DOCUMENTATION. THIS WARNING CONSTITUTES AN
+# ADDITION TO THOSE TECHNICAL SPECIFICATIONS AND
+# NON-COMPLIANCE MAY CONSTITUTE A VIOLATION OF
+# THE FOUNDRY LICENSE AGREEMENT.
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# This script will use the transformsGradleDistributionUrl environment variable and replace the contents of the gradle-wrapper.template.properties
+# searching for the "${transformsGradleDistributionUrl}" contents and replacing it with the transformsGradleDistributionUrl variable.
+
+root_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+sed -e "s|\${transformsGradleDistributionUrl}|${transformsGradleDistributionUrl}|g" "${root_dir}/gradle/wrapper/gradle-wrapper.template.properties" > "${root_dir}/gradle/wrapper/gradle-wrapper.properties"
+
+echo "Running gradle in ${root_dir}"
+
+"${root_dir}/gradlew" "$@"
