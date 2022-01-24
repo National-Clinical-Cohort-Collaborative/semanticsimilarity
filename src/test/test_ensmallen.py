@@ -1,4 +1,5 @@
 from unittest import TestCase
+from clustering import EnsmallenGraph
 
 
 class TestEnsmalllen(TestCase):
@@ -6,7 +7,7 @@ class TestEnsmalllen(TestCase):
     def test_make_ensmallen_graph(self):
         self.assertTrue(True)
         try:
-            from clustering.hpo_ensmallen_parser import EnsmallenGraph
+            print("hello world")
         except Exception as e:
             print("Problem:")
             print(e)
