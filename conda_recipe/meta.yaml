@@ -10,12 +10,12 @@ source:
 
 requirements:
   build:
-    - python 3.8.*
+    - python 3.6.15
     - setuptools
 
   # Any packages required to run your package
   run:
-    - python 3.8.*
+    - python 3.6.15
     - ensmallen_graph 0.6.0
 
 build:
