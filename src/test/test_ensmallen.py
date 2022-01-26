@@ -7,8 +7,6 @@ class TestEnsmalllen(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        #current_file = __FILE__;
-        #parent = os.path.pa
         # The following gets us the directory of this file
         dir = os.path.dirname(os.path.abspath(__file__))
         cls.path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
