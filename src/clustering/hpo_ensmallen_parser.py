@@ -20,7 +20,9 @@ class Hpo2EnsmallenParser:
             edge_path=edges_file,
             directed=False,
             sources_column="subject",
-            destinations_column="object")
+            destinations_column="object",
+            edge_separator="  "
+            )
 
     @property
     def graph(self):
