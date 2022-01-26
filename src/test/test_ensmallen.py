@@ -2,6 +2,7 @@ from unittest import TestCase
 from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
 import os
 
+
 class TestEnsmalllen(TestCase):
 
     @classmethod
@@ -14,8 +15,6 @@ class TestEnsmalllen(TestCase):
 
     def test_file_is_found(self):
         self.assertTrue(os.path.isfile(self.path))
-
-
 
     def test_ctor_ensmaller_parser(self):
         try:
