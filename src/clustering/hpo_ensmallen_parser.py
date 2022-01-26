@@ -21,7 +21,7 @@ class Hpo2EnsmallenParser:
             directed=False,
             sources_column="subject",
             destinations_column="object",
-            edge_separator="\t"
+            edge_separator=","
             )
 
     @property
