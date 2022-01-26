@@ -30,4 +30,7 @@ class TestEnsmalllen(TestCase):
     def test_graph(self):
         parser = Hpo2EnsmallenParser(self.path)
         #g = parser.graph
-        self.assertNonNone(parser)
+        self.assertTrue(parser)
+        self.assertTrue(isinstance(parser, Hpo2EnsmallenParser))
+        g = parser.graph
+        self.assertTrue(g)
