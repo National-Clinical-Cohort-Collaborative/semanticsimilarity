@@ -16,19 +16,8 @@ class Hpo2EnsmallenParser:
         self._graph = self._read_file(edge_path)
 
     def _read_file(self, edges_file):
-        inp = edges_file
-        fs = inp.filesystem()
-        filename = edges_file
-        with fs.open(filename, 'rb') as f:
-            with open(filename, "wb") as g:
-                shutil.copyfileobj(f, g)
-
-                print(os.listdir())
-        with open(filename, 'r') as content_file:
-            print(content_file.read())
-
         return EnsmallenGraph.from_unsorted_csv(
-            edge_path=filename,
+            edge_path=edges_file,
             directed=False,
             sources_column="subject",
             destinations_column="object")
