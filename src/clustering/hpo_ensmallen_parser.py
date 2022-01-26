@@ -10,7 +10,7 @@ class Hpo2EnsmallenParser:
     """
     My great documention
     """
-    def __init__(self, node_path, edge_path):
+    def __init__(self, edge_path):
          if not os.path.isfile(edge_path):
             raise FileNotFoundError("Could not find HPO edge path at '" + edge_path + "'")
         self._graph = self._read_file(edge_path)
