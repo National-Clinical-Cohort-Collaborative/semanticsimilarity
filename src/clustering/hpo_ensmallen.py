@@ -3,3 +3,7 @@ class HpoEnsmallen:
     """
     def __init__(self, g):
         self.graph = g
+
+    # TODO:
+    # get all descendents
+    # get all ancestors
