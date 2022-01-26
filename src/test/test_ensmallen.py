@@ -3,7 +3,7 @@ from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
 import os
 
 
-class TestEnsmalllen(TestCase):
+class TestEnsmallen(TestCase):
 
     @classmethod
     def setUpClass(cls):
