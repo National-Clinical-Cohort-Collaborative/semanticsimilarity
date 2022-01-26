@@ -18,7 +18,7 @@ class Hpo2EnsmallenParser:
     def _read_file(self, edges_file):
         return EnsmallenGraph.from_unsorted_csv(
             edge_path=edges_file,
-            directed=False,
+            directed=True,
             sources_column="subject",
             destinations_column="object",
             edge_separator=","
