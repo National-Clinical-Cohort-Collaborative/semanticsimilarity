@@ -10,14 +10,12 @@ class Hpo2EnsmallenParser:
     """
     My great documention
     """
-    def __init__(self, node_path, edge_path):
-        if not os.path.isfile(node_path):
-            raise FileNotFoundError("Could not find HPO node path at '" + node_path + "'")
+    def __init__(self, edge_path):
         if not os.path.isfile(edge_path):
             raise FileNotFoundError("Could not find HPO edge path at '" + edge_path + "'")
-        self._graph = self._read_file(edge_path)
+        #self._graph = self._read_file(edge_path)
 
-    def _read_file(edges_file):
+    def _read_file(self, edges_file):
         inp = edges_file
         fs = inp.filesystem()
         filename = edges_file
@@ -38,4 +36,3 @@ class Hpo2EnsmallenParser:
     @property
     def graph(self):
         return self._graph
-
