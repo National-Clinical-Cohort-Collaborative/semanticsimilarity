@@ -29,6 +29,7 @@ class TestEnsmallen(TestCase):
         p = make_ensmallen_graph_parser_object(self.path)
         pass
 
+
     def test_get_descendents(self):
         p = make_ensmallen_graph_parser_object(self.path)
         pass
