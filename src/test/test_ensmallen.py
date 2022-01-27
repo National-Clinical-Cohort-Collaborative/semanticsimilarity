@@ -27,12 +27,12 @@ class TestEnsmallen(TestCase):
 
     def test_get_ancestors(self):
         p = make_ensmallen_graph_parser_object(self.path)
-        pass
+        self.assertTrue( hasattr(p, 'get_ancestors') )
 
 
     def test_get_descendents(self):
         p = make_ensmallen_graph_parser_object(self.path)
-        pass
+        self.assertTrue( hasattr(p, 'get_descendents') )
 
 
 def make_ensmallen_graph_parser_object(hpo_graph):
