@@ -3,6 +3,16 @@ from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
 import os
 
 
+def make_ensmallen_graph_parser_object(hpo_graph):
+    try:
+        parser = Hpo2EnsmallenParser(hpo_graph)
+        return parser
+    except Exception as e:  # try/exception here is necessary to get a useful error message
+        print("Problem making :")
+        print(e)
+        return None
+
+
 class TestEnsmallen(TestCase):
 
     @classmethod
@@ -15,13 +25,8 @@ class TestEnsmallen(TestCase):
         self.assertTrue(os.path.isfile(self.path))
 
     def test_ctor_ensmaller_parser(self):
-        try:
-            parser = Hpo2EnsmallenParser(self.path)
-            self.assertTrue(not False)
-        except Exception as e:  # try/exception here is necessary to get a useful error message
-            print("Problem making :")
-            print(e)
-            self.assertTrue(False, msg="Problem creating Hpo2EnsmallenParser instance")
+        p = make_ensmallen_graph_parser_object(self.path)
+        self.assertIsNotNone(p)
 
     def test_graph(self):
         parser = Hpo2EnsmallenParser(self.path)
@@ -29,3 +34,10 @@ class TestEnsmallen(TestCase):
         self.assertTrue(isinstance(parser, Hpo2EnsmallenParser))
         g = parser.graph
         self.assertTrue(g)
+
+    def test_get_ancestors(self):
+        pass
+
+    def test_get_descendents(self):
+        pass
+
