@@ -10,32 +10,20 @@ class Hpo2EnsmallenParser:
     """
     My great documention
     """
-    def __init__(self, node_path, edge_path):
-        if not os.path.isfile(node_path):
-            raise FileNotFoundError("Could not find HPO node path at '" + node_path + "'")
+    def __init__(self, edge_path):
         if not os.path.isfile(edge_path):
             raise FileNotFoundError("Could not find HPO edge path at '" + edge_path + "'")
         self._graph = self._read_file(edge_path)
 
-    def _read_file(edges_file):
-        inp = edges_file
-        fs = inp.filesystem()
-        filename = edges_file
-        with fs.open(filename, 'rb') as f:
-            with open(filename, "wb") as g:
-                shutil.copyfileobj(f, g)
-
-                print(os.listdir())
-        with open(filename, 'r') as content_file:
-            print(content_file.read())
-
+    def _read_file(self, edges_file):
         return EnsmallenGraph.from_unsorted_csv(
-            edge_path=filename,
-            directed=False,
+            edge_path=edges_file,
+            directed=True,
             sources_column="subject",
-            destinations_column="object")
+            destinations_column="object",
+            edge_separator=","
+            )
 
     @property
     def graph(self):
         return self._graph
-
