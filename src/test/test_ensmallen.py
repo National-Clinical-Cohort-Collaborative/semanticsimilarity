@@ -17,16 +17,14 @@ class TestEnsmallen(TestCase):
     def test_ctor_ensmaller_parser(self):
         try:
             parser = Hpo2EnsmallenParser(self.path)
-            self.assertTrue( not False)
-            print("WE GOT HERE")
-        except Exception as e:
-            print("Problem:")
+            self.assertTrue(not False)
+        except Exception as e:  # try/exception here is necessary to get a useful error message
+            print("Problem making :")
             print(e)
-            pass
+            self.assertTrue(False, msg="Problem creating Hpo2EnsmallenParser instance")
 
     def test_graph(self):
         parser = Hpo2EnsmallenParser(self.path)
-        #g = parser.graph
         self.assertTrue(parser)
         self.assertTrue(isinstance(parser, Hpo2EnsmallenParser))
         g = parser.graph
