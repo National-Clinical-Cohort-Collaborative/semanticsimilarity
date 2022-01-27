@@ -1,5 +1,6 @@
 from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
 
+
 class HpoEnsmallen:
     """A class to keep track of things like information content and maps for doing sem sim
     """
@@ -10,13 +11,13 @@ class HpoEnsmallen:
         self.graph_reversed_edges = parser.graph_reversed_edges
 
     # get all descendents
-    def get_descendents(self, hpo_term, descendents=[]) -> list:
-
-        descendents += [hpo_term]
+    def get_descendents(self, hpo_term, descendents=[], start=True) -> list:
+        if not start:  # avoid adding original term at the beginning
+            descendents += [hpo_term]
 
         for neighbor in self.graph_reversed_edges.get_node_neighbours_name_by_node_name(hpo_term):
             if neighbor not in descendents:
-                descendents = self.get_descendents(neighbor, descendents)
+                descendents = self.get_descendents(neighbor, descendents, start=False)
 
         return descendents
 

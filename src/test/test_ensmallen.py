@@ -36,8 +36,7 @@ class TestEnsmallen(TestCase):
         go = HpoEnsmallen(self.path)
         self.assertTrue(hasattr(go, 'get_descendents'))
         anc = go.get_descendents('HP:0000118')
-        self.assertCountEqual(anc, ['HP:0000118',  # <- fix this - get_descendants returns the original node
-                                    'HP:0000707', 'HP:0000818', 'HP:0000834', 'HP:0000873', 'HP:0003549',
+        self.assertCountEqual(anc, ['HP:0000707', 'HP:0000818', 'HP:0000834', 'HP:0000873', 'HP:0003549',
                                     'HP:0009025', 'HP:0009124', 'HP:0012638', 'HP:0012639', 'HP:0100568',
                                     'HP:0100881', 'HP:0410008'])
 
