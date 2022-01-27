@@ -27,12 +27,14 @@ class TestEnsmallen(TestCase):
         self.assertTrue(g)
 
     def test_get_ancestors(self):
-        ego = make_ensmallen_graph_object(self.path)
-        self.assertTrue(hasattr(ego, 'get_ancestors'))
+        go = make_ensmallen_graph_object(self.path)
+        self.assertTrue(hasattr(go, 'get_ancestors'))
+        anc = go.get_ancestors('HP:0012638')
+        self.assertEqual(anc, ['HP:0000707', 'HP:0000118'])
 
     def test_get_descendents(self):
-        ego = make_ensmallen_graph_object(self.path)
-        self.assertTrue(hasattr(ego, 'get_descendents'))
+        go = make_ensmallen_graph_object(self.path)
+        self.assertTrue(hasattr(go, 'get_descendents'))
 
 
 def make_ensmallen_graph_parser_object(hpo_graph):
