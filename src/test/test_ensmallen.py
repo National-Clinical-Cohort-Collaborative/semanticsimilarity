@@ -30,15 +30,15 @@ class TestEnsmallen(TestCase):
         go = make_ensmallen_graph_object(self.path)
         self.assertTrue(hasattr(go, 'get_ancestors'))
         anc = go.get_ancestors('HP:0012638')
-        self.assertEqual(anc, ['HP:0000707', 'HP:0000118'])
+        self.assertCountEqual(anc, ['HP:0000707', 'HP:0000118'])
 
     def test_get_descendents(self):
         go = make_ensmallen_graph_object(self.path)
         self.assertTrue(hasattr(go, 'get_descendents'))
         anc = go.get_ancestors('HP:0000118')
-        self.assertEqual(anc, ['HP:0000707', 'HP:0000818', 'HP:0000834', 'HP:0000873', 'HP:0003549',
-                               'HP:0009025', 'HP:0009124', 'HP:0012638', 'HP:0012639', 'HP:0100568',
-                               'HP:0100881', 'HP:0410008'])
+        self.assertCountEqual(anc, ['HP:0000707', 'HP:0000818', 'HP:0000834', 'HP:0000873', 'HP:0003549',
+                                    'HP:0009025', 'HP:0009124', 'HP:0012638', 'HP:0012639', 'HP:0100568',
+                                    'HP:0100881', 'HP:0410008'])
 
 
 def make_ensmallen_graph_parser_object(hpo_graph):
