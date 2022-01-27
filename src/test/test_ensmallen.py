@@ -1,5 +1,6 @@
 from unittest import TestCase
 from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
+from clustering.hpo_ensmallen import HpoEnsmallen
 import os
 
 
@@ -26,13 +27,13 @@ class TestEnsmallen(TestCase):
         self.assertTrue(g)
 
     def test_get_ancestors(self):
-        p = make_ensmallen_graph_parser_object(self.path)
-        self.assertTrue( hasattr(p, 'get_ancestors') )
+        ego = make_ensmallen_graph_object(self.path)
+        self.assertTrue( hasattr(ego, 'get_ancestors') )
 
 
     def test_get_descendents(self):
-        p = make_ensmallen_graph_parser_object(self.path)
-        self.assertTrue( hasattr(p, 'get_descendents') )
+        ego = make_ensmallen_graph_object(self.path)
+        self.assertTrue( hasattr(ego, 'get_descendents') )
 
 
 def make_ensmallen_graph_parser_object(hpo_graph):
@@ -43,3 +44,9 @@ def make_ensmallen_graph_parser_object(hpo_graph):
         print("Problem making :")
         print(e)
         return None
+
+
+def make_ensmallen_graph_object(hpo_graph):
+    p = make_ensmallen_graph_parser_object(hpo_graph)
+    hpo_ens = HpoEnsmallen(p.graph)
+    return hpo_ens
