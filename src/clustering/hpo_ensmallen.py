@@ -6,4 +6,9 @@ class HpoEnsmallen:
 
     # TODO:
     # get all descendents
+    def get_descendents(self):
+        return None
+
     # get all ancestors
+    def get_ancestors(self):
+        return None
