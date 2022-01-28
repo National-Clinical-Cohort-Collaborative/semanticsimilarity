@@ -1,4 +1,5 @@
 
 
 
-class AnnotationProt
+class AnnotationPrototype:
+    
