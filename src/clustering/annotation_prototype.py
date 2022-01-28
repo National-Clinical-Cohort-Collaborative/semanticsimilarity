@@ -3,5 +3,5 @@
 
 class AnnotationPrototype:
     """
-    This class is intended to cou
+    This class is intended to count 
     """
