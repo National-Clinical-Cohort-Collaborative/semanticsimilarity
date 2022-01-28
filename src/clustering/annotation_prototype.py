@@ -3,5 +3,5 @@
 
 class AnnotationPrototype:
     """
-    This
+    This class is in
     """
