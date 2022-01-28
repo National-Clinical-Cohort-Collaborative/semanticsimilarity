@@ -22,11 +22,12 @@ class HpoEnsmallen:
         return descendents
 
     # get all ancestors
-    def get_ancestors(self, hpo_term, ancestors=[]) -> list:
-        ancestors += [hpo_term]
+    def get_ancestors(self, hpo_term, ancestors=[], start=True) -> list:
+        if not start:
+            ancestors += [hpo_term]
 
         for neighbor in self.graph.get_node_neighbours_name_by_node_name(hpo_term):
             if neighbor not in ancestors:
-                ancestors = self.get_descendents(neighbor, ancestors)
+                ancestors = self.get_ancestors(neighbor, ancestors, start=False)
 
         return ancestors
