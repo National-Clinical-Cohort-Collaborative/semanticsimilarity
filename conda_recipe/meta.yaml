@@ -17,6 +17,8 @@ requirements:
   run:
     - python 3.6.15
     - ensmallen_graph 0.6.0
+    - pandas
+    - parameterized
 
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt

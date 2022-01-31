@@ -11,23 +11,31 @@ class HpoEnsmallen:
         self.graph_reversed_edges = parser.graph_reversed_edges
 
     # get all descendents
-    def get_descendents(self, hpo_term, descendents=[], start=True) -> list:
-        if not start:  # avoid adding original term at the beginning
-            descendents += [hpo_term]
+    def get_descendents(self, hpo_term) -> list:
+        stack = [hpo_term]
+        path = []
 
-        for neighbor in self.graph_reversed_edges.get_node_neighbours_name_by_node_name(hpo_term):
-            if neighbor not in descendents:
-                descendents = self.get_descendents(neighbor, descendents, start=False)
+        while stack:
+            vertex = stack.pop()
+            if vertex in path:
+                continue
+            path.append(vertex)
+            for neighbor in self.graph_reversed_edges.get_node_neighbours_name_by_node_name(vertex):
+                stack.append(neighbor)
 
-        return descendents
+        return path
 
     # get all ancestors
-    def get_ancestors(self, hpo_term, ancestors=[], start=True) -> list:
-        if not start:
-            ancestors += [hpo_term]
+    def get_ancestors(self, hpo_term) -> list:
+        stack = [hpo_term]
+        path = []
 
-        for neighbor in self.graph.get_node_neighbours_name_by_node_name(hpo_term):
-            if neighbor not in ancestors:
-                ancestors = self.get_ancestors(neighbor, ancestors, start=False)
+        while stack:
+            vertex = stack.pop()
+            if vertex in path:
+                continue
+            path.append(vertex)
+            for neighbor in self.graph.get_node_neighbours_name_by_node_name(vertex):
+                stack.append(neighbor)
 
-        return ancestors
+        return path
