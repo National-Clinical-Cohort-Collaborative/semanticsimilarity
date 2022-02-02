@@ -24,23 +24,21 @@ class AnnotationCounter:
             # as well as a list of the hpo_id's for that patient id
             df_by_patient_id = counts_df.groupby('patient_id')['hpo_id'].apply(list)
             print(df_by_patient_id)
-            # now we can create a set that contains all of the ancestors of all terms 
+            # now we can create a set that contains all of the ancestors of all terms
             # to which each patient is annotated and then we use this to increment
             # the counts dictionary.
             # df_by_patient_id is a pandas series, whence iteritems()
             for index, row in df_by_patient_id.iteritems():
-                print(row)
-                print(type(row))
                 # pat_id = row[0]
                 hpo_id_list = row
                 ######## TODO #################
-                # remove the following before production, but now 
+                # remove the following before production, but now
                 # we still need to check sanity
                 if not isinstance(hpo_id_list, list):
                     raise ValueError('hpo_id not list')
                 induced_ancestor_graph = set()
                 for hpo_id in hpo_id_list:
-                    induced_ancestor_graph.add(hpo_id) # add orignal term, which does not appear in ancestors
+                    induced_ancestor_graph.add(hpo_id)  # add orignal term, which does not appear in ancestors
                     ancs = self._hpo.get_ancestors(hpo_id)
                     induced_ancestor_graph.update(ancs)
                 self._total_patients += 1

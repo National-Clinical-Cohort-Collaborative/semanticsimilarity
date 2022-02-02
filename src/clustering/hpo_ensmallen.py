@@ -1,4 +1,5 @@
 from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
+from typing import Set
 
 
 class HpoEnsmallen:
@@ -11,31 +12,37 @@ class HpoEnsmallen:
         self.graph_reversed_edges = parser.graph_reversed_edges
 
     # get all descendents
-    def get_descendents(self, hpo_term) -> list:
+    def get_descendents(self, hpo_term) -> Set:
+        """
+        get a set of all descendents of hpo_term, including hpo_term itself
+        """
         stack = [hpo_term]
-        path = []
+        path = set()
 
         while stack:
             vertex = stack.pop()
             if vertex in path:
                 continue
-            path.append(vertex)
+            path.add(vertex)
+
             for neighbor in self.graph_reversed_edges.get_node_neighbours_name_by_node_name(vertex):
                 stack.append(neighbor)
 
         return path
 
     # get all ancestors
-    def get_ancestors(self, hpo_term) -> list:
+    def get_ancestors(self, hpo_term) -> Set:
+        """
+        get a set of all ancestors of hpo_term, including hpo_term itself
+        """
         stack = [hpo_term]
-        path = []
+        ancs = set()
 
         while stack:
             vertex = stack.pop()
-            if vertex in path:
+            if vertex in ancs:
                 continue
-            path.append(vertex)
+            ancs.add(vertex)
             for neighbor in self.graph.get_node_neighbours_name_by_node_name(vertex):
                 stack.append(neighbor)
-
-        return path
+        return ancs

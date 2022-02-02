@@ -1,7 +1,6 @@
 from unittest import TestCase
 from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
 from clustering.hpo_ensmallen import HpoEnsmallen
-from parameterized import parameterized
 import os
 
 
@@ -60,4 +59,3 @@ def make_ensmallen_graph_parser_object(hpo_graph):
         print("Problem making :")
         print(e)
         return None
-

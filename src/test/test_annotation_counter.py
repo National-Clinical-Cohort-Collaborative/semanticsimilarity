@@ -1,4 +1,4 @@
-from unittest import TestCase, skip
+from unittest import TestCase
 from clustering.annotation_counter import AnnotationCounter
 from clustering.hpo_ensmallen import HpoEnsmallen
 import os
@@ -12,7 +12,6 @@ class TestAnnotationCounter(TestCase):
         # The following gets us the directory of this file
         dir = os.path.dirname(os.path.abspath(__file__))
         cls.hpo_path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
-        cls.hpo_path_tiny = os.path.join(dir, "test_data/test_hpo_graph_tiny.tsv")        
 
     def test_trivial_case(self):
         ensmallen = HpoEnsmallen(hpo_graph=self.hpo_path)
