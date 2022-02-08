@@ -12,7 +12,7 @@
 
 env:
   transformsGradleDistributionUrl:
-    uri-role: gradle-distribution-6-7-1
+    uri-role: gradle-distribution-7-2
   ORG_GRADLE_PROJECT_artifactsUri:
     uri-role: foundry-artifacts-api
   ORG_GRADLE_PROJECT_condaInstallerUri:
