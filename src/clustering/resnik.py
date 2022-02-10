@@ -22,7 +22,7 @@ class Resnik:
             self._ic_d[hpo_id] = ic
         # get list of all HPO terms
         hpo_id_list = list(counts_d.keys())
-        for i in itertools.combinations(hpo_id_list, 2):
+        for i in itertools.combinations_with_replacement(hpo_id_list, 2):
             self._mica_d[i] = self.calculate_mica_ic(i, ensmallen)
 
     def calculate_mica_ic(self, tp, ensmallen: HpoEnsmallen) -> TermPair:
