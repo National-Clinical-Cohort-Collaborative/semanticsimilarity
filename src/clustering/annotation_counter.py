@@ -1,7 +1,7 @@
 from collections import defaultdict
 from clustering import HpoEnsmallen
 import pandas as pd
-
+from warnings import warn
 
 class AnnotationCounter:
 
@@ -38,9 +38,12 @@ class AnnotationCounter:
                     raise ValueError('hpo_id not list')
                 induced_ancestor_graph = set()
                 for hpo_id in hpo_id_list:
-                    induced_ancestor_graph.add(hpo_id)  # add orignal term, which does not appear in ancestors
-                    ancs = self._hpo.get_ancestors(hpo_id)
-                    induced_ancestor_graph.update(ancs)
+                    if self._hpo.node_exists(hpo_id):
+                        induced_ancestor_graph.add(hpo_id)  # add orignal term, which does not appear in ancestors
+                        ancs = self._hpo.get_ancestors(hpo_id)
+                        induced_ancestor_graph.update(ancs)
+                    else:
+                        warn(f"Couldn't find {hpo_id} in self._hpo graph")
                 self._total_patients += 1
                 for hpo_id in induced_ancestor_graph:
                     self._termcounts[hpo_id] += 1
