@@ -40,6 +40,12 @@ class TestEnsmallen(TestCase):
                                     'HP:0009025', 'HP:0009124', 'HP:0012638', 'HP:0012639', 'HP:0100568',
                                     'HP:0100881', 'HP:0410008'])
 
+    def test_node_exists(self):
+        go = HpoEnsmallen(self.path)
+        self.assertTrue(hasattr(go, 'node_exists'))
+        self.assertTrue(go.node_exists('HP:0000118'))
+        self.assertFalse(go.node_exists('NONEXISTENT'))
+
     # @parameterized.expand([
     #     ['HP:PARENT', ['HP:CHILD1','HP:CHILD2', 'HP:GRANDCHILD1'], []],
     #     ['HP:CHILD1', [], ['HP:PARENT']],

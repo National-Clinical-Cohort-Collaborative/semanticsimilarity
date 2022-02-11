@@ -11,6 +11,9 @@ class HpoEnsmallen:
         self.graph = parser.graph
         self.graph_reversed_edges = parser.graph_reversed_edges
 
+    def node_exists(self, node) -> bool:
+        return node in self.graph.get_node_names()
+
     # get all descendents
     def get_descendents(self, hpo_term) -> Set:
         """
