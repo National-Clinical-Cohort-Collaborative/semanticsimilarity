@@ -16,7 +16,7 @@ class AnnotationCounter:
         if isinstance(counts_df, pd.DataFrame):
             # the dataframe must have exactly two columns, the first of
             # which is called patient_id and the second is called hpo_id
-            if not len(counts_df.columns):  # TODO: add check for 
+            if not len(counts_df.columns):  # TODO: add check for  == 2
                 raise ValueError("DataFrame must have exactly two columns")
             if 'patient_id' not in counts_df.columns or 'hpo_id' not in counts_df.columns:
                 raise ValueError("Columns must be patient_id and hpo_id, but we got {}".format(";".join(counts_df.columns)))
