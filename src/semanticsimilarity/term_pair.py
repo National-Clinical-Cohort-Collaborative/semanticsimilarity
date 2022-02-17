@@ -7,7 +7,7 @@ class TermPair():
         self._t2 = thisPair[1]
 
     def __eq__(self, other):
-        return other and self._t1 == other[0] and self._t2 == other[1]
+        return other and self._t1 == other._t1 and self._t2 == other._t2
 
     def __ne__(self, other):
         return not self.__eq__(other)

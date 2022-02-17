@@ -1,6 +1,6 @@
 from unittest import TestCase
-from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
-from clustering.hpo_ensmallen import HpoEnsmallen
+from semanticsimilarity.hpo_ensmallen_parser import Hpo2EnsmallenParser
+from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 import os
 
 

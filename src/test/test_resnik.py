@@ -1,7 +1,7 @@
 from unittest import TestCase
-from clustering.annotation_counter import AnnotationCounter
-from clustering.hpo_ensmallen import HpoEnsmallen
-from clustering.resnik import Resnik
+from semanticsimilarity.annotation_counter import AnnotationCounter
+from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
+from semanticsimilarity.resnik import Resnik
 import os
 import math
 import pandas as pd
@@ -37,8 +37,8 @@ class TestResnik(TestCase):
         total = annotationCounter.get_total_patient_count()
         resnik = Resnik(counts_d=counts_d, total=total, ensmallen=ensmallen)
         mica_d = resnik.get_mica_d()
-        mica_0012638 = math.log(0.5)
-        mica_0000707 = math.log(1.0)
+        mica_0012638 = -math.log(0.5)
+        mica_0000707 = -math.log(1.0)
         EPSILON = 0.000001
-        self.assertEqual(mica_0012638, mica_d.get('HP:0012638'), EPSILON)
-        self.assertEqual(mica_0000707, mica_d.get('HP:0000707'), EPSILON)
+        self.assertEqual(mica_0012638, mica_d.get(('HP:0012638', 'HP:0012638')), EPSILON)
+        self.assertEqual(mica_0000707, mica_d.get(('HP:0000707', 'HP:0000707')), EPSILON)

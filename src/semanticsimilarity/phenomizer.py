@@ -35,3 +35,9 @@ class Phenomizer:
         if len(a_to_b_sim) == 0 or len(b_to_a_sim) == 0:
             return 0
         return 0.5 * sum(a_to_b_sim)/len(a_to_b_sim) + 0.5 * sum(b_to_a_sim)/len(b_to_a_sim)
+
+    def make_similarity_matrix():
+        pass
+
+    def update_mica_d(self, new_mica_d: dict):
+        self._mica_d = new_mica_d

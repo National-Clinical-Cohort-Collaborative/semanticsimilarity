@@ -1,6 +1,6 @@
 from unittest import TestCase
-from clustering.annotation_counter import AnnotationCounter
-from clustering.hpo_ensmallen import HpoEnsmallen
+from semanticsimilarity.annotation_counter import AnnotationCounter
+from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 import os
 import pandas as pd
 

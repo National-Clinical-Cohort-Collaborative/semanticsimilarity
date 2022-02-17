@@ -1,7 +1,8 @@
 from collections import defaultdict
-from clustering import HpoEnsmallen
+from semanticsimilarity import HpoEnsmallen
 import pandas as pd
 from warnings import warn
+
 
 class AnnotationCounter:
 
@@ -31,7 +32,7 @@ class AnnotationCounter:
             for index, row in df_by_patient_id.iteritems():
                 # pat_id = row[0]
                 hpo_id_list = row
-                ######## TODO #################
+                # ####### TODO #################
                 # remove the following before production, but now
                 # we still need to check sanity
                 if not isinstance(hpo_id_list, list):
