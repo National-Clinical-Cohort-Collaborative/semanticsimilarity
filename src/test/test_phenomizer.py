@@ -1,8 +1,8 @@
 from unittest import TestCase
-from clustering.phenomizer import Phenomizer
-from clustering.resnik import Resnik
-from clustering.hpo_ensmallen import HpoEnsmallen
-from clustering.annotation_counter import AnnotationCounter
+from semanticsimilarity.phenomizer import Phenomizer
+from semanticsimilarity.resnik import Resnik
+from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
+from semanticsimilarity.annotation_counter import AnnotationCounter
 import os
 import pandas as pd
 
@@ -88,3 +88,14 @@ class TestPhenomizer(TestCase):
         ss = p.similarity_score(self.patientA, self.patientB)
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 2.5649493574615367*0.5)  # this is the IC of HP:0012638 vs HP:0012638 / 2
+
+    def test_has_update_mica_d(self):
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, 'update_mica_d'))
+        new_dict = {'foo': 'bar'}
+        p.update_mica_d(new_dict)
+        self.assertEqual(p._mica_d['foo'], 'bar')
+
+    def test_has_make_similarity_matrix_method(self):
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, 'make_similarity_matrix'))

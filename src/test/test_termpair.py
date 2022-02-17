@@ -1,5 +1,5 @@
 from unittest import TestCase
-from clustering.term_pair import TermPair
+from semanticsimilarity.term_pair import TermPair
 
 
 

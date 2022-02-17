@@ -1,4 +1,4 @@
-from clustering.hpo_ensmallen_parser import Hpo2EnsmallenParser
+from semanticsimilarity.hpo_ensmallen_parser import Hpo2EnsmallenParser
 from typing import Set
 
 
