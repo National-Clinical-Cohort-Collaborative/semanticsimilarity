@@ -9,11 +9,12 @@ buildscript {
                 basic(BasicAuthentication)
             }
             url project.mavenProxyRepoUri
-        }
-    }
 
-    pythonLibrary {
-        publishChannelName = 'libs'
+            pythonLibrary {
+                publishChannelName = 'libs'
+            }
+
+        }
     }
 
     dependencies {
