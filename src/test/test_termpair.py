@@ -2,7 +2,6 @@ from unittest import TestCase
 from semanticsimilarity.term_pair import TermPair
 
 
-
 class TestTermPair(TestCase):
 
     def test_equality(self):

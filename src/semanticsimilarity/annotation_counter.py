@@ -19,7 +19,7 @@ class AnnotationCounter:
             # which is called patient_id and the second is called hpo_id
             if not len(counts_df.columns):
                 raise ValueError("DataFrame must have exactly two columns")
-            if 'patient_id' not in counts_df.columns or 'hpo_id' not in counts_df.columns:
+            if 'patient_id' not in counts_df.columns or 'hpo_id' not in counts_df.columns:  # TODO: these column names should not be hard coded
                 raise ValueError("Columns must be patient_id and hpo_id, but we got {}".format(";".join(counts_df.columns)))
             # Group by patient_id and create a dataframe with one row per patient_id
             # as well as a list of the hpo_id's for that patient id
