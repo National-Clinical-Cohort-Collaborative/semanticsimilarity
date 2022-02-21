@@ -18,13 +18,13 @@ buildscript {
     }
 }
 
-pythonLibrary {
-    publishChannelName = 'semanticsimilarity'
-}
-
 
 apply plugin: 'com.palantir.transforms.lang.python-library'
 apply plugin: 'com.palantir.transforms.lang.python-library-defaults'
+
+pythonLibrary {
+    publishChannelName = 'lib'
+}
 
 // Apply the testing plugin
 // apply plugin: 'com.palantir.transforms.lang.pytest-defaults'
