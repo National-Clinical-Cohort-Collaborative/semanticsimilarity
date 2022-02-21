@@ -10,10 +10,6 @@ buildscript {
             }
             url project.mavenProxyRepoUri
 
-            pythonLibrary {
-                publishChannelName = 'libs'
-            }
-
         }
     }
 
@@ -21,6 +17,12 @@ buildscript {
         classpath "com.palantir.transforms.python:lang-python-gradle-plugin:${transformsPythonVersion}"
     }
 }
+
+
+pythonLibrary {
+    publishChannelName = 'libs'
+}
+
 
 apply plugin: 'com.palantir.transforms.lang.python-library'
 apply plugin: 'com.palantir.transforms.lang.python-library-defaults'
