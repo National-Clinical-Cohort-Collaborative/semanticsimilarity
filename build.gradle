@@ -18,9 +18,8 @@ buildscript {
     }
 }
 
-
 pythonLibrary {
-    publishChannelName = 'libs'
+    publishChannelName = 'semanticsimilarity'
 }
 
 
