@@ -12,6 +12,10 @@ buildscript {
         }
     }
 
+    pythonLibrary {
+        publishChannelName = 'libs'
+    }
+
     dependencies {
         classpath "com.palantir.transforms.python:lang-python-gradle-plugin:${transformsPythonVersion}"
     }
