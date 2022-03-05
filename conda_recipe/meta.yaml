@@ -20,6 +20,7 @@ requirements:
     - pandas
     - parameterized
     - setuptools
+    - scipy
 
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt
