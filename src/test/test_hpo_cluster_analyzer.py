@@ -8,7 +8,7 @@ from parameterized import parameterized
 from scipy.stats import chi2_contingency
 
 
-class TestHpoClusteAnalyzer(TestCase):
+class TestHpoClusterAnalyzer(TestCase):
 
     @classmethod
     def setUpClass(cls):
