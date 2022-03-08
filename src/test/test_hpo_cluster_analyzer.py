@@ -5,7 +5,7 @@ from semanticsimilarity.hpo_cluster_analyzer import HpoClusterAnalyzer
 import pandas as pd
 from pyspark.sql import SparkSession
 from parameterized import parameterized
-from scipy.stats import chi2_contingency
+from scipy.stats import chi2_contingency, fisher_exact
 
 
 class TestHpoClusterAnalyzer(TestCase):
@@ -71,7 +71,7 @@ class TestHpoClusterAnalyzer(TestCase):
         cls.cluster_assignment_df = cls.spark_obj.createDataFrame(cls.cluster_assignment_pd)
         cls.clusterAnalyzer.add_counts(cls.patient_df, cls.cluster_assignment_df)
         cls.do_chi2_result_df = cls.clusterAnalyzer.do_chi2()
-
+        cls.do_fisher_result_df = cls.clusterAnalyzer.do_fisher_exact()
 
     def test_add_counts_total_patients_attr(self):
         self.assertEqual(self.clusterAnalyzer._total_patients, 13)
@@ -149,4 +149,20 @@ class TestHpoClusterAnalyzer(TestCase):
     ])
     def test_do_chi2_manually_check_one_row(self, this_hpo_id, col, value):
         this_row = self.do_chi2_result_df[self.do_chi2_result_df['hpo_id'] == this_hpo_id]
+        self.assertEqual(this_row[col].values[0], value)
+
+    @parameterized.expand([
+        ['HP:0000818', '1-total', 7],
+        ['HP:0000818', '1-with', 1],
+        ['HP:0000818', '1-without', 6],
+        ['HP:0000818', '0-total', 6],
+        ['HP:0000818', '0-with', 4],
+        ['HP:0000818', '0-without', 2],
+        #  manually calculate chi2 with counts for HP:0000818 and make sure stats are what we expect
+        #  table = [[with for cluster0, with for cluster1], [without for cluster0, without for cluster1]]
+        ['HP:0000818', 'oddsr', fisher_exact([[4, 1], [2, 6]])[0]],  # second ret val is p
+        ['HP:0000818', 'p', fisher_exact([[4, 1], [2, 6]])[1]],  # third ret val is dof
+    ])
+    def test_do_fisher_exact_manually_check_one_row(self, this_hpo_id, col, value):
+        this_row = self.do_fisher_result_df[self.do_fisher_result_df['hpo_id'] == this_hpo_id]
         self.assertEqual(this_row[col].values[0], value)

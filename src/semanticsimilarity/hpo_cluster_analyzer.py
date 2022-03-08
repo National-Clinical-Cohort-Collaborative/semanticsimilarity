@@ -1,6 +1,6 @@
 from collections import defaultdict
 from semanticsimilarity import HpoEnsmallen
-from scipy.stats import chi2_contingency
+from scipy.stats import chi2_contingency, fisher_exact
 import pyspark
 from warnings import warn
 import pandas as pd
@@ -124,4 +124,33 @@ class HpoClusterAnalyzer:
             d['dof'] = dof
             d['expected'] = expected
             results_list.append(d)
+        return pd.DataFrame(results_list)
+
+    def do_fisher_exact(self):
+        """
+        Perform chi2 test for each term
+        """
+        results_list = []
+        for hpo_id in self._hpo_terms:
+            with_hpo_count = []
+            without_hpo_count = []
+            d = {'hpo_id': hpo_id}
+            for cluster in self._clusters:
+                cluster_with = f"{cluster}-with"
+                cluster_without = f"{cluster}-without"
+                cluster_total = f"{cluster}-total"
+                total = self._per_cluster_total_pt_count[cluster]
+                d[cluster_total] = total
+                with_hpo = self._percluster_termcounts[cluster][hpo_id]
+                d[cluster_with] = with_hpo
+                without_hpo = total - with_hpo
+                with_hpo_count.append(with_hpo)
+                without_hpo_count.append(without_hpo)
+                d[cluster_without] = without_hpo
+
+            oddsr, p = fisher_exact([with_hpo_count, without_hpo_count])
+            d['oddsr'] = oddsr
+            d['p'] = p
+            results_list.append(d)
+
         return pd.DataFrame(results_list)
