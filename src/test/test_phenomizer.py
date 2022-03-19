@@ -94,7 +94,6 @@ class TestPhenomizer(TestCase):
         p = Phenomizer(self.resnik.get_mica_d())
         ss1 = p.similarity_score(self.patientA, self.patientB)
         ss2 = p.similarity_score(self.patientB, self.patientA)
-
         self.assertTrue(isinstance(ss1, (int, float)))
         self.assertAlmostEquals(ss1, 0)
 
