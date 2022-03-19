@@ -4,7 +4,7 @@ from .term_pair import TermPair
 import numpy as np
 import pandas as pd
 from pyspark.sql import functions as F
-from pyspark.sql.functions import colma
+from pyspark.sql.functions import col
 from pyspark.sql import SparkSession, DataFrame
 from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 from semanticsimilarity.resnik import Resnik
