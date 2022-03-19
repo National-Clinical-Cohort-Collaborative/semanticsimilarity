@@ -87,7 +87,7 @@ class TestPhenomizer(TestCase):
         self.assertAlmostEquals(ss, 0)
 
     @parameterized.expand([
-        [['HP:0012638', 'HP:0001818'], ['HP:0012638']],
+        [['HP:0012638', 'HP:0001818'], ['HP:0012638'],
     ])
     def test_phenomizer_test_commutativity(self, patientA, patientB):
         p = Phenomizer(self.resnik.get_mica_d())
