@@ -92,8 +92,6 @@ class TestPhenomizer(TestCase):
     ])
     def test_phenomizer_test_commutativity(self, patientA, patientB):
         p = Phenomizer(self.resnik.get_mica_d())
-        ss1 = 
-        ss2 = 
         self.assertEqual(p.similarity_score(patientA, patientB),
                          p.similarity_score(patientB, patientA))
 
