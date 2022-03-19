@@ -92,7 +92,7 @@ class TestPhenomizer(TestCase):
         self.patientB = set(['HP:0000707'])
 
         p = Phenomizer(self.resnik.get_mica_d())
-        ss = p.similarity_score(self.patientA, self.patientB)
+        ss1 = p.similarity_score(self.patientA, self.patientB)
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
