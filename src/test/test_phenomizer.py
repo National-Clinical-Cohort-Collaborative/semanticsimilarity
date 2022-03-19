@@ -86,6 +86,7 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
+
     def test_phenomizer_test_commutativity(self):
         # make two patients
         self.patientA = set(['HP:0001818'])
