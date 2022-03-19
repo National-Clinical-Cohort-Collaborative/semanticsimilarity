@@ -86,7 +86,7 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
-        
+    
 
     def test_phenomizer_leaf_against_leaf(self):
         # make two patients
