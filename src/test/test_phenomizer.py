@@ -86,7 +86,15 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
+    def test_phenomizer_non_root_against_root(self):
+        # make two patients
+        self.patientA = set(['HP:0001818'])
+        self.patientB = set(['HP:0000707'])
 
+        p = Phenomizer(self.resnik.get_mica_d())
+        ss = p.similarity_score(self.patientA, self.patientB)
+        self.assertTrue(isinstance(ss, (int, float)))
+        self.assertAlmostEquals(ss, 0)
 
     def test_phenomizer_leaf_against_leaf(self):
         # make two patients
