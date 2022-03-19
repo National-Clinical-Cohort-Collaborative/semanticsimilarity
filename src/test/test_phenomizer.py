@@ -86,7 +86,14 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
-
+    @parameterized.expand([
+        ['13', '13', 2.564949],
+        ['7', '8', 1.178655],
+        ['4', '5', 0.955512],
+        ['2', '5', 0.7166335],  # test patient with >1 term (pt2) and another with 1 term (pt5)
+        ['5', '2', 0.7166335],  # test symmetry
+    ])
+    def test_specific_pairs_in_patient_similarity_long_spark_df(self, patientA, patientB, sim):
     def test_phenomizer_test_commutativity(self):
         # make two patients
         self.patientA = set(['HP:0001818'])
