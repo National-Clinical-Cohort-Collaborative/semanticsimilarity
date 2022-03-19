@@ -93,7 +93,7 @@ class TestPhenomizer(TestCase):
         ['2', '5', 0.7166335],  # test patient with >1 term (pt2) and another with 1 term (pt5)
         ['5', '2', 0.7166335],  # test symmetry
     ])
-    def test_phenomizer_test_commutativity(patientA, patientB):
+    def test_phenomizer_test_commutativity(self, patientA, patientB):
         # make two patients
         patientA = set(['HP:0001818'])
         patientB = set(['HP:0000707'])
