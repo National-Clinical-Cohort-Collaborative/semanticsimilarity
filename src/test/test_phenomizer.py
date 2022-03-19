@@ -96,7 +96,7 @@ class TestPhenomizer(TestCase):
     def test_phenomizer_test_commutativity(patientA, patientB):
         # make two patients
         patientA = set(['HP:0001818'])
-        self.patientB = set(['HP:0000707'])
+        patientB = set(['HP:0000707'])
 
         p = Phenomizer(self.resnik.get_mica_d())
         ss1 = p.similarity_score(self.patientA, self.patientB)
