@@ -95,7 +95,7 @@ class TestPhenomizer(TestCase):
         ss1 = p.similarity_score(self.patientA, self.patientB)
         ss2 = p.similarity_score(self.patientB, self.patientA)
         self.assertTrue(isinstance(ss1, (int, float)))
-        self.assertAlmostEquals(ss1, 0)
+        self.assertAlmostEquals(ss1, ss)
 
     def test_phenomizer_leaf_against_leaf(self):
         # make two patients
