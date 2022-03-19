@@ -149,7 +149,7 @@ class TestPhenomizer(TestCase):
         self.assertCountEqual(uniq_patients_input, list(sim_pd['patientB'].unique()))
 
     @parameterized.expand([
-        ['13', '13', 2.564949],  # test symmetry
+        ['13', '13', 2.564949],  
         ['7', '8', 1.178655],
         ['4', '5', 0.955512],
         ['2', '5', 0.7166335],  # test patient with >1 term (pt2) and another with 1 term (pt5)
