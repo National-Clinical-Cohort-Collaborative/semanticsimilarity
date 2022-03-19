@@ -86,7 +86,7 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(ss, (int, float)))
         self.assertAlmostEquals(ss, 0)
 
-    def test_phenomizer_non_root_against_root(self):
+    def test_phenomizer_(self):
         # make two patients
         self.patientA = set(['HP:0001818'])
         self.patientB = set(['HP:0000707'])
