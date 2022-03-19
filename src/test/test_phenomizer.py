@@ -90,8 +90,6 @@ class TestPhenomizer(TestCase):
         [['HP:0012638', 'HP:0001818'], ['HP:0012638', 'HP:0001818']],
     ])
     def test_phenomizer_test_commutativity(self, patientA, patientB):
-
-
         p = Phenomizer(self.resnik.get_mica_d())
         ss1 = p.similarity_score(patientA, patientB)
         ss2 = p.similarity_score(patientB, patientA)
