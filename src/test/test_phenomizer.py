@@ -87,7 +87,7 @@ class TestPhenomizer(TestCase):
         self.assertAlmostEquals(ss, 0)
 
     @parameterized.expand([
-        ['13', '13', 2.564949],
+        [],
     ])
     def test_phenomizer_test_commutativity(self, patientA, patientB):
         # make two patients
