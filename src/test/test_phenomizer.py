@@ -97,7 +97,6 @@ class TestPhenomizer(TestCase):
         self.assertEqual(p.similarity_score(patientA, patientB),
                          p.similarity_score(patientB, patientA))
 
-
     def test_phenomizer_leaf_against_leaf(self):
         # make two patients
         self.patientA = set(['HP:0012638'])
