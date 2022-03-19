@@ -94,7 +94,7 @@ class TestPhenomizer(TestCase):
         ['5', '2', 0.7166335],  # test symmetry
     ])
     def test_specific_pairs_in_patient_similarity_long_spark_df(self, patientA, patientB, sim):
-    def test_phenomizer_test_commutativity(patientA):
+    def test_phenomizer_test_commutativity(patientA, pa):
         # make two patients
         self.patientA = set(['HP:0001818'])
         self.patientB = set(['HP:0000707'])
