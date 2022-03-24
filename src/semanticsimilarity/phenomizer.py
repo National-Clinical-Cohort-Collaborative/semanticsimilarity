@@ -168,9 +168,7 @@ class Phenomizer:
                                       clustered_patient_hpo_col_name: str = 'hpo_id') -> list:
 
         average_sim_for_pt_to_clusters = []
-
         test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
-
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
 
         for k in sorted(clusters):
