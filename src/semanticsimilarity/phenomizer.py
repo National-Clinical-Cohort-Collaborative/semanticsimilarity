@@ -157,16 +157,16 @@ class Phenomizer:
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
     def patient_to_cluster_similarity(self,
-        test_patient_hpo_terms: DataFrame,
-        clustered_patient_hpo_terms: DataFrame,
-        cluster_assignments: DataFrame,
-        test_patient_id_col_name: str = 'patient_id',
-        test_patient_hpo_col_name: str = 'hpo_id',
-        cluster_assignment_patient_col_name: str = 'patient_id',
-        cluster_assignment_cluster_col_name: str = 'cluster',
-        clustered_patient_id_col_name: str = 'patient_id',
-        clustered_patient_hpo_col_name: str = 'hpo_id',
-    ):
+                                      test_patient_hpo_terms: DataFrame,
+                                      clustered_patient_hpo_terms: DataFrame,
+                                      cluster_assignments: DataFrame,
+                                      test_patient_id_col_name: str = 'patient_id',
+                                      test_patient_hpo_col_name: str = 'hpo_id',
+                                      cluster_assignment_patient_col_name: str = 'patient_id',
+                                      cluster_assignment_cluster_col_name: str = 'cluster',
+                                      clustered_patient_id_col_name: str = 'patient_id',
+                                      clustered_patient_hpo_col_name: str = 'hpo_id') -> list:
+
         average_sim_for_pt_to_clusters = []
 
         test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
