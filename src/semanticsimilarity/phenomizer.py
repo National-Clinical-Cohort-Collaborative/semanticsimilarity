@@ -173,12 +173,12 @@ class Phenomizer:
 
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
 
-        for k in clusters:
+        for k in sorted(clusters):
             sim_for_pt_to_cluster_k = []
             patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
             for p in patients_in_this_cluster:
-                ss = self.similarity_score(test_patient_hpo_term_list, "")
-                                            # hpo_terms_by_patient[j][1])
+                p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
+                ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
                 sim_for_pt_to_cluster_k.append(ss)
             np.mean(sim_for_pt_to_cluster_k)
         return average_sim_for_pt_to_clusters
