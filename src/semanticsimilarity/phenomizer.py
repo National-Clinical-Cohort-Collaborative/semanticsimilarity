@@ -156,6 +156,9 @@ class Phenomizer:
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
+    def patient_to_cluster_similarity():
+        
+
     @staticmethod
     def make_similarity_matrix(patient_df: DataFrame) -> Dict[str, Union[np.ndarray, list]]:
 

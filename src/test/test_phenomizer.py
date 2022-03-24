@@ -214,3 +214,7 @@ class TestPhenomizer(TestCase):
                                    msg=f"sim matrix doesn't match long spark df for patient A {row['patientA']} vs patient B {row['patientB']}")
             self.assertAlmostEqual(sim_matrix['np'][j][i], row['similarity'], dec_places,
                                    msg=f"sim matrix doesn't match long spark df for patient B {row['patientB']} vs patient A {row['patientA']}")
+
+    def test_patient_to_cluster_similarity(self):
+        p = Phenomizer({})
+        self.assertTrue(hasattr(p, "patient_to_cluster_similarity"))
