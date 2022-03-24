@@ -66,6 +66,38 @@ class TestPhenomizer(TestCase):
         # make patient_df spark dataframe
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
+        # make three held out patients
+        holdout_annots = []
+        for d in [
+                  {'patient_id': "100", 'hpo_id': 'HP:0000118'},
+                  {'patient_id': "101", 'hpo_id': 'HP:0009124'},
+                  {'patient_id': "101", 'hpo_id': 'HP:0100881'},
+                  {'patient_id': "102", 'hpo_id': 'HP:0410008'},
+        ]:
+            holdout_annots.append(d)
+        cls.holdout_patients_pd = pd.DataFrame(holdout_annots)
+        cls.holdout_patients = cls.spark_obj.createDataFrame(cls.holdout_patients_pd)
+
+        # make some cluster assignments
+        cluster_info = []
+        for d in [
+                  {'patient_id': "1", 'cluster': '1'},
+                  {'patient_id': "2", 'cluster': '1'},
+                  {'patient_id': "3", 'cluster': '1'},
+                  {'patient_id': "4", 'cluster': '1'},
+                  {'patient_id': "5", 'cluster': '1'},
+                  {'patient_id': "6", 'cluster': '1'},
+                  {'patient_id': "7", 'cluster': '1'},
+                  {'patient_id': "8", 'cluster': '1'},
+                  {'patient_id': "9", 'cluster': '1'},
+                  {'patient_id': "10", 'cluster': '2'},
+                  {'patient_id': "11", 'cluster': '2'},
+                  {'patient_id': "12", 'cluster': '2'},
+                  {'patient_id': "13", 'cluster': '2'}]:
+            cluster_info.append(d)
+        cls.cluster_assignment_pd = pd.DataFrame(cluster_info)
+        cls.cluster_assignment = cls.spark_obj.createDataFrame(cls.cluster_assignment_pd)
+
     def test_phenomizer_simple(self):
         # make two patients
         self.patientA = set(['HP:0000707'])
