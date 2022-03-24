@@ -256,7 +256,7 @@ class TestPhenomizer(TestCase):
 
     def test_patient_to_cluster_similarity_method(self):
         p = Phenomizer(self.resnik.get_mica_d())
-        heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 100).show()
+        heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 100)
         p.patient_to_cluster_similarity(test_patient_hpo_terms=heldout_patient,
                                         clustered_patient_hpo_terms=self.patient_sdf,
                                         cluster_assignments=self.cluster_assignment

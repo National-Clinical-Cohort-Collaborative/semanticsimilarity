@@ -160,19 +160,27 @@ class Phenomizer:
         test_patient_hpo_terms: DataFrame,
         clustered_patient_hpo_terms: DataFrame,
         cluster_assignments: DataFrame,
-        cluster_col_name: str = 'cluster',
-        patient_col_name: str = 'patient_id'
+        test_patient_id_col_name: str = 'patient_id',
+        test_patient_hpo_col_name: str = 'hpo_id',
+        cluster_assignment_patient_col_name: str = 'patient_id',
+        cluster_assignment_cluster_col_name: str = 'cluster',
+        clustered_patient_id_col_name: str = 'patient_id',
+        clustered_patient_hpo_col_name: str = 'hpo_id',
     ):
         average_sim_for_pt_to_clusters = []
-        # Model.groupby('Age Code').agg({'Patient_Number':'nunique', 'Major':['sum','mean'],'Minor':['sum','mean']}).round(2).to_csv('/Users/marimanammar/OneDrive - University of Tennessee/SDoRT/results/Predictors_EntireCohort.csv', mode='a', header=False)
-        clustered_patients = cluster_assignments.groupBy(cluster_col_name).select(patient_col_name)
-        # for k in clusters:
-        #     sim_for_pt_to_cluster_k = []
-        #     for cp in clustered_patients:
-        #         ss = self.similarity_score(hpo_terms_by_patient[i][1],
-        #                                    hpo_terms_by_patient[j][1])
-        #         sim_for_pt_to_cluster_k.append(ss)
-        #     np.mean(sim_for_pt_to_cluster_k)
+
+        test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
+
+        clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
+
+        for k in clusters:
+            sim_for_pt_to_cluster_k = []
+            patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
+            for p in patients_in_this_cluster:
+                ss = self.similarity_score(test_patient_hpo_term_list, "")
+                                            # hpo_terms_by_patient[j][1])
+                sim_for_pt_to_cluster_k.append(ss)
+            np.mean(sim_for_pt_to_cluster_k)
         return average_sim_for_pt_to_clusters
 
     @staticmethod
