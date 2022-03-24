@@ -254,10 +254,14 @@ class TestPhenomizer(TestCase):
         p = Phenomizer({})
         self.assertTrue(hasattr(p, "patient_to_cluster_similarity"))
 
-    def test_patient_to_cluster_similarity_method(self):
+    def test_patient_to_cluster_similarity_method_returns_list_with_correct_length(self):
         p = Phenomizer(self.resnik.get_mica_d())
         heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 100)
-        p.patient_to_cluster_similarity(test_patient_hpo_terms=heldout_patient,
-                                        clustered_patient_hpo_terms=self.patient_sdf,
-                                        cluster_assignments=self.cluster_assignment
-        )
+        sim = p.patient_to_cluster_similarity(test_patient_hpo_terms=heldout_patient,
+                                              clustered_patient_hpo_terms=self.patient_sdf,
+                                              cluster_assignments=self.cluster_assignment)
+        self.assertTrue(isinstance(sim, list))
+
+        num_of_clusters = [i[0] for i in self.cluster_assignment.select('cluster').distinct().collect()]
+
+        self.assertEqual(len(sim), len(num_of_clusters))
