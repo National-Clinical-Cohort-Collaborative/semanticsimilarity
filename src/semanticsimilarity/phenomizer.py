@@ -159,14 +159,20 @@ class Phenomizer:
     def patient_to_cluster_similarity(self,
         test_patient_hpo_terms: DataFrame,
         clustered_patient_hpo_terms: DataFrame,
-        cluster_assignments: DataFrame
+        cluster_assignments: DataFrame,
+        cluster_col_name: str = 'cluster',
+        patient_col_name: str = 'patient_id'
     ):
         average_sim_for_pt_to_clusters = []
-        for k in clusters:
-            sim_for_pt_to_cluster_k = []
-            for cp in clustered_patients:
-                sim_for_pt_to_cluster_k.append(phenomizer(test_patient_hpo_terms, cp_hpo_terms))
-            np.mean(sim_for_pt_to_cluster_k)
+        # Model.groupby('Age Code').agg({'Patient_Number':'nunique', 'Major':['sum','mean'],'Minor':['sum','mean']}).round(2).to_csv('/Users/marimanammar/OneDrive - University of Tennessee/SDoRT/results/Predictors_EntireCohort.csv', mode='a', header=False)
+        clustered_patients = cluster_assignments.groupBy(cluster_col_name).select(patient_col_name)
+        # for k in clusters:
+        #     sim_for_pt_to_cluster_k = []
+        #     for cp in clustered_patients:
+        #         ss = self.similarity_score(hpo_terms_by_patient[i][1],
+        #                                    hpo_terms_by_patient[j][1])
+        #         sim_for_pt_to_cluster_k.append(ss)
+        #     np.mean(sim_for_pt_to_cluster_k)
         return average_sim_for_pt_to_clusters
 
     @staticmethod
