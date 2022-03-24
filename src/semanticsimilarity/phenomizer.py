@@ -156,8 +156,18 @@ class Phenomizer:
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
-    def patient_to_cluster_similarity():
-        
+    def patient_to_cluster_similarity(self,
+        test_patient_hpo_terms: DataFrame,
+        clustered_patient_hpo_terms: DataFrame,
+        cluster_assignments: DataFrame
+    ):
+        average_sim_for_pt_to_clusters = []
+        for k in clusters:
+            sim_for_pt_to_cluster_k = []
+            for cp in clustered_patients:
+                sim_for_pt_to_cluster_k.append(phenomizer(test_patient_hpo_terms, cp_hpo_terms))
+            np.mean(sim_for_pt_to_cluster_k)
+        return average_sim_for_pt_to_clusters
 
     @staticmethod
     def make_similarity_matrix(patient_df: DataFrame) -> Dict[str, Union[np.ndarray, list]]:
