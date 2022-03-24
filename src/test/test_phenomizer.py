@@ -8,12 +8,15 @@ from parameterized import parameterized
 import os
 import pandas as pd
 import numpy as np
+from pyspark.sql import functions as F
 
 
 class TestPhenomizer(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.spark_obj = SparkSession.builder.appName("pandas to spark").getOrCreate()
+
         # The following gets us the directory of this file
         dir = os.path.dirname(os.path.abspath(__file__))
         cls.hpo_path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
@@ -48,6 +51,7 @@ class TestPhenomizer(TestCase):
             annots.append(d)
 
         cls.patient_pd = pd.DataFrame(annots)
+        cls.patient_sdf = cls.spark_obj.createDataFrame(cls.patient_pd)
         cls.annotationCounter.add_counts(cls.patient_pd)
 
         # make Resnik object
@@ -59,7 +63,6 @@ class TestPhenomizer(TestCase):
         # which makes an HpoEnsmallen, AnnotationCounter, Resnik, and Phenomizer object itself
 
         # make HPO spark df
-        cls.spark_obj = SparkSession.builder.appName("pandas to spark").getOrCreate()
         cls.hpo_pd = pd.read_csv(cls.hpo_path)
         cls.hpo_spark = cls.spark_obj.createDataFrame(cls.hpo_pd)
 
@@ -253,4 +256,8 @@ class TestPhenomizer(TestCase):
 
     def test_patient_to_cluster_similarity_method(self):
         p = Phenomizer(self.resnik.get_mica_d())
-        pass
+        heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 100).show()
+        p.patient_to_cluster_similarity(test_patient_hpo_terms=heldout_patient,
+                                        clustered_patient_hpo_terms=self.patient_sdf,
+                                        cluster_assignments=self.cluster_assignment
+        )
