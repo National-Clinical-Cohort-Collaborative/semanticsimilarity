@@ -166,3 +166,5 @@ class TestHpoClusterAnalyzer(TestCase):
     def test_do_fisher_exact_manually_check_one_row(self, this_hpo_id, col, value):
         this_row = self.do_fisher_result_df[self.do_fisher_result_df['hpo_id'] == this_hpo_id]
         self.assertEqual(this_row[col].values[0], value)
+
+    
