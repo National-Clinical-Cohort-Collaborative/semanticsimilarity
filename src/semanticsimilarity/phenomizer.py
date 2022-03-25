@@ -230,16 +230,16 @@ class Phenomizer:
                                       cluster_assignment_patient_col_name: str = 'patient_id',
                                       cluster_assignment_cluster_col_name: str = 'cluster',
                                       clustered_patient_id_col_name: str = 'patient_id',
-                                      clustered_patient_hpo_col_name: str = 'hpo_id') -> list:
+                                      clustered_patient_hpo_col_name: str = 'hpo_id') -> pd.DataFrame:
 
-        average_sim_for_pt_to_clusters = []
-        #test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
+        test_patient_ids = [i[0] for i in test_patient_hpo_terms.select(test_patient_id_col_name).distinct().collect()]
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
-        clustered_pat_ids = [i[0] for i in clustered_patient_hpo_terms.select(clustered_patient_id_col_name).distinct().collect()]
+
         sim_items = []
-        for clustered_pat_id in clustered_pat_ids:
-            # removed F.col(test_patient_id_col_name) == clustered_pat_id).
-            test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
+
+        for this_test_pt in test_patient_ids:
+            test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.filter(F.col(test_patient_id_col_name) == this_test_pt).select(test_patient_hpo_col_name).distinct().collect()]
+
             for k in sorted(clusters):
                 sim_for_pt_to_cluster_k = []
                 patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
@@ -247,9 +247,9 @@ class Phenomizer:
                     p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
                     ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
                     sim_for_pt_to_cluster_k.append(ss)
-                    d = {'test.id': p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
+                    d = {'test.pt.id': this_test_pt, 'clustered.pt.id': p, 'cluster': k, 'score': ss}
                     sim_items.append(d)
-            #average_sim_for_pt_to_clusters.append(np.mean(sim_for_pt_to_cluster_k))
+
         return pd.DataFrame(sim_items)
 
     @staticmethod
