@@ -247,7 +247,7 @@ class Phenomizer:
                     p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
                     ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
                     sim_for_pt_to_cluster_k.append(ss)
-                    d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
+                    d = {'test.id': p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
                     sim_items.append(d)
             #average_sim_for_pt_to_clusters.append(np.mean(sim_for_pt_to_cluster_k))
         return pd.DataFrame(sim_items)
