@@ -9,6 +9,7 @@ from pyspark.sql import SparkSession, DataFrame
 from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 from semanticsimilarity.resnik import Resnik
 from semanticsimilarity.annotation_counter import AnnotationCounter
+from collections import defaultdict
 
 
 class Phenomizer:
@@ -156,6 +157,70 @@ class Phenomizer:
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
+    def center_to_cluster_generalizability(self,
+                                      test_patients_hpo_terms:DataFrame,
+                                      clustered_patient_hpo_terms: DataFrame,
+                                      cluster_assignments: DataFrame,
+                                      test_patient_id_col_name: str = 'patient_id',
+                                      test_patient_hpo_col_name: str = 'hpo_id',
+                                      cluster_assignment_patient_col_name: str = 'patient_id',
+                                      cluster_assignment_cluster_col_name: str = 'cluster',
+                                      clustered_patient_id_col_name: str = 'patient_id',
+                                      clustered_patient_hpo_col_name: str = 'hpo_id'):
+        # 1) Generate matrix of similarities between the new ('test') patients and the existing ('clustered_patient_hpo_terms') patients
+        # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
+        # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
+        test_to_clustered_df = self.patient_to_cluster_similarity(test_patients_hpo_terms, 
+                                                                    clustered_patient_hpo_terms,
+                                                                    cluster_assignments,
+                                                                    test_patient_id_col_name,
+                                                            test_patient_hpo_col_name,
+                                                            cluster_assignment_patient_col_name,
+                                                            cluster_assignment_cluster_col_name,
+                                                            clustered_patient_id_col_name,
+                                                            clustered_patient_hpo_col_name)
+        # 2) Calculate the OBSERVED probabilities of a test patient to belong one of the existing clusters
+        # -- refactor patient_to_cluster_similarity to start with the new matrix
+        original_cluster_assignments = test_to_clustered_df['cluster'].to_numpy()
+        observed_max_sim = self.average_max_similarity(test_to_clustered_df,original_cluster_assignments )
+        # 3) Do W=1000 permutations
+        # -- shuffled the column with the assigned cluster and repeat
+        W = 1000
+        permuted_max_sim = []
+        for w in range(W):
+            permuted_cluster_assignments = original_cluster_assignments # TODO permute me
+            test_to_clustered_df['cluster'] = permuted_cluster_assignments
+            max_sim = self.average_max_similarity(test_to_clustered_df)
+            permuted_max_sim.append(max_sim)
+        ## todo, calculate mean, sd, z score, number of times permuted data is higher than observed_max_sim
+        mean_sim = np.mean(permuted_max_sim)
+        sd_sim = np.std(permuted_max_sim)
+        zscore = (observed_max_sim - mean_sim)/sd_sim
+        d = {"mean.sim": mean_sim, "sd.sim": sd_sim, "observed": observed_max_sim, 'zscore':zscore}
+        return pd.DataFrame(d)
+
+
+
+    def average_max_similarity(test_to_clustered_df: pd.DataFrame):
+        # group by test patient id
+        # d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
+        test_pat_d = defaultdict(defaultdict(list))
+        for _, row in test_to_clustered_df.iterrows():
+            test_id = row['test.id']
+            cluster = row['cluster']
+            score = row['score']
+            test_pat_d[test_id][cluster].append(score)
+        max_sim = []
+        for pat_id, cluster_d in test_pat_d.items():
+            patient_scores = []
+            for cluster, scores in cluster_d.items():
+                mean_score = np.mean(scores)
+                patient_scores.append(mean_score)
+            max_score = np.max(patient_scores)/np.sum(patient_scores)
+            max_sim.append(max_score)
+        return np.mean(max_sim)
+
+
     def patient_to_cluster_similarity(self,
                                       test_patient_hpo_terms: DataFrame,
                                       clustered_patient_hpo_terms: DataFrame,
@@ -170,16 +235,21 @@ class Phenomizer:
         average_sim_for_pt_to_clusters = []
         test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.select(test_patient_hpo_col_name).distinct().collect()]
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
-
-        for k in sorted(clusters):
-            sim_for_pt_to_cluster_k = []
-            patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
-            for p in patients_in_this_cluster:
-                p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
-                ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
-                sim_for_pt_to_cluster_k.append(ss)
-            average_sim_for_pt_to_clusters.append(np.mean(sim_for_pt_to_cluster_k))
-        return average_sim_for_pt_to_clusters
+        clustered_pat_ids = [i[0] for i in test_patient_hpo_terms.select(test_patient_id_col_name).distinct().collect()]
+        sim_items = []
+        for clustered_pat_id in clustered_pat_ids:
+            test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.filter(F.col(test_patient_id_col_name) == clustered_pat_id).select(test_patient_hpo_col_name).distinct().collect()]
+            for k in sorted(clusters):
+                sim_for_pt_to_cluster_k = []
+                patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
+                for p in patients_in_this_cluster:
+                    p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
+                    ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
+                    sim_for_pt_to_cluster_k.append(ss)
+                    d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
+                    sim_items.append(d)
+            #average_sim_for_pt_to_clusters.append(np.mean(sim_for_pt_to_cluster_k))
+        return pd.DataFrame(sim_items)
 
     @staticmethod
     def make_similarity_matrix(patient_df: DataFrame) -> Dict[str, Union[np.ndarray, list]]:
