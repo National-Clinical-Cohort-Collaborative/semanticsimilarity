@@ -182,14 +182,14 @@ class Phenomizer:
         # 2) Calculate the OBSERVED probabilities of a test patient to belong one of the existing clusters
         # -- refactor patient_to_cluster_similarity to start with the new matrix
         original_cluster_assignments = test_to_clustered_df['cluster'].to_numpy()
-        observed_max_sim = self.average_max_similarity(test_to_clustered_df,original_cluster_assignments )
+        observed_max_sim = self.average_max_similarity(test_to_clustered_df)
         # 3) Do W=1000 permutations
         # -- shuffled the column with the assigned cluster and repeat
         W = 1000
         permuted_max_sim = []
         for w in range(W):
-            permuted_cluster_assignments = original_cluster_assignments # TODO permute me
-            test_to_clustered_df['cluster'] = permuted_cluster_assignments
+            np.random.shuffle(original_cluster_assignments)
+            test_to_clustered_df['cluster'] = original_cluster_assignments
             max_sim = self.average_max_similarity(test_to_clustered_df)
             permuted_max_sim.append(max_sim)
         ## todo, calculate mean, sd, z score, number of times permuted data is higher than observed_max_sim
@@ -197,27 +197,44 @@ class Phenomizer:
         sd_sim = np.std(permuted_max_sim)
         zscore = (observed_max_sim - mean_sim)/sd_sim
         d = {"mean.sim": mean_sim, "sd.sim": sd_sim, "observed": observed_max_sim, 'zscore':zscore}
-        return pd.DataFrame(d)
+        return pd.DataFrame([d])
 
 
 
-    def average_max_similarity(test_to_clustered_df: pd.DataFrame):
+    def average_max_similarity(self, test_to_clustered_df: pd.DataFrame):
         # group by test patient id
         # d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
-        test_pat_d = defaultdict(defaultdict(list))
+        class TestPt:
+            def __init__(self, id):
+                self.id = id
+                self.cluster_d = defaultdict(list)
+
+            def add_score(self, cluster, score):
+                self.cluster_d[cluster].append(score)
+
+            def get_max_sim(self):
+                patient_scores = []
+                for cluster, scores in self.cluster_d.items():
+                    mean_score = np.mean(scores)
+                    patient_scores.append(mean_score)
+                total_scores = np.sum(patient_scores)
+                if total_scores == 0:
+                    return 0
+                max_score = np.max(patient_scores)/total_scores
+                return max_score
+
+        patient_d = defaultdict(TestPt)
         for _, row in test_to_clustered_df.iterrows():
-            test_id = row['test.id']
+            test_id = row['test.pt.id']
             cluster = row['cluster']
             score = row['score']
-            test_pat_d[test_id][cluster].append(score)
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
         max_sim = []
-        for pat_id, cluster_d in test_pat_d.items():
-            patient_scores = []
-            for cluster, scores in cluster_d.items():
-                mean_score = np.mean(scores)
-                patient_scores.append(mean_score)
-            max_score = np.max(patient_scores)/np.sum(patient_scores)
-            max_sim.append(max_score)
+        for pat_id, testPt in patient_d.items():
+            max_sim.append(testPt.get_max_sim())
         return np.mean(max_sim)
 
 
