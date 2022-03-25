@@ -261,7 +261,7 @@ class TestPhenomizer(TestCase):
         sim = p.patient_to_cluster_similarity(test_patient_hpo_terms=heldout_patient,
                                               clustered_patient_hpo_terms=self.patient_sdf,
                                               cluster_assignments=self.cluster_assignment)
-        self.assertTrue(isinstance(sim, DataFrame))
+        self.assertTrue(isinstance(sim, pd.DataFrame))
         self.assertEqual(len(sim), len(assigned_clusters))
 
     def test_generalizability(self):
