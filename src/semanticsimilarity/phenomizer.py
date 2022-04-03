@@ -174,11 +174,11 @@ class Phenomizer:
                                                                     clustered_patient_hpo_terms,
                                                                     cluster_assignments,
                                                                     test_patient_id_col_name,
-                                                            test_patient_hpo_col_name,
-                                                            cluster_assignment_patient_col_name,
-                                                            cluster_assignment_cluster_col_name,
-                                                            clustered_patient_id_col_name,
-                                                            clustered_patient_hpo_col_name)
+                                                                    test_patient_hpo_col_name,
+                                                                    cluster_assignment_patient_col_name,
+                                                                    cluster_assignment_cluster_col_name,
+                                                                    clustered_patient_id_col_name,
+                                                                    clustered_patient_hpo_col_name)
         # 2) Calculate the OBSERVED probabilities of a test patient to belong one of the existing clusters
         # -- refactor patient_to_cluster_similarity to start with the new matrix
         original_cluster_assignments = test_to_clustered_df['cluster'].to_numpy()
@@ -198,8 +198,6 @@ class Phenomizer:
         zscore = (observed_max_sim - mean_sim)/sd_sim
         d = {"mean.sim": mean_sim, "sd.sim": sd_sim, "observed": observed_max_sim, 'zscore':zscore}
         return pd.DataFrame([d])
-
-
 
     def average_max_similarity(self, test_to_clustered_df: pd.DataFrame):
         # group by test patient id
