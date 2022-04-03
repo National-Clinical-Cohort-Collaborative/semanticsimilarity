@@ -158,15 +158,15 @@ class Phenomizer:
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
     def center_to_cluster_generalizability(self,
-                                      test_patients_hpo_terms:DataFrame,
-                                      clustered_patient_hpo_terms: DataFrame,
-                                      cluster_assignments: DataFrame,
-                                      test_patient_id_col_name: str = 'patient_id',
-                                      test_patient_hpo_col_name: str = 'hpo_id',
-                                      cluster_assignment_patient_col_name: str = 'patient_id',
-                                      cluster_assignment_cluster_col_name: str = 'cluster',
-                                      clustered_patient_id_col_name: str = 'patient_id',
-                                      clustered_patient_hpo_col_name: str = 'hpo_id'):
+                                           test_patients_hpo_terms:DataFrame,
+                                           clustered_patient_hpo_terms: DataFrame,
+                                           cluster_assignments: DataFrame,
+                                           test_patient_id_col_name: str = 'patient_id',
+                                           test_patient_hpo_col_name: str = 'hpo_id',
+                                           cluster_assignment_patient_col_name: str = 'patient_id',
+                                           cluster_assignment_cluster_col_name: str = 'cluster',
+                                           clustered_patient_id_col_name: str = 'patient_id',
+                                           clustered_patient_hpo_col_name: str = 'hpo_id'):
         # 1) Generate matrix of similarities between the new ('test') patients and the existing ('clustered_patient_hpo_terms') patients
         # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
         # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
