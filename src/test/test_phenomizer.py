@@ -274,5 +274,4 @@ class TestPhenomizer(TestCase):
         df = p.center_to_cluster_generalizability(test_patients_hpo_terms=self.holdout_patients,
                                               clustered_patient_hpo_terms=self.patient_sdf,
                                               cluster_assignments=self.cluster_assignment)
-
-        self.assertNotNone(True)
+        self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
