@@ -171,14 +171,14 @@ class Phenomizer:
         # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
         # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
         test_to_clustered_df = self.patient_to_cluster_similarity(test_patients_hpo_terms, 
-                                                                    clustered_patient_hpo_terms,
-                                                                    cluster_assignments,
-                                                                    test_patient_id_col_name,
-                                                                    test_patient_hpo_col_name,
-                                                                    cluster_assignment_patient_col_name,
-                                                                    cluster_assignment_cluster_col_name,
-                                                                    clustered_patient_id_col_name,
-                                                                    clustered_patient_hpo_col_name)
+                                                                  clustered_patient_hpo_terms,
+                                                                  cluster_assignments,
+                                                                  test_patient_id_col_name,
+                                                                  test_patient_hpo_col_name,
+                                                                  cluster_assignment_patient_col_name,
+                                                                  cluster_assignment_cluster_col_name,
+                                                                  clustered_patient_id_col_name,
+                                                                  clustered_patient_hpo_col_name)
         # 2) Calculate the OBSERVED probabilities of a test patient to belong one of the existing clusters
         # -- refactor patient_to_cluster_similarity to start with the new matrix
         original_cluster_assignments = test_to_clustered_df['cluster'].to_numpy()
