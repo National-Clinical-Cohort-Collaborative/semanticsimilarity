@@ -100,13 +100,16 @@ class TestHpoClusterAnalyzer(TestCase):
         ["0",  # cluster 0:
             [1, 2, 3, 4, 5, 6],  # pt ids
             ['HP:0000118', 'HP:0000707', 'HP:0000818', 'HP:0000818', 'HP:0000834', 'HP:0000873', 'HP:0003549'],  # terms
-            {'HP:0000118': 6, 'HP:0000707': 1, 'HP:0000818': 4, 'HP:0000834': 1, 'HP:0000873': 1, 'HP:0003549': 1}  # cts
+            {'HP:0000118': 6, 'HP:0000707': 1, 'HP:0000818': 4, 'HP:0000834': 1, 'HP:0000873': 1, 'HP:0003549': 1,  # cts
+             'HP:0410008': 0, 'HP:0100881': 0, 'HP:0100568': 0, 'HP:0012639': 0, 'HP:0009124': 0, 'HP:0012638': 0,
+             'HP:0009025': 0}
          ],
         ["1",  # cluster 1:
             [7, 8, 9, 10, 11, 12, 13],  # pt ids
             ['HP:0009025', 'HP:0009124', 'HP:0012638', 'HP:0012639', 'HP:0100568', 'HP:0100881', 'HP:0410008'],  # terms
             {'HP:0000118': 7, 'HP:0000707': 3, 'HP:0012639': 1, 'HP:0100568': 1, 'HP:0000818': 1, 'HP:0003549': 3,  # cts
              'HP:0100881': 1, 'HP:0410008': 1, 'HP:0009025': 1, 'HP:0009124': 1, 'HP:0012638': 1,
+             'HP:0000834': 0, 'HP:0000873': 0
              # TODO: For 'HP:0100568', to test HPO term with two paths to 118 Phen Abn, we maybe should add:
              # HP:0011793 Neoplasm by anat site and HP:0002664 Neoplasm - this is another path to 118 Phen Abn
              #  'HP:0011793': 1,  # Neoplasm by anat site
