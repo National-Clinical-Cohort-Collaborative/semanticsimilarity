@@ -246,7 +246,14 @@ class Phenomizer:
                                       cluster_assignment_cluster_col_name: str = 'cluster',
                                       clustered_patient_id_col_name: str = 'patient_id',
                                       clustered_patient_hpo_col_name: str = 'hpo_id') -> pd.DataFrame:
-
+        """
+        The purpose of this method is to make a dataframe with the following columns
+        test_pat_id (patients from the 'new' center), clustered_pat_id (patients from the center[s] in which we generated
+        the clusters), cluster (the unpermuted cluster assignments of the original clustering, similarity_score (the
+        similarity by Phenomizer of the test patient and clustered patient in the current row)
+        # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
+        # Note that we have k clusters. Each of the rows has one of the clusters
+        """
         test_patient_ids = [i[0] for i in test_patient_hpo_terms.select(test_patient_id_col_name).distinct().collect()]
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
 
@@ -254,17 +261,13 @@ class Phenomizer:
 
         for this_test_pt in test_patient_ids:
             test_patient_hpo_term_list = [i[0] for i in test_patient_hpo_terms.filter(F.col(test_patient_id_col_name) == this_test_pt).select(test_patient_hpo_col_name).distinct().collect()]
-
             for k in sorted(clusters):
-                sim_for_pt_to_cluster_k = []
                 patients_in_this_cluster = [i[0] for i in cluster_assignments.filter(F.col(cluster_assignment_cluster_col_name) == k).select(cluster_assignment_patient_col_name).collect()]
                 for p in patients_in_this_cluster:
                     p_hpo_ids = [i[0] for i in clustered_patient_hpo_terms.filter(F.col(clustered_patient_id_col_name) == p).select(clustered_patient_hpo_col_name).distinct().collect()]
                     ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
-                    sim_for_pt_to_cluster_k.append(ss)
                     d = {'test.pt.id': this_test_pt, 'clustered.pt.id': p, 'cluster': k, 'score': ss}
                     sim_items.append(d)
-
         return pd.DataFrame(sim_items)
 
     @staticmethod
