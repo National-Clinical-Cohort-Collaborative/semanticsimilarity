@@ -267,7 +267,7 @@ class TestPhenomizer(TestCase):
                                               clustered_patient_hpo_terms=self.patient_sdf,
                                               cluster_assignments=self.cluster_assignment)
         self.assertTrue(isinstance(sim, pd.DataFrame))
-        self.assertEqual(len(sim), len(assigned_clusters))
+        self.assertEqual(len(sim), self.cluster_assignment.count())
 
     def test_generalizability(self):
         p = Phenomizer(self.resnik.get_mica_d())
