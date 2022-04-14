@@ -170,7 +170,7 @@ class Phenomizer:
         # 1) Generate matrix of similarities between the new ('test') patients and the existing ('clustered_patient_hpo_terms') patients
         # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
         # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
-        test_to_clustered_df = self.patient_to_cluster_similarity(test_patients_hpo_terms, 
+        test_to_clustered_df = self.patient_to_cluster_similarity_pd(test_patients_hpo_terms, 
                                                                   clustered_patient_hpo_terms,
                                                                   cluster_assignments,
                                                                   test_patient_id_col_name,
@@ -268,6 +268,55 @@ class Phenomizer:
                     ss = self.similarity_score(test_patient_hpo_term_list, p_hpo_ids)
                     d = {'test.pt.id': this_test_pt, 'clustered.pt.id': p, 'cluster': k, 'score': ss}
                     sim_items.append(d)
+        return pd.DataFrame(sim_items)
+
+    def patient_to_cluster_similarity_pd(self,
+                                      test_patient_hpo_terms: DataFrame,
+                                      clustered_patient_hpo_terms: DataFrame,
+                                      cluster_assignments: DataFrame,
+                                      test_patient_id_col_name: str = 'patient_id',
+                                      test_patient_hpo_col_name: str = 'hpo_id',
+                                      cluster_assignment_patient_col_name: str = 'patient_id',
+                                      cluster_assignment_cluster_col_name: str = 'cluster',
+                                      clustered_patient_id_col_name: str = 'patient_id',
+                                      clustered_patient_hpo_col_name: str = 'hpo_id') -> pd.DataFrame:
+        """
+        The purpose of this method is to make a dataframe with the following columns
+        test_pat_id (patients from the 'new' center), clustered_pat_id (patients from the center[s] in which we generated
+        the clusters), cluster (the unpermuted cluster assignments of the original clustering, similarity_score (the
+        similarity by Phenomizer of the test patient and clustered patient in the current row)
+        # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
+        # Note that we have k clusters. Each of the rows has one of the clusters
+        """
+        # 1 Make dictionaries with key=patient_id, value=set of HPO terms for both clustered and test patients
+        clustered_pt_d = defaultdict(set)
+        test_pt_d = defaultdict(set)
+        # 1a, cluster patients
+        clustered_patient_df = clustered_patient_hpo_terms.toPandas()
+        for idx, row in clustered_patient_df.iterrows():
+            patient_id = row[clustered_patient_id_col_name]
+            hpo_id = row[clustered_patient_hpo_col_name]
+            clustered_pt_d[patient_id].add(hpo_id)
+        # 1b, test patients
+        test_patient_df = test_patient_hpo_terms.toPandas()
+        for idx, row in test_patient_df.iterrows():
+            patient_id = row[test_patient_id_col_name]
+            hpo_id = row[test_patient_hpo_col_name]
+            test_pt_d[patient_id].add(hpo_id)
+        cluster_assignments_d = defaultdict(int)
+        cluster_assignments_df = cluster_assignments.toPandas()
+        for idx, row in cluster_assignments_df.iterrows():
+            c = row[cluster_assignment_cluster_col_name]
+            p_id = row[cluster_assignment_patient_col_name]
+            cluster_assignments_d[p_id] = c
+        sim_items = []
+        for this_test_pt, test_pt_hpo_set in test_pt_d.items():
+            for this_cluster_pt, cluster_pt_hpo_set in clustered_pt_d.items():
+                ss = self.similarity_score(test_pt_hpo_set, cluster_pt_hpo_set)
+                #k = clusters[clusters['patient_id']==this_cluster_pt]
+                k = cluster_assignments_d.get(this_cluster_pt)
+                d = {'test.pt.id': this_test_pt, 'clustered.pt.id': this_cluster_pt, 'cluster': k, 'score': ss}
+                sim_items.append(d)
         return pd.DataFrame(sim_items)
 
     @staticmethod

@@ -269,6 +269,16 @@ class TestPhenomizer(TestCase):
         self.assertTrue(isinstance(sim, pd.DataFrame))
         self.assertEqual(len(sim), self.cluster_assignment.count())
 
+    def test_patient_to_cluster_similarity_method_returns_list_with_correct_features_pd(self):
+        assigned_clusters = [i[0] for i in self.cluster_assignment.select('cluster').distinct().collect()]
+        p = Phenomizer(self.resnik.get_mica_d())
+        heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 200)
+        sim = p.patient_to_cluster_similarity_pd(test_patient_hpo_terms=heldout_patient,
+                                              clustered_patient_hpo_terms=self.patient_sdf,
+                                              cluster_assignments=self.cluster_assignment)
+        self.assertTrue(isinstance(sim, pd.DataFrame))
+        self.assertEqual(len(sim), self.cluster_assignment.count())
+
     def test_generalizability(self):
         p = Phenomizer(self.resnik.get_mica_d())
         df = p.center_to_cluster_generalizability(test_patients_hpo_terms=self.holdout_patients,
