@@ -159,7 +159,8 @@ class HpoClusterAnalyzer:
     def do_chi_square_on_covariates(covariate_dataframe: pd.DataFrame,
                                     cluster_col: str = 'cluster',
                                     minimum_n: int = 5,
-                                    ignore_col: list = []) -> pd.DataFrame:
+                                    ignore_col: list = [],
+                                    bonferroni: bool = True) -> pd.DataFrame:
         """A static method for performing chi square on covariates for which we have cluster info.
 
         This function simply wraps the ``+`` operator, and does not
@@ -181,6 +182,8 @@ class HpoClusterAnalyzer:
         minimum_n: minimal number of values necessary to calculate chisq - otherwise stats are set to float('NaN')
 
         ignore_col: ignore these covariate columns - don't calculate stats on them.
+
+        bonferroni: do a bonferroni correction (p value * number of tests)
 
         Returns
         -------
@@ -204,4 +207,8 @@ class HpoClusterAnalyzer:
                 chi2, p_value, dof, exp = chi2_contingency(contingency_table)
             d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
             results.append(d)
-        return pd.DataFrame(results)
+
+        results_pd = pd.DataFrame(results)
+        if bonferroni:
+            results_pd['p'] = results_pd['p'] * results_pd.shape[0]
+        return results_pd
