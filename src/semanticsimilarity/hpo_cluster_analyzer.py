@@ -210,8 +210,5 @@ class HpoClusterAnalyzer:
 
         results_pd = pd.DataFrame(results)
         if bonferroni:
-            results_pd['p'] = results_pd['p'] * results_pd.shape[0]
-            import math
-            if math.max(results_pd['p']) > 1:
-                pass
+            results_pd['p'] = results_pd['p'].apply(lambda x: x*results_pd.shape[0] if x < 1 else 1)
         return results_pd
