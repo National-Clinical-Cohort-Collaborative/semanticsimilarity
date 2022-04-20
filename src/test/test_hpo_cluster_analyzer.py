@@ -246,3 +246,8 @@ class TestHpoClusterAnalyzer(TestCase):
         return_pd = HpoClusterAnalyzer.do_chi_square_on_covariates(covariate_dataframe=self.do_chi_square_on_cov_df_arg,
                                                                    ignore_col=['boolean_cov_ignore_col'])
         self.assertTrue('boolean_cov_ignore_col' not in list(return_pd['covariate'].unique()))
+
+    # def test_do_chi_square_on_covariates_bonferroni(self):
+    #     return_pd = HpoClusterAnalyzer.do_chi_square_on_covariates(covariate_dataframe=self.do_chi_square_on_cov_df_arg,
+    #                                                                ignore_col=['boolean_cov_ignore_col'])
+    #     self.assertTrue('boolean_cov_ignore_col' not in list(return_pd['covariate'].unique()))
