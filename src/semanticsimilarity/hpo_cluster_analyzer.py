@@ -154,3 +154,54 @@ class HpoClusterAnalyzer:
             results_list.append(d)
 
         return pd.DataFrame(results_list)
+
+    @staticmethod
+    def do_chi_square_on_covariates(covariate_dataframe: pd.DataFrame,
+                                    cluster_col: str = 'cluster',
+                                    minimum_n: int = 5,
+                                    ignore_col: list = []) -> pd.DataFrame:
+        """A static method for performing chi square on covariates for which we have cluster info.
+
+        This function simply wraps the ``+`` operator, and does not
+        do anything interesting, except for illustrating what
+        the docstring of a very simple function looks like.
+
+        Parameters
+        ----------
+        covariate_dataframe : pd.DataFrame
+        a Pandas dataframe with a column describing cluster information, and other boolean or factor data, like so:
+        cluster    diabetes    gender
+        1          True        Male
+        2          True        Female
+        3          False       Unknown
+
+        cluster_col : str [default 'cluster']
+            the column containing cluster information for each person
+
+        minimum_n: minimal number of values necessary to calculate chisq - otherwise stats are set to float('NaN')
+
+        ignore_col: ignore these covariate columns - don't calculate stats on them.
+
+        Returns
+        -------
+        pd.DataFrame with these statistics about rows that were analyzed:
+
+                  covariate        chi2             p  dof
+        0          diabetes  100.000000  1.554159e-21    3
+        1          gender    123.000000        2.3e-1    1
+        """
+        if cluster_col not in covariate_dataframe.columns:
+            raise ValueError(f"cluster_col arg {cluster_col} is not a column in covariate_dataframe")
+
+        results = []
+        for column in covariate_dataframe.columns:
+            if column == cluster_col or column in ignore_col:
+                continue
+            if covariate_dataframe[column].dtype == bool and len(covariate_dataframe[column][covariate_dataframe[column]]) < minimum_n:
+                chi2, p_value, dof, exp = float('NaN'), float('NaN'), float('NaN'), float('NaN')
+            else:
+                contingency_table = pd.crosstab(covariate_dataframe[cluster_col], covariate_dataframe[column])
+                chi2, p_value, dof, exp = chi2_contingency(contingency_table)
+            d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
+            results.append(d)
+        return pd.DataFrame(results)

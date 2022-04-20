@@ -6,6 +6,9 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from parameterized import parameterized
 from scipy.stats import chi2_contingency, fisher_exact
+import numpy as np
+from datetime import datetime
+import math
 
 
 class TestHpoClusterAnalyzer(TestCase):
@@ -73,6 +76,29 @@ class TestHpoClusterAnalyzer(TestCase):
         cls.do_chi2_result_df = cls.clusterAnalyzer.do_chi2()
         cls.do_fisher_result_df = cls.clusterAnalyzer.do_fisher_exact()
 
+        #
+        # do_chi_square_on_covariates stuff
+        #
+        len_of_fake_data = 100
+
+        # make some fake data with significant chi-square values
+        idx = list(range(1, len_of_fake_data + 1))
+        cluster_col_data = [1, 2, 3, 4] * int(len_of_fake_data/4)
+        boolean_cov_data = [bool(i % 2) for i in idx]  # True, False, True, ...
+        boolean_0_1_cov_data = [i % 2 for i in idx]  # 0, 1, 0, 1, ...
+        factor_cov_data = ['Female' if v % 2 else 'Unknown' if v % 4 else 'Male' \
+                           for v in idx]  # Female, Unknown, Female, Male, [repeat]
+
+        # other edge cases
+        boolean_cov_not_signif = [True for i in idx]
+        boolean_cov_low_n_data = [True if i == 1 else False for i in idx]
+        boolean_cov_ignore_col = [True for i in idx]
+
+        col_names = ['cluster', 'boolean_cov', 'boolean_0_1_cov', 'factor_cov_data', 'boolean_cov_not_signif', 'boolean_cov_low_n_data', 'boolean_cov_ignore_col']
+        col_data = list(zip(cluster_col_data, boolean_cov_data, boolean_0_1_cov_data, factor_cov_data, boolean_cov_not_signif, boolean_cov_low_n_data, boolean_cov_ignore_col))
+        cls.do_chi_square_on_cov_df_arg = pd.DataFrame(col_data,
+                                                       columns=col_names)
+
     def test_add_counts_total_patients_attr(self):
         self.assertEqual(self.clusterAnalyzer._total_patients, 13)
 
@@ -134,7 +160,9 @@ class TestHpoClusterAnalyzer(TestCase):
         self.assertCountEqual(self.do_chi2_result_df['hpo_id'], list(self.clusterAnalyzer._hpo_terms))
 
     def test_do_chi2_phen_abn_p_value_should_be_nan(self):
-        self.assertEqual(self.do_chi2_result_df[self.do_chi2_result_df['hpo_id'] == 'HP:0000118']['p'], float('nan'))
+        self.assertTrue(
+            math.isnan(self.do_chi2_result_df[self.do_chi2_result_df['hpo_id'] == 'HP:0000118']['p'].iloc[0])
+        )
 
     @parameterized.expand([
         ['HP:0000818', '1-total', 7],
@@ -170,4 +198,51 @@ class TestHpoClusterAnalyzer(TestCase):
         this_row = self.do_fisher_result_df[self.do_fisher_result_df['hpo_id'] == this_hpo_id]
         self.assertEqual(this_row[col].values[0], value)
 
-    
+    def test_do_chi_square_on_covariates_exists(self):
+        self.assertTrue(hasattr(HpoClusterAnalyzer, "do_chi_square_on_covariates"))
+
+    def test_do_chi_square_on_covariates_returns_pd_dataframe(self):
+        self.assertTrue(isinstance(
+                                   HpoClusterAnalyzer.do_chi_square_on_covariates(covariate_dataframe=self.do_chi_square_on_cov_df_arg),
+                                   pd.DataFrame))
+
+    def test_do_chi_square_on_covariates_returns_complains_about_bad_cluster_col_arg(self):
+        kwargs = {'covariate_dataframe': self.do_chi_square_on_cov_df_arg, 'cluster_col': 'some_col_that_doesnt_exist'}
+        self.assertRaises(ValueError, HpoClusterAnalyzer.do_chi_square_on_covariates, **kwargs)
+
+    @parameterized.expand([
+        ['boolean_cov', 'chi2', 100, False],
+        ['boolean_cov', 'p', 0, True],
+        ['boolean_cov', 'dof', 3, False],
+        ['boolean_0_1_cov', 'chi2', 100, False],
+        ['boolean_0_1_cov', 'p', 0, True],
+        ['boolean_0_1_cov', 'dof', 3, False],
+        ['factor_cov_data', 'chi2', 200, False],
+        ['factor_cov_data', 'p', 0, True],
+        ['factor_cov_data', 'dof', 6, False],
+        ['boolean_cov_not_signif', 'chi2', 0, False],
+        ['boolean_cov_not_signif', 'p', 1, True],
+        ['boolean_cov_not_signif', 'dof', 0, False],
+        ['boolean_cov_low_n_data', 'chi2', float("NaN"), False],
+        ['boolean_cov_low_n_data', 'p', float("NaN"), False],
+        ['boolean_cov_low_n_data', 'dof', float("NaN"), False],
+    ])
+    def test_do_chi_square_on_covariates_bool(self, this_covariate, stat_name, exp_val, almost_eq):
+        contingency_table = pd.crosstab(self.do_chi_square_on_cov_df_arg['cluster'],
+                                        self.do_chi_square_on_cov_df_arg[this_covariate])
+        chi2, p_value, dof, exp = chi2_contingency(contingency_table)
+        return_pd = HpoClusterAnalyzer.do_chi_square_on_covariates(covariate_dataframe=self.do_chi_square_on_cov_df_arg)
+
+        actual_val = return_pd.loc[return_pd['covariate'] == this_covariate][stat_name].values[0]
+
+        if math.isnan(exp_val):
+            self.assertTrue(math.isnan(actual_val))
+        elif almost_eq:
+            self.assertAlmostEqual(actual_val, exp_val)
+        else:
+            self.assertEqual(actual_val, exp_val)
+
+    def test_do_chi_square_on_covariates_ignore_col(self):
+        return_pd = HpoClusterAnalyzer.do_chi_square_on_covariates(covariate_dataframe=self.do_chi_square_on_cov_df_arg,
+                                                                   ignore_col=['boolean_cov_ignore_col'])
+        self.assertTrue('boolean_cov_ignore_col' not in list(return_pd['covariate'].unique()))
