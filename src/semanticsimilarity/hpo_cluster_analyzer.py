@@ -175,6 +175,8 @@ class HpoClusterAnalyzer:
         1          True        Male
         2          True        Female
         3          False       Unknown
+        2          False       Female
+        1          False       Male
 
         cluster_col : str [default 'cluster']
             the column containing cluster information for each person
@@ -206,9 +208,14 @@ class HpoClusterAnalyzer:
                 contingency_table = pd.crosstab(covariate_dataframe[cluster_col], covariate_dataframe[column])
                 chi2, p_value, dof, exp = chi2_contingency(contingency_table)
             d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
+
+            # add_counts_by_cluster
+            if covariate_dataframe[column].dtypes == 'bool':
+                pass
             results.append(d)
 
         results_pd = pd.DataFrame(results)
         if bonferroni:
             results_pd['p'] = results_pd['p'].apply(lambda x: x*results_pd.shape[0] if x < 1 else 1)
+
         return results_pd
