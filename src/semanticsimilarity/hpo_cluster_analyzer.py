@@ -232,13 +232,21 @@ def add_true_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_
         else:  # just take the first one if this isn't a boolean thing
             true_counts_col = contingency_table.columns[0]
         true_counts_by_cluster = list(contingency_table[true_counts_col])
-        # total_counts_by_cluster = contingency_table.sum(axis=1)
     else:
         # otherwise set everything to NaN - too confusing to report counts for covariates more than 2 factors
         true_counts_col = None
         true_counts_by_cluster = [float('NaN')] * contingency_table.shape[0]
 
+    total_counts_by_cluster = contingency_table.sum(axis=1)
+
+    # add cluster true counts info to existing dict
     keys = ['cluster' + str(contingency_table.index[idx]) for idx in range(contingency_table.shape[0])]
     new_d = dict(zip(keys, true_counts_by_cluster))
+    d = {**d, **new_d}
 
-    return {**d, **new_d}, true_counts_col
+    # add cluster total counts info to existing dict
+    keys = ['cluster' + str(contingency_table.index[idx]) + "_total" for idx in range(contingency_table.shape[0])]
+    new_d_total = dict(zip(keys, total_counts_by_cluster))
+    d = {**d, **new_d_total}
+
+    return d, true_counts_col

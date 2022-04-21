@@ -218,6 +218,10 @@ class TestHpoClusterAnalyzer(TestCase):
         ['boolean_cov', 'cluster2', 0, False],
         ['boolean_cov', 'cluster3', 25, False],
         ['boolean_cov', 'cluster4', 0, False],
+        ['boolean_cov', 'cluster1_total', 25, False],
+        ['boolean_cov', 'cluster2_total', 25, False],
+        ['boolean_cov', 'cluster3_total', 25, False],
+        ['boolean_cov', 'cluster4_total', 25, False],
 
         ['boolean_0_1_cov', 'chi2', 100, False],
         ['boolean_0_1_cov', 'p', 0, True],
