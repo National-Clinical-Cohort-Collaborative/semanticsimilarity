@@ -220,7 +220,7 @@ class HpoClusterAnalyzer:
 
 
 def add_true_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_dtype: str):
-    if contingency_table.shape[1] == 2:
+    if contingency_table.shape[1] > 2:
         if column_dtype == bool:
             true_counts_col = True
         elif '1' in contingency_table.columns:
