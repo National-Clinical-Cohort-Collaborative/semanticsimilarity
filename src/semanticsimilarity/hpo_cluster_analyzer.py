@@ -203,10 +203,10 @@ class HpoClusterAnalyzer:
         for column in covariate_dataframe.columns:
             if column == cluster_col or column in ignore_col:
                 continue
+            contingency_table = pd.crosstab(covariate_dataframe[cluster_col], covariate_dataframe[column])
             if covariate_dataframe[column].dtype == bool and len(covariate_dataframe[column][covariate_dataframe[column]]) < minimum_n:
                 chi2, p_value, dof, exp = float('NaN'), float('NaN'), float('NaN'), float('NaN')
             else:
-                contingency_table = pd.crosstab(covariate_dataframe[cluster_col], covariate_dataframe[column])
                 chi2, p_value, dof, exp = chi2_contingency(contingency_table)
             d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
 
