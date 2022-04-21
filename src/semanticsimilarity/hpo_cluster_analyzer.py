@@ -209,7 +209,7 @@ class HpoClusterAnalyzer:
                 chi2, p_value, dof, exp = chi2_contingency(contingency_table)
             d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
 
-            d, factor_to_append = add_counts_by_cluster(d, contingency_table, covariate_dataframe[column].dtype)
+            d, factor_to_append = add_true_counts_by_cluster(d, contingency_table, covariate_dataframe[column].dtype)
             results.append(d)
 
         results_pd = pd.DataFrame(results)
@@ -219,10 +219,24 @@ class HpoClusterAnalyzer:
         return results_pd
 
 
-def add_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_dtype: str):
-    # if there are two columns
-    # total_by_cluster = contingency_table.sum(axis=1)
-    factor_to_append = ''
+def add_true_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_dtype: str):
+    if contingency_table.shape[1] == 2:
+        if column_dtype == bool:
+            true_counts_col = True
+        elif '1' in contingency_table.columns:
+            true_counts_col = '1'
+        elif 1 in contingency_table.columns:
+            true_counts_col = 1
+        else: # just take the first one if this isn't a yes/no thing
+            true_counts_col = contingency_table.columns[0]
+        true_counts_by_cluster = list(contingency_table[true_counts_col])
+        # total_counts_by_cluster = contingency_table.sum(axis=1)
+    else:
+        # otherwise set everything to NaN - too confusing to report totals with more than 2 factors
+        true_counts_col = None
+        true_counts_by_cluster = [float('NaN')] * contingency_table.shape[0]
 
-    # otherwise set everything to NaN - too confusing to report totals with more than 2 factors
-    return d, factor_to_append
+    keys = ['cluster' + str(contingency_table.index[idx]) for idx in range(contingency_table.shape[0])]
+    new_d = dict(zip(keys, true_counts_by_cluster))
+
+    return {**d, **new_d}, true_counts_col
