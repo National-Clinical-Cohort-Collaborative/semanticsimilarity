@@ -4,6 +4,7 @@ from scipy.stats import chi2_contingency, fisher_exact
 import pyspark
 from warnings import warn
 import pandas as pd
+import math
 
 
 class HpoClusterAnalyzer:
@@ -214,7 +215,8 @@ class HpoClusterAnalyzer:
 
         results_pd = pd.DataFrame(results)
         if bonferroni:
-            results_pd['p'] = results_pd['p'].apply(lambda x: x*results_pd.shape[0] if x < 1 else 1)
+            results_pd['p'] = results_pd['p'].apply(lambda x: x*results_pd.shape[0])
+            results_pd['p'] = results_pd['p'].apply(lambda x: x if x < 1 or math.isnan(x) else 1)  # no p-values > 1
 
         return results_pd
 
