@@ -209,9 +209,7 @@ class HpoClusterAnalyzer:
                 chi2, p_value, dof, exp = chi2_contingency(contingency_table)
             d = {'covariate': column, 'chi2': chi2, 'p': p_value, 'dof': dof}
 
-            # add_counts_by_cluster
-            if covariate_dataframe[column].dtypes == 'bool':
-                pass
+            d, factor_to_append = add_counts_by_cluster(d, contingency_table, covariate_dataframe[column].dtype)
             results.append(d)
 
         results_pd = pd.DataFrame(results)
@@ -219,3 +217,12 @@ class HpoClusterAnalyzer:
             results_pd['p'] = results_pd['p'].apply(lambda x: x*results_pd.shape[0] if x < 1 else 1)
 
         return results_pd
+
+
+def add_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_dtype: str):
+    # if there are two columns
+    # total_by_cluster = contingency_table.sum(axis=1)
+    factor_to_append = ''
+
+    # otherwise set everything to NaN - too confusing to report totals with more than 2 factors
+    return d, factor_to_append
