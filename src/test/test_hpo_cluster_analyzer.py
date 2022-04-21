@@ -230,6 +230,10 @@ class TestHpoClusterAnalyzer(TestCase):
         ['boolean_0_1_cov', 'cluster2', 0, False],
         ['boolean_0_1_cov', 'cluster3', 25, False],
         ['boolean_0_1_cov', 'cluster4', 0, False],
+        ['boolean_0_1_cov', 'cluster1_total', 25, False],
+        ['boolean_0_1_cov', 'cluster2_total', 25, False],
+        ['boolean_0_1_cov', 'cluster3_total', 25, False],
+        ['boolean_0_1_cov', 'cluster4_total', 25, False],
 
         ['factor_cov_data', 'chi2', 200, False],
         ['factor_cov_data', 'p', 0, True],
@@ -238,6 +242,10 @@ class TestHpoClusterAnalyzer(TestCase):
         ['factor_cov_data', 'cluster2', float('NaN'), False],
         ['factor_cov_data', 'cluster3', float('NaN'), False],
         ['factor_cov_data', 'cluster4', float('NaN'), False],
+        ['factor_cov_data', 'cluster1_total', 25, False],
+        ['factor_cov_data', 'cluster2_total', 25, False],
+        ['factor_cov_data', 'cluster3_total', 25, False],
+        ['factor_cov_data', 'cluster4_total', 25, False],
 
         ['boolean_cov_not_signif', 'chi2', 0, False],
         ['boolean_cov_not_signif', 'p', 1, True],
@@ -246,6 +254,10 @@ class TestHpoClusterAnalyzer(TestCase):
         ['boolean_cov_not_signif', 'cluster2', 25, False],
         ['boolean_cov_not_signif', 'cluster3', 25, False],
         ['boolean_cov_not_signif', 'cluster4', 25, False],
+        ['boolean_cov_not_signif', 'cluster1_total', 25, False],
+        ['boolean_cov_not_signif', 'cluster2_total', 25, False],
+        ['boolean_cov_not_signif', 'cluster3_total', 25, False],
+        ['boolean_cov_not_signif', 'cluster4_total', 25, False],
 
         ['boolean_cov_low_n_data', 'chi2', float("NaN"), False],
         ['boolean_cov_low_n_data', 'p', float("NaN"), False],
@@ -254,6 +266,10 @@ class TestHpoClusterAnalyzer(TestCase):
         ['boolean_cov_low_n_data', 'cluster2', 0, False],
         ['boolean_cov_low_n_data', 'cluster3', 0, False],
         ['boolean_cov_low_n_data', 'cluster4', 0, False],
+        ['boolean_cov_low_n_data', 'cluster1_total', 25, False],
+        ['boolean_cov_low_n_data', 'cluster2_total', 25, False],
+        ['boolean_cov_low_n_data', 'cluster3_total', 25, False],
+        ['boolean_cov_low_n_data', 'cluster4_total', 25, False],        
     ])
     def test_do_chi_square_on_covariates_bool(self, this_covariate, stat_name, exp_val, almost_eq):
         contingency_table = pd.crosstab(self.do_chi_square_on_cov_df_arg['cluster'],
