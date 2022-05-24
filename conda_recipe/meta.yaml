@@ -21,6 +21,7 @@ requirements:
     - parameterized
     - setuptools
     - scipy
+    # need these packages to deploy documenation: sphinx sphinx_rtd_theme recommonmark sphinx_click
 
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt
