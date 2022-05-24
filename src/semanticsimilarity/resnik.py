@@ -10,7 +10,7 @@ class Resnik:
 
     def __init__(self, counts_d: Dict, total: int, ensmallen: HpoEnsmallen):
         """
-        The constructor calculates the information contents from the term counts
+        The constructor calculates the information content of each term from the term counts
         """
         self._counts_d = counts_d
         self._total_count = total
