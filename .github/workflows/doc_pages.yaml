@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python 3.
       uses: actions/setup-python@v3
       with:
-        python-version: 3.6
+        python-version: 3.9
 
     - name: install
       run: pip3 install sphinx sphinx-rtd-theme recommonmark # ensmallen_graph==0.6.0 pandas parameterized setuptools scipy
