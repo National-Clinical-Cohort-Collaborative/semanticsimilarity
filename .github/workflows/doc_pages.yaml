@@ -18,8 +18,8 @@ jobs:
         python-version: 3.9
 
     - name: install
-      run: pip3 install sphinx sphinx-rtd-theme recommonmark sphinxcontrib-mermaid ensmallen_graph==0.6.0 pandas parameterized setuptools scipy
-
+      run: pip3 install sphinx sphinx-rtd-theme recommonmark ensmallen_graph==0.6.0
+      # sphinxcontrib-mermaid pandas parameterized setuptools scipy
     - name: Build documentation.
       run: |
         mkdir gh-pages
