@@ -164,10 +164,6 @@ class HpoClusterAnalyzer:
                                     bonferroni: bool = True) -> pd.DataFrame:
         """A static method for performing chi square on covariates for which we have cluster info.
 
-        This function simply wraps the ``+`` operator, and does not
-        do anything interesting, except for illustrating what
-        the docstring of a very simple function looks like.
-
         Parameters
         ----------
         covariate_dataframe : pd.DataFrame
