@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publishing Conda Libraries &mdash; Semantic Similarity 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="src" href="../modules.html" />
+    <link rel="prev" title="Welcome to Semantic Similarity’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Semantic Similarity
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Publishing Conda Libraries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#consuming-conda-libraries">Consuming Conda Libraries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#consuming-from-shared-channel-deprecated">Consuming from shared channel (deprecated)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-example">Import example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Semantic Similarity</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Publishing Conda Libraries</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="publishing-conda-libraries">
+<h1>Publishing Conda Libraries<a class="headerlink" href="#publishing-conda-libraries" title="Permalink to this heading"></a></h1>
+<p>This repository template is setup to publish a Python package into Foundry.</p>
+<p>By default, the repository name at the time of the bootstrap is used as the name of the conda package.
+To override this, modify the <code class="docutils literal notranslate"><span class="pre">condaPackageName</span></code> variable in the <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code> file. You will have to tick
+the “Show hidden files” checkbox located in the bottom left of the Authoring interface.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code> file configures the publish task to only run when the repository is tagged.
+You can create tag in “Branches” tab in Authoring.</p>
+<p>Each Authoring repository has associated an Artifacts repository which holds all the produced packages.
+Libraries can currently be published to Artifacts repository (default and recommended) or to the shared channel (deprecated).
+In the future, libraries will always be published to Artifacts repository.
+<strong>If you want your library to be available in Code Workbooks, you will have to publish it to the shared channel.</strong></p>
+<p><strong>If you decide to publish a library to the shared channel, it is not safe to go back to using Artifacts repository!</strong></p>
+<p>To publish your library to the shared channel, you have to add following in <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pythonLibrary</span> <span class="p">{</span>	
+    <span class="n">publishChannelName</span> <span class="o">=</span> <span class="s1">&#39;libs&#39;</span>	
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>By publishing a library to the shared channel, your repository will acquire ownership over the name of that library.
+This means that if another repository tries to publish a library of the same name to the channel, it will be rejected.
+This is done to prevent conflicts.</p>
+<section id="consuming-conda-libraries">
+<h2>Consuming Conda Libraries<a class="headerlink" href="#consuming-conda-libraries" title="Permalink to this heading"></a></h2>
+<p>If a library is published to Artifacts repository (default and recommended), you will need read access on the library’s origin repository to be able to consume the library. You can search for the library by selecting the <em>Libraries</em> button on the left hand side in your consuming authoring repository, searching for the library name, clicking the name and clicking <em> Add Library</em>. This will add the appropriate backing repositories to your authoring repository, as well as the appropriate dependencies in the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>.</p>
+<p>Note that if you are an advanced user you can also edit manually the backing repositories of your authoring repository by navigating to <em>Settings</em> and selecting <em>Artifacts</em>. Also, you can edit manually the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> to add dependencies.</p>
+<section id="consuming-from-shared-channel-deprecated">
+<h3>Consuming from shared channel (deprecated)<a class="headerlink" href="#consuming-from-shared-channel-deprecated" title="Permalink to this heading"></a></h3>
+<p>To consume libraries published to the shared channel (<em>libs</em> in this example), you have to add following in Python Transforms project’s <code class="docutils literal notranslate"><span class="pre">transforms-python/build.gradle</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apply</span> <span class="n">plugin</span><span class="p">:</span> <span class="s1">&#39;com.palantir.transforms.lang.python&#39;</span>
+<span class="n">apply</span> <span class="n">plugin</span><span class="p">:</span> <span class="s1">&#39;com.palantir.transforms.lang.python-defaults&#39;</span>
+
+<span class="n">transformsPython</span> <span class="p">{</span>
+  <span class="n">sharedChannels</span> <span class="s1">&#39;libs&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or in Python Library project’s <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code>, add to the <code class="docutils literal notranslate"><span class="pre">pythonLibrary</span></code> block the line <code class="docutils literal notranslate"><span class="pre">sharedChannels</span> <span class="pre">'libs'</span></code> like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apply</span> <span class="n">plugin</span><span class="p">:</span> <span class="s1">&#39;com.palantir.transforms.lang.python-library&#39;</span>
+<span class="n">apply</span> <span class="n">plugin</span><span class="p">:</span> <span class="s1">&#39;com.palantir.transforms.lang.python-library-defaults&#39;</span>
+
+<span class="n">pythonLibrary</span> <span class="p">{</span>
+    <span class="n">sharedChannels</span> <span class="s1">&#39;libs&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Please note that as of conda-repository proxy verion 0.70.0 and artifacts version 0.67.10, the only available shared channel is <strong>libs</strong>. If other channels existed on your stack before you can still use them to publish and consume, but no new channels are allowed.</p>
+<p>After you have setup the above configuration for shared channel, you can then depend on the name of the library as usual
+in the project’s <code class="docutils literal notranslate"><span class="pre">conda_recipe/meta.yaml</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">requirements</span><span class="p">:</span>
+  <span class="n">run</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">python</span>
+    <span class="o">-</span> <span class="n">my</span><span class="o">-</span><span class="n">library</span>
+</pre></div>
+</div>
+<p>Adding library to your project will install packages from source directory. The source directory defaults to <code class="docutils literal notranslate"><span class="pre">src/</span></code>
+and we recommend not changing this. You still need to import package before you can use it in your module. Be aware that you have to import package name and not library name (in this template, package name is <code class="docutils literal notranslate"><span class="pre">myproject</span></code>).</p>
+<p><em>Important:</em> note that underscores in the repository name are rewritten to dash. For example, if your repository is named <code class="docutils literal notranslate"><span class="pre">my_library</span></code>, then the library will be published as <code class="docutils literal notranslate"><span class="pre">my-library</span></code> and should be listed as such in the <code class="docutils literal notranslate"><span class="pre">conda_recipe/meta.yaml</span></code> file.</p>
+</section>
+<section id="import-example">
+<h3>Import example<a class="headerlink" href="#import-example" title="Permalink to this heading"></a></h3>
+<p>Let’s say your library structure is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda_recipe</span><span class="o">/</span>
+<span class="n">src</span><span class="o">/</span>
+  <span class="n">examplepkg</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">mymodule</span><span class="o">.</span><span class="n">py</span>
+  <span class="n">otherpkg</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">py</span>
+  <span class="n">setup</span><span class="o">.</span><span class="n">cfg</span>
+  <span class="n">setup</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>And in <code class="docutils literal notranslate"><span class="pre">gradle.properties</span></code>, value of <code class="docutils literal notranslate"><span class="pre">condaPackageName</span></code> is <code class="docutils literal notranslate"><span class="pre">mylibrary</span></code>.</p>
+<p>When consuming library, your <code class="docutils literal notranslate"><span class="pre">conda_recipe/meta.yaml</span></code> should contain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">requirements</span><span class="p">:</span>
+  <span class="n">run</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">mylibrary</span>
+</pre></div>
+</div>
+<p>Then you can import any of the packages <code class="docutils literal notranslate"><span class="pre">examplepkg</span></code> or <code class="docutils literal notranslate"><span class="pre">otherpkg</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">examplepkg</span> <span class="k">as</span> <span class="nn">E</span>
+<span class="kn">from</span> <span class="nn">examplepkg</span> <span class="kn">import</span> <span class="n">mymodule</span>
+<span class="kn">from</span> <span class="nn">otherpkg.utils</span> <span class="kn">import</span> <span class="n">some_function_in_utils</span>
+</pre></div>
+</div>
+<p>Note that the import may fail if the package does not include a file named <strong>init</strong>.py.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to Semantic Similarity’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules.html" class="btn btn-neutral float-right" title="src" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Foobar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

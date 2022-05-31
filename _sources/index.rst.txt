@@ -10,6 +10,7 @@ Welcome to Semantic Similarity's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   intro/index
    modules
 
 
