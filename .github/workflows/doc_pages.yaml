@@ -24,8 +24,9 @@ jobs:
       run: |
         mkdir gh-pages
         touch gh-pages/.nojekyll
-        cd gh-pages
+        cd docs/
         sphinx-build -b html . _build
+        cp -r _build/* ../gh-pages/
 
     - name: Deploy documentation.
       if: ${{ github.event_name == 'pull_request' }}
