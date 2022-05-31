@@ -13,6 +13,9 @@ from collections import defaultdict
 
 
 class Phenomizer:
+    """Phenomizer class for measuring semantic similarity between patients using phenotype data
+
+    """
 
     def __init__(self, mica_d: Dict):
         self._mica_d = mica_d
