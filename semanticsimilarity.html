@@ -43,13 +43,13 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">semanticsimilarity package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-annotation-counter-module">semanticsimilarity.annotation_counter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-hpo-cluster-analyzer-module">semanticsimilarity.hpo_cluster_analyzer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-hpo-ensmallen-module">semanticsimilarity.hpo_ensmallen module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-hpo-ensmallen-parser-module">semanticsimilarity.hpo_ensmallen_parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-phenomizer-module">semanticsimilarity.phenomizer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-resnik-module">semanticsimilarity.resnik module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semanticsimilarity-term-pair-module">semanticsimilarity.term_pair module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.resnik">semanticsimilarity.resnik module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.term_pair">semanticsimilarity.term_pair module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -87,26 +87,120 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="semanticsimilarity-annotation-counter-module">
-<h2>semanticsimilarity.annotation_counter module<a class="headerlink" href="#semanticsimilarity-annotation-counter-module" title="Permalink to this heading"></a></h2>
+<section id="module-semanticsimilarity.annotation_counter">
+<span id="semanticsimilarity-annotation-counter-module"></span><h2>semanticsimilarity.annotation_counter module<a class="headerlink" href="#module-semanticsimilarity.annotation_counter" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.annotation_counter.</span></span><span class="sig-name descname"><span class="pre">AnnotationCounter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><span class="pre">HpoEnsmallen</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.add_counts">
+<span class="sig-name descname"><span class="pre">add_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.add_counts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.get_counts_dict">
+<span class="sig-name descname"><span class="pre">get_counts_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.get_counts_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.get_total_patient_count">
+<span class="sig-name descname"><span class="pre">get_total_patient_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.get_total_patient_count" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="semanticsimilarity-hpo-cluster-analyzer-module">
 <h2>semanticsimilarity.hpo_cluster_analyzer module<a class="headerlink" href="#semanticsimilarity-hpo-cluster-analyzer-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="semanticsimilarity-hpo-ensmallen-module">
-<h2>semanticsimilarity.hpo_ensmallen module<a class="headerlink" href="#semanticsimilarity-hpo-ensmallen-module" title="Permalink to this heading"></a></h2>
+<section id="module-semanticsimilarity.hpo_ensmallen">
+<span id="semanticsimilarity-hpo-ensmallen-module"></span><h2>semanticsimilarity.hpo_ensmallen module<a class="headerlink" href="#module-semanticsimilarity.hpo_ensmallen" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.hpo_ensmallen.</span></span><span class="sig-name descname"><span class="pre">HpoEnsmallen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to keep track of things like information content and maps for doing sem sim</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_ancestors">
+<span class="sig-name descname"><span class="pre">get_ancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_term</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_ancestors" title="Permalink to this definition"></a></dt>
+<dd><p>get a set of all ancestors of hpo_term, including hpo_term itself</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_descendents">
+<span class="sig-name descname"><span class="pre">get_descendents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_term</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_descendents" title="Permalink to this definition"></a></dt>
+<dd><p>get a set of all descendents of hpo_term, including hpo_term itself</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.node_exists">
+<span class="sig-name descname"><span class="pre">node_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.node_exists" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="semanticsimilarity-hpo-ensmallen-parser-module">
-<h2>semanticsimilarity.hpo_ensmallen_parser module<a class="headerlink" href="#semanticsimilarity-hpo-ensmallen-parser-module" title="Permalink to this heading"></a></h2>
+<section id="module-semanticsimilarity.hpo_ensmallen_parser">
+<span id="semanticsimilarity-hpo-ensmallen-parser-module"></span><h2>semanticsimilarity.hpo_ensmallen_parser module<a class="headerlink" href="#module-semanticsimilarity.hpo_ensmallen_parser" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.hpo_ensmallen_parser.</span></span><span class="sig-name descname"><span class="pre">Hpo2EnsmallenParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>My great documention</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph_reversed_edges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_reversed_edges</span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph_reversed_edges" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="semanticsimilarity-phenomizer-module">
 <h2>semanticsimilarity.phenomizer module<a class="headerlink" href="#semanticsimilarity-phenomizer-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="semanticsimilarity-resnik-module">
-<h2>semanticsimilarity.resnik module<a class="headerlink" href="#semanticsimilarity-resnik-module" title="Permalink to this heading"></a></h2>
+<section id="module-semanticsimilarity.resnik">
+<span id="semanticsimilarity-resnik-module"></span><h2>semanticsimilarity.resnik module<a class="headerlink" href="#module-semanticsimilarity.resnik" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.resnik.Resnik">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.resnik.</span></span><span class="sig-name descname"><span class="pre">Resnik</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensmallen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><span class="pre">HpoEnsmallen</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.resnik.Resnik" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.resnik.Resnik.calculate_mica_ic">
+<span class="sig-name descname"><span class="pre">calculate_mica_ic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensmallen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><span class="pre">HpoEnsmallen</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#semanticsimilarity.term_pair.TermPair" title="semanticsimilarity.term_pair.TermPair"><span class="pre">TermPair</span></a></span></span><a class="headerlink" href="#semanticsimilarity.resnik.Resnik.calculate_mica_ic" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.resnik.Resnik.get_mica_d">
+<span class="sig-name descname"><span class="pre">get_mica_d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.resnik.Resnik.get_mica_d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="semanticsimilarity-term-pair-module">
-<h2>semanticsimilarity.term_pair module<a class="headerlink" href="#semanticsimilarity-term-pair-module" title="Permalink to this heading"></a></h2>
+<section id="module-semanticsimilarity.term_pair">
+<span id="semanticsimilarity-term-pair-module"></span><h2>semanticsimilarity.term_pair module<a class="headerlink" href="#module-semanticsimilarity.term_pair" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.term_pair.TermPair">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.term_pair.</span></span><span class="sig-name descname"><span class="pre">TermPair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">termA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">termB</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.term_pair.TermPair" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="semanticsimilarity.term_pair.TermPair.t1">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t1</span></span><a class="headerlink" href="#semanticsimilarity.term_pair.TermPair.t1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="semanticsimilarity.term_pair.TermPair.t2">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t2</span></span><a class="headerlink" href="#semanticsimilarity.term_pair.TermPair.t2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
