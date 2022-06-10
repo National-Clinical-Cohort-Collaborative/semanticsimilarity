@@ -1,9 +1,8 @@
-src
-===
+Semantic Similarity
+===================
 
 .. toctree::
    :maxdepth: 4
 
    semanticsimilarity
-   setup
-   test
+
