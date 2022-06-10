@@ -8,10 +8,15 @@ import math
 
 
 class HpoClusterAnalyzer:
-    """
+    """A class for analyzing clusters for HPO terms that are distributed unevenly in
+    the clusters
     """
 
     def __init__(self, hpo: HpoEnsmallen):
+        """Constructor
+
+        :param hpo: an HpoEnsmallen object representing the HPO graph
+        """
         self._percluster_termcounts = defaultdict(dict)
         self._per_cluster_total_pt_count = defaultdict(int)
         self._hpo_terms = set()
@@ -29,8 +34,14 @@ class HpoClusterAnalyzer:
                    ca_patient_id_col='patient_id',
                    ca_cluster_col='cluster'):
         """
-        cluster_assignment: Spark DF with two columns: patient ID and cluster assignment
-        patient_hpo_d: Spark DF with two columns: patient ID and HPO term
+
+        :param patient_hpo_df: Spark DF with two columns: patient ID and HPO term
+        :param cluster_assignment_df: Spark DF with two columns: patient ID and cluster assignment
+        :param ph_patient_id_col: column in patient_hpo_df with patient ID [patient_id]
+        :param ph_hpo_col: column in patient_hpo_df with HPO id [hpo_id]
+        :param ca_patient_id_col: column in cluster_assignment_df with patient ID [patient id]
+        :param ca_cluster_col: column in cluster_assignment_df with cluster assignment [cluster]
+        :return: None
         """
         cluster_dict = {row[ca_patient_id_col]: row[ca_cluster_col] for row in cluster_assignment_df.collect()}
 
@@ -91,9 +102,11 @@ class HpoClusterAnalyzer:
                 self._percluster_termcounts[cluster][hpo_id] += 1
 
     def do_chi2(self):
+        """Perform chi2 test for each term
+
+        :return: Pandas dataframe with results of chi squared tests
         """
-        Perform chi2 test for each term
-        """
+
         results_list = []
         for hpo_id in self._hpo_terms:
             with_hpo_count = []
@@ -128,8 +141,9 @@ class HpoClusterAnalyzer:
         return pd.DataFrame(results_list)
 
     def do_fisher_exact(self):
-        """
-        Perform chi2 test for each term
+        """Perform chi2 test for each term
+
+        :return: Pandas dataframe with results of Fisher exact tests
         """
         results_list = []
         for hpo_id in self._hpo_terms:
@@ -247,6 +261,13 @@ class HpoClusterAnalyzer:
 
 
 def add_true_counts_by_cluster(d: dict, contingency_table: pd.DataFrame, column_dtype: str):
+    """Add true counts by cluster
+
+    :param d: a dict with counts
+    :param contingency_table: a Pandas dataframe with contingency table
+    :param column_dtype: dtype of col [str]
+    :return:
+    """
     if contingency_table.shape[1] <= 2:
         if column_dtype == bool:
             true_counts_col = True
