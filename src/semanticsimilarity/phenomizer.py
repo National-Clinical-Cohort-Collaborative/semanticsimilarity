@@ -18,10 +18,16 @@ class Phenomizer:
     """
 
     def __init__(self, mica_d: Dict):
+        """Constructor
+
+        :param mica_d: a dictionary containing the information content for the most
+        informative common ancestor for every pair of HPO terms
+        """
         self._mica_d = mica_d
 
     def similarity_score(self, patientA: Set[str], patientB: Set[str]) -> float:
-        """This implements equation (2) of PMID:19800049 but with both D and Q are patients.
+        """This implements equation (2) of PMID:19800049 but both D and Q are patients
+        (whereas in that paper, D is phenotypes for a disease, and Q is patient phenotypes)
 
         :param patientA: first patient phenotypes
         :param patientB: second patient phenotypes
@@ -53,10 +59,21 @@ class Phenomizer:
         return 0.5 * sum(a_to_b_sim)/len(a_to_b_sim) + 0.5 * sum(b_to_a_sim)/len(b_to_a_sim)
 
     def check_term_pair_in_mica_d(self, tp: TermPair):
+        """Helper method to check whether a given term pair is in self._mica_d
+
+        :param tp: A TermPair object representing the pair of HPO terms to be checked
+        :return: None
+        """
         if (tp._t1, tp._t2) not in self._mica_d:
             print(f"Warning, could not find tp in self._mica_d: {(tp._t1, tp._t2)}")
 
     def update_mica_d(self, new_mica_d: dict):
+        """Replace self._mica_d with new_mica_d
+
+        :param new_mica_d: a dictionary containing the information content for the most
+        informative common ancestor for every pair of HPO terms
+        :return: None
+        """
         self._mica_d = new_mica_d
 
     def make_patient_similarity_long_spark_df(self,
@@ -67,39 +84,63 @@ class Phenomizer:
                                               ) -> DataFrame:
         """Produce long spark dataframe with similarity between all pairs of patients in patient_df
 
-        Args:
-            patient_df: long table (spark dataframe) with person_id hpo_id for all patients
-            hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
-            person_id_col: name of person ID column [person_id]
-            hpo_term_col: name of hpo term column [hpo_id]
-
-        Returns:
-            Spark dataframe with patientA  patientB similarity for all pairs of patients (ignoring ordering)
-
-        Details:
-
         Take a long spark dataframe of patients (containing person_ids and hpo terms) like so:
-        person_id  hpo_term
-        patient1   HP:0001234
-        patient1   HP:0003456
-        patient2   HP:0006789
-        patient3   HP:0004567
-        ...
+
+        .. list-table::
+           :widths: 25 25
+           :header-rows: 1
+
+           * - person_id
+             - hpo_term
+           * - patient1
+             - HP:0001234
+           * - patient1
+             - HP:0003456
+           * - patient2
+             - HP:0006789
+           * - patient3
+             - HP:0004567
 
         and an HPO graph like so:
-        subject     edge_label   object
-        HP:0003456  subclass_of  HP:0003456
-        HP:0004567  subclass_of  HP:0006789
-        ...
+
+        .. list-table::
+           :widths: 25 25 25
+           :header-rows: 1
+
+           * - subject
+             - edge_label
+             - object
+           * - HP:0003456
+             - subclass_of
+             - HP:0003456
+           * - HP:0004567
+             - subclass_of
+             - HP:0006789
 
         and output a matrix of patient patient phenotypic semantic similarity like so:
-        patientA    patientB    similarity
-        patient1    patient1    2.566
-        patient1    patient2    0.523
-        patient1    patient3    0.039
-        patient2    patient2    2.934
-        patient2    patient3    0.349
-        ...
+
+        .. list-table::
+           :widths: 25 25 25
+           :header-rows: 1
+
+           * - patientA
+             - patientB
+             - similarity
+           * - patient1
+             - patient1
+             - 2.566
+           * - patient1
+             - patient2
+             - 0.523
+           * - patient1
+             - patient3
+             - 0.039
+           * - patient2
+             - patient2
+             - 2.934
+           * - patient2
+             - patient3
+             - 0.349
 
         Phenotypic similarity between patients is calculated using similarity_score above.
         Similarity of each patient to themself if also calculated.
@@ -108,7 +149,13 @@ class Phenomizer:
         This frequency is used in the calculation of most informative common ancestor for
         each possible pair of terms.
 
-        Note that this method updates self._mica_d using data in patient_df
+        Note that this method updates self._mica_d using data in patient_df.
+
+        :param patient_df: long table (spark dataframe) with person_id hpo_id for all patients
+        :param hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
+        :param person_id_col: name of person ID column [person_id]
+        :param hpo_term_col: name of hpo term column [hpo_id]
+        :return: Spark dataframe with patientA  patientB similarity for all pairs of patients (ignoring ordering)
         """
 
         # make HPO graph in the correct format
@@ -173,6 +220,20 @@ class Phenomizer:
                                            cluster_assignment_cluster_col_name: str = 'cluster',
                                            clustered_patient_id_col_name: str = 'patient_id',
                                            clustered_patient_hpo_col_name: str = 'hpo_id'):
+        """Measure generalizability of clusters using data frame different hospital
+        system
+
+        :param test_patients_hpo_terms: dataframe with patient HPO terms
+        :param clustered_patient_hpo_terms: dataframe with HPO terms for clustered patients
+        :param cluster_assignments: dataframe with cluster assignments
+        :param test_patient_id_col_name: column in test_patients_hpo_terms with patient ID [patient_id]
+        :param test_patient_hpo_col_name: column in test_patients_hpo_terms with HPO term [hpo_id]
+        :param cluster_assignment_patient_col_name: column in cluster assignment df with patient ID [patient_id]
+        :param cluster_assignment_cluster_col_name: column in cluster assignment df with cluster ID [cluster]
+        :param clustered_patient_id_col_name: column in clustered patient df with patient ID [patient_id]
+        :param clustered_patient_hpo_col_name: column in clustered patient df with HPO term [hpo_id]
+        :return: pandas dataframe with columns mean.sim, sd.sim, observed, zscore
+        """
         # 1) Generate matrix of similarities between the new ('test') patients and the existing ('clustered_patient_hpo_terms') patients
         # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
         # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
@@ -206,6 +267,11 @@ class Phenomizer:
         return pd.DataFrame([d])
 
     def average_max_similarity(self, test_to_clustered_df: pd.DataFrame):
+        """Helper method to measure average similarity
+
+        :param test_to_clustered_df: pandas dataframe
+        :return: average sim
+        """
         # group by test patient id
         # d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
         class TestPt:
@@ -241,7 +307,6 @@ class Phenomizer:
             max_sim.append(testPt.get_max_sim())
         return np.mean(max_sim)
 
-
     def patient_to_cluster_similarity(self,
                                       test_patient_hpo_terms: DataFrame,
                                       clustered_patient_hpo_terms: DataFrame,
@@ -252,14 +317,31 @@ class Phenomizer:
                                       cluster_assignment_cluster_col_name: str = 'cluster',
                                       clustered_patient_id_col_name: str = 'patient_id',
                                       clustered_patient_hpo_col_name: str = 'hpo_id') -> pd.DataFrame:
+        """Measure similarity of patient to cluster
+        (note that we are currently using patient_to_cluster_similarity_pd instead of
+        this method)
+
+        The purpose of this method is to make a dataframe with the following columns:
+        test_pat_id (patients from the 'new' center)
+        clustered_pat_id (patients from the center[s] in which we generated the clusters)
+        cluster (the unpermuted cluster assignments of the original clustering
+        similarity_score (the similarity by Phenomizer of the test patient and clustered patient in the current row)
+
+        If there are M test patients and N clustered patients, then we have MN rows and 4 columns
+        Note that we have k clusters. Each of the rows has one of the clusters
+
+        :param test_patient_hpo_terms:
+        :param clustered_patient_hpo_terms:
+        :param cluster_assignments:
+        :param test_patient_id_col_name:
+        :param test_patient_hpo_col_name:
+        :param cluster_assignment_patient_col_name:
+        :param cluster_assignment_cluster_col_name:
+        :param clustered_patient_id_col_name:
+        :param clustered_patient_hpo_col_name:
+        :return: Pandas dataframe
         """
-        The purpose of this method is to make a dataframe with the following columns
-        test_pat_id (patients from the 'new' center), clustered_pat_id (patients from the center[s] in which we generated
-        the clusters), cluster (the unpermuted cluster assignments of the original clustering, similarity_score (the
-        similarity by Phenomizer of the test patient and clustered patient in the current row)
-        # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
-        # Note that we have k clusters. Each of the rows has one of the clusters
-        """
+
         test_patient_ids = [i[0] for i in test_patient_hpo_terms.select(test_patient_id_col_name).distinct().collect()]
         clusters = [i[0] for i in cluster_assignments.select(cluster_assignment_cluster_col_name).distinct().collect()]
 
@@ -286,13 +368,27 @@ class Phenomizer:
                                       cluster_assignment_cluster_col_name: str = 'cluster',
                                       clustered_patient_id_col_name: str = 'patient_id',
                                       clustered_patient_hpo_col_name: str = 'hpo_id') -> pd.DataFrame:
-        """
+        """Measure similarity of patient to cluster using pandas
+        (reimplementation of patient_to_cluster_similarity above)
+
         The purpose of this method is to make a dataframe with the following columns
-        test_pat_id (patients from the 'new' center), clustered_pat_id (patients from the center[s] in which we generated
-        the clusters), cluster (the unpermuted cluster assignments of the original clustering, similarity_score (the
-        similarity by Phenomizer of the test patient and clustered patient in the current row)
-        # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
-        # Note that we have k clusters. Each of the rows has one of the clusters
+        test_pat_id (patients from the 'new' center)
+        clustered_pat_id (patients from the center[s] in which we generated the clusters)
+        cluster (the unpermuted cluster assignments of the original clustering
+        similarity_score (the similarity by Phenomizer of the test patient and clustered patient in the current row)
+        if there are M test patients and N clustered patients, then we have MN rows and 4 columns
+        Note that we have k clusters. Each of the rows has one of the clusters
+
+        :param test_patient_hpo_terms:
+        :param clustered_patient_hpo_terms:
+        :param cluster_assignments:
+        :param test_patient_id_col_name:
+        :param test_patient_hpo_col_name:
+        :param cluster_assignment_patient_col_name:
+        :param cluster_assignment_cluster_col_name:
+        :param clustered_patient_id_col_name:
+        :param clustered_patient_hpo_col_name:
+        :return:
         """
         # 1 Make dictionaries with key=patient_id, value=set of HPO terms for both clustered and test patients
         clustered_pt_d = defaultdict(set)
@@ -327,6 +423,13 @@ class Phenomizer:
 
     @staticmethod
     def make_similarity_matrix(patient_df: DataFrame) -> Dict[str, Union[np.ndarray, list]]:
+        """Make a similarity matrix from long patient dataframe
+
+        :param patient_df: dataframe with patient-patient similarity
+        :return: A dict with 'np' with a numpy array with patient-patient similarity and
+        'patient_list' that defines the ordering of the rows and columns in 'np' with
+        respect to patient IDs
+        """
 
         # construct an index map for patients
         patientA_set = set([x["patientA"] for x in patient_df.select("patientA").distinct().collect()])  # noqa
