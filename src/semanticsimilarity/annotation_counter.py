@@ -6,7 +6,7 @@ from warnings import warn
 
 class AnnotationCounter:
     """Counts the number of annotations for a given term (including the ancestors of
-    that term
+    that term.
     """
 
     def __init__(self, hpo: HpoEnsmallen):
