@@ -18,7 +18,7 @@ jobs:
         python-version: 3.9
 
     - name: install
-       run: |
+      run: |
         pip3 install sphinx sphinx-rtd-theme recommonmark
         pip3 install -e .
 
