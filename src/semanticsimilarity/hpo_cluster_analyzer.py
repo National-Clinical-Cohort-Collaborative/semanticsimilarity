@@ -166,18 +166,52 @@ class HpoClusterAnalyzer:
 
         covariate_dataframe should be a Pandas dataframe with a column describing cluster
         information, and other boolean or factor data, like so:
-        cluster    diabetes    gender
-        1          True        Male
-        2          True        Female
-        3          False       Unknown
-        2          False       Female
-        1          False       Male
+
+        .. list-table::
+           :widths: 25 25 50
+           :header-rows: 1
+
+           * - cluster
+             - diabetes
+             - gender
+           * - 1
+             - True
+             - Male
+           * - 2
+             - True
+             - Female
+           * - 3
+             - False
+             - Unknown
+           * - 2
+             - False
+             - Female
+           * - 1
+             - False
+             - Male
 
         This method return a pandas dataframe with these statistics about rows that were
         analyzed:
-        covariate        chi2             p  dof
-        0          diabetes  100.000000  1.554159e-21    3
-        1          gender    123.000000        2.3e-1    1
+
+        .. list-table::
+           :widths: 25 25 50 50 10
+           :header-rows: 1
+
+           * -
+             - covariate
+             - chi2
+             - p
+             - dof
+           * - 0
+             - diabetes
+             - 100.000000
+             - 1.554159e-21
+             - 3
+           * - 1
+             - gender
+             - 123.000000
+             - 2.3e-1
+             - 1
 
         :param covariate_dataframe: pd.DataFrame
         :param cluster_col: str [default 'cluster'] the column containing cluster information for each person
