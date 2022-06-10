@@ -164,22 +164,28 @@ class HpoClusterAnalyzer:
                                     bonferroni: bool = True) -> pd.DataFrame:
         """A static method for performing chi square on covariates for which we have cluster info.
 
-        :param covariate_dataframe: pd.DataFrame
-        a Pandas dataframe with a column describing cluster information, and other boolean or factor data, like so:
+        covariate_dataframe should be a Pandas dataframe with a column describing cluster
+        information, and other boolean or factor data, like so:
         cluster    diabetes    gender
         1          True        Male
         2          True        Female
         3          False       Unknown
         2          False       Female
         1          False       Male
+
+        This method return a pandas dataframe with these statistics about rows that were
+        analyzed:
+        covariate        chi2             p  dof
+        0          diabetes  100.000000  1.554159e-21    3
+        1          gender    123.000000        2.3e-1    1
+
+        :param covariate_dataframe: pd.DataFrame
         :param cluster_col: str [default 'cluster'] the column containing cluster information for each person
         :param minimum_n: minimal number of values necessary to calculate chisq - otherwise stats are set to float('NaN')
         :param ignore_col: ignore these covariate columns - don't calculate stats on them.
         :param bonferroni: do a bonferroni correction (p value * number of tests)
-        :return:    pd.DataFrame with these statistics about rows that were analyzed:
-        covariate        chi2             p  dof
-        0          diabetes  100.000000  1.554159e-21    3
-        1          gender    123.000000        2.3e-1    1
+        :return: pd.DataFrame
+
         """
         if cluster_col not in covariate_dataframe.columns:
             raise ValueError(f"cluster_col arg {cluster_col} is not a column in covariate_dataframe")
