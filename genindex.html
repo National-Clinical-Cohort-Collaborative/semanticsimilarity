@@ -72,9 +72,11 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -86,6 +88,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="semanticsimilarity.html#semanticsimilarity.annotation_counter.AnnotationCounter">AnnotationCounter (class in semanticsimilarity.annotation_counter)</a>
 </li>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.average_max_similarity">average_max_similarity() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -93,6 +97,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="semanticsimilarity.html#semanticsimilarity.resnik.Resnik.calculate_mica_ic">calculate_mica_ic() (semanticsimilarity.resnik.Resnik method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.center_to_cluster_generalizability">center_to_cluster_generalizability() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.check_term_pair_in_mica_d">check_term_pair_in_mica_d() (semanticsimilarity.phenomizer.Phenomizer method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -134,15 +144,23 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.make_patient_similarity_long_spark_df">make_patient_similarity_long_spark_df() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.make_similarity_matrix">make_similarity_matrix() (semanticsimilarity.phenomizer.Phenomizer static method)</a>
+</li>
       <li>
     module
 
       <ul>
+        <li><a href="semanticsimilarity.html#module-semanticsimilarity">semanticsimilarity</a>
+</li>
         <li><a href="semanticsimilarity.html#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter</a>
 </li>
         <li><a href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen</a>
 </li>
         <li><a href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser</a>
+</li>
+        <li><a href="semanticsimilarity.html#module-semanticsimilarity.phenomizer">semanticsimilarity.phenomizer</a>
 </li>
         <li><a href="semanticsimilarity.html#module-semanticsimilarity.resnik">semanticsimilarity.resnik</a>
 </li>
@@ -160,6 +178,20 @@
   </ul></td>
 </tr></table>
 
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity">patient_to_cluster_similarity() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity_pd">patient_to_cluster_similarity_pd() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer">Phenomizer (class in semanticsimilarity.phenomizer)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -171,6 +203,13 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    semanticsimilarity
+
+      <ul>
+        <li><a href="semanticsimilarity.html#module-semanticsimilarity">module</a>
+</li>
+      </ul></li>
       <li>
     semanticsimilarity.annotation_counter
 
@@ -195,6 +234,13 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    semanticsimilarity.phenomizer
+
+      <ul>
+        <li><a href="semanticsimilarity.html#module-semanticsimilarity.phenomizer">module</a>
+</li>
+      </ul></li>
+      <li>
     semanticsimilarity.resnik
 
       <ul>
@@ -208,6 +254,8 @@
         <li><a href="semanticsimilarity.html#module-semanticsimilarity.term_pair">module</a>
 </li>
       </ul></li>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.similarity_score">similarity_score() (semanticsimilarity.phenomizer.Phenomizer method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -221,6 +269,14 @@
       <li><a href="semanticsimilarity.html#semanticsimilarity.term_pair.TermPair.t2">t2 (semanticsimilarity.term_pair.TermPair property)</a>
 </li>
       <li><a href="semanticsimilarity.html#semanticsimilarity.term_pair.TermPair">TermPair (class in semanticsimilarity.term_pair)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.update_mica_d">update_mica_d() (semanticsimilarity.phenomizer.Phenomizer method)</a>
 </li>
   </ul></td>
 </tr></table>
