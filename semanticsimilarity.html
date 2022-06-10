@@ -96,17 +96,39 @@ that term).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.add_counts">
 <span class="sig-name descname"><span class="pre">add_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.add_counts" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Given a Pandas dataframe with two columns, the first called patient_id and
+the second called hpo_id, add counts for each term and its ancestors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>counts_df</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.get_counts_dict">
 <span class="sig-name descname"><span class="pre">get_counts_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.get_counts_dict" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get a dict with all counts for each term</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Term counts [dict]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.get_total_patient_count">
 <span class="sig-name descname"><span class="pre">get_total_patient_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.get_total_patient_count" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the total count of patients</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Total patients [int]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
