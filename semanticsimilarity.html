@@ -156,26 +156,25 @@ patient_hpo_d: Spark DF with two columns: patient ID and HPO term</p>
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi_square_on_covariates">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">do_chi_square_on_covariates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">covariate_dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cluster'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonferroni</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi_square_on_covariates" title="Permalink to this definition"></a></dt>
 <dd><p>A static method for performing chi square on covariates for which we have cluster info.</p>
-<p>covariate_dataframe : pd.DataFrame
-a Pandas dataframe with a column describing cluster information, and other boolean or factor data, like so:
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>covariate_dataframe</strong> – pd.DataFrame</p>
+</dd>
+</dl>
+<p>a Pandas dataframe with a column describing cluster information, and other boolean or factor data, like so:
 cluster    diabetes    gender
 1          True        Male
 2          True        Female
 3          False       Unknown
 2          False       Female
-1          False       Male</p>
-<dl class="simple">
-<dt>cluster_col<span class="classifier">str [default ‘cluster’]</span></dt><dd><p>the column containing cluster information for each person</p>
-</dd>
-</dl>
-<p>minimum_n: minimal number of values necessary to calculate chisq - otherwise stats are set to float(‘NaN’)</p>
-<p>ignore_col: ignore these covariate columns - don’t calculate stats on them.</p>
-<p>bonferroni: do a bonferroni correction (p value * number of tests)</p>
-<p>pd.DataFrame with these statistics about rows that were analyzed:</p>
-<blockquote>
-<div><p>covariate        chi2             p  dof</p>
-</div></blockquote>
-<p>0          diabetes  100.000000  1.554159e-21    3
+1          False       Male
+:param cluster_col: str [default ‘cluster’] the column containing cluster information for each person
+:param minimum_n: minimal number of values necessary to calculate chisq - otherwise stats are set to float(‘NaN’)
+:param ignore_col: ignore these covariate columns - don’t calculate stats on them.
+:param bonferroni: do a bonferroni correction (p value * number of tests)
+:return:    pd.DataFrame with these statistics about rows that were analyzed:
+covariate        chi2             p  dof
+0          diabetes  100.000000  1.554159e-21    3
 1          gender    123.000000        2.3e-1    1</p>
 </dd></dl>
 
