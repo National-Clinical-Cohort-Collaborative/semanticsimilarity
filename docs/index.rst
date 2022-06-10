@@ -10,8 +10,7 @@ Welcome to Semantic similarity's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   usage
-   api
+   modules
 
 
 Indices and tables
