@@ -139,17 +139,37 @@ the second called hpo_id, add counts for each term and its ancestors</p>
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.hpo_cluster_analyzer.</span></span><span class="sig-name descname"><span class="pre">HpoClusterAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><span class="pre">HpoEnsmallen</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for analyzing clusters for HPO terms that are distributed unevenly in
+the clusters</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.add_counts">
 <span class="sig-name descname"><span class="pre">add_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient_hpo_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_assignment_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph_patient_id_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph_hpo_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hpo_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_patient_id_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_cluster_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cluster'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.add_counts" title="Permalink to this definition"></a></dt>
-<dd><p>cluster_assignment: Spark DF with two columns: patient ID and cluster assignment
-patient_hpo_d: Spark DF with two columns: patient ID and HPO term</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>patient_hpo_df</strong> – Spark DF with two columns: patient ID and HPO term</p></li>
+<li><p><strong>cluster_assignment_df</strong> – Spark DF with two columns: patient ID and cluster assignment</p></li>
+<li><p><strong>ph_patient_id_col</strong> – column in patient_hpo_df with patient ID [patient_id]</p></li>
+<li><p><strong>ph_hpo_col</strong> – column in patient_hpo_df with HPO id [hpo_id]</p></li>
+<li><p><strong>ca_patient_id_col</strong> – column in cluster_assignment_df with patient ID [patient id]</p></li>
+<li><p><strong>ca_cluster_col</strong> – column in cluster_assignment_df with cluster assignment [cluster]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi2">
 <span class="sig-name descname"><span class="pre">do_chi2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi2" title="Permalink to this definition"></a></dt>
 <dd><p>Perform chi2 test for each term</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Pandas dataframe with results of chi squared tests</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -246,6 +266,11 @@ analyzed:</p>
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_fisher_exact">
 <span class="sig-name descname"><span class="pre">do_fisher_exact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_fisher_exact" title="Permalink to this definition"></a></dt>
 <dd><p>Perform chi2 test for each term</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Pandas dataframe with results of Fisher exact tests</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -253,7 +278,20 @@ analyzed:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_cluster_analyzer.add_true_counts_by_cluster">
 <span class="sig-prename descclassname"><span class="pre">semanticsimilarity.hpo_cluster_analyzer.</span></span><span class="sig-name descname"><span class="pre">add_true_counts_by_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contingency_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_cluster_analyzer.add_true_counts_by_cluster" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Add true counts by cluster</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – a dict with counts</p></li>
+<li><p><strong>contingency_table</strong> – a Pandas dataframe with contingency table</p></li>
+<li><p><strong>column_dtype</strong> – dtype of col [str]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-semanticsimilarity.hpo_ensmallen">
