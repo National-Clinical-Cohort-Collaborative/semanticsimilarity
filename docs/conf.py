@@ -12,13 +12,12 @@
 #
 import os
 import sys
-# this is poorly documented (strangely) - this abspath is relative to the directory in which conf.py is
-# sys.path.append('/Users/jtr4v/PycharmProjects/semanticsimilarity/src/')
-sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../src/'))
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'Semantic similarity'
+project = 'Semantic Similarity'
 copyright = '2022, Foobar'
 author = 'Foobar'
 
@@ -36,7 +35,8 @@ extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',    
+    'sphinx.ext.autosummary',
+    'recommonmark'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -45,7 +45,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for HTML output -------------------------------------------------

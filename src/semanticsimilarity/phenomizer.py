@@ -13,14 +13,20 @@ from collections import defaultdict
 
 
 class Phenomizer:
+    """Phenomizer class for measuring semantic similarity between patients using phenotype data
+
+    """
 
     def __init__(self, mica_d: Dict):
         self._mica_d = mica_d
 
     def similarity_score(self, patientA: Set[str], patientB: Set[str]) -> float:
-        """
+        """This implements equation (2) of PMID:19800049 but with both D and Q are patients.
 
-        This implements equation (2) of PMID:19800049 but with both D and Q are patients.
+        :param patientA: first patient phenotypes
+        :param patientB: second patient phenotypes
+
+        :return: float
         """
         a_to_b_sim = []
         b_to_a_sim = []
@@ -170,7 +176,7 @@ class Phenomizer:
         # 1) Generate matrix of similarities between the new ('test') patients and the existing ('clustered_patient_hpo_terms') patients
         # data frame with the columns test_pat_id, clustered_pat_id, cluster, similarity_score
         # if there are M test patients and N clustered patients, then we have MN rows and 4 columns
-        test_to_clustered_df = self.patient_to_cluster_similarity_pd(test_patients_hpo_terms, 
+        test_to_clustered_df = self.patient_to_cluster_similarity_pd(test_patients_hpo_terms,
                                                                   clustered_patient_hpo_terms,
                                                                   cluster_assignments,
                                                                   test_patient_id_col_name,
