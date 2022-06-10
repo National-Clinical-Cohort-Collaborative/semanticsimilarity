@@ -300,23 +300,48 @@ analyzed:</p>
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.hpo_ensmallen.</span></span><span class="sig-name descname"><span class="pre">HpoEnsmallen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to keep track of things like information content and maps for doing sem sim</p>
+<p>A class to keep track of things like information content and maps for doing semantic similarity</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_ancestors">
 <span class="sig-name descname"><span class="pre">get_ancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_term</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_ancestors" title="Permalink to this definition"></a></dt>
-<dd><p>get a set of all ancestors of hpo_term, including hpo_term itself</p>
+<dd><p>Get a set of all ancestors of hpo_term, including hpo_term itself</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hpo_term</strong> – HPO term for which we want to get ancestors</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of all ancestors of a node</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_descendents">
 <span class="sig-name descname"><span class="pre">get_descendents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_term</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_descendents" title="Permalink to this definition"></a></dt>
-<dd><p>get a set of all descendents of hpo_term, including hpo_term itself</p>
+<dd><p>Get a set of all descendents of hpo_term, including hpo_term itself</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hpo_term</strong> – HPO term for which we want to get descendents</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of all descendents of a node</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.hpo_ensmallen.HpoEnsmallen.node_exists">
 <span class="sig-name descname"><span class="pre">node_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.node_exists" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Does node exists?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> – Name of node to look for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bol</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
