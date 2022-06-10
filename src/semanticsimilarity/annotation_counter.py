@@ -10,6 +10,10 @@ class AnnotationCounter:
     """
 
     def __init__(self, hpo: HpoEnsmallen):
+        """Constructor
+
+        :param hpo:
+        """
         self._termcounts = defaultdict(int)
         self._total_patients = 0
         if not isinstance(hpo, HpoEnsmallen):
@@ -17,6 +21,12 @@ class AnnotationCounter:
         self._hpo = hpo
 
     def add_counts(self, counts_df):
+        """Given a Pandas dataframe with two columns, the first called patient_id and
+        the second called hpo_id, add counts for each term and its ancestors
+
+        :param counts_df:
+        :return: None
+        """
         if isinstance(counts_df, pd.DataFrame):
             # the dataframe must have exactly two columns, the first of
             # which is called patient_id and the second is called hpo_id
@@ -57,7 +67,15 @@ class AnnotationCounter:
             raise ValueError("counts_df argument must be of type pd.DataFrame (TODO or spark")
 
     def get_total_patient_count(self):
+        """Get the total count of patients
+
+        :return: Total patients [int]
+        """
         return self._total_patients
 
     def get_counts_dict(self):
+        """Get a dict with all counts for each term
+
+        :return: Term counts [dict]
+        """
         return self._termcounts
