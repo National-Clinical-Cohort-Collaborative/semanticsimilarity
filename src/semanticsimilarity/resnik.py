@@ -7,10 +7,16 @@ from .hpo_ensmallen import HpoEnsmallen
 
 
 class Resnik:
+    """A class to calculate Resnik semantic similarity
+
+    """
 
     def __init__(self, counts_d: Dict, total: int, ensmallen: HpoEnsmallen):
-        """
-        The constructor calculates the information content of each term from the term counts
+        """The constructor calculates the information content of each term from the term counts
+
+        :param counts_d: a dict containing term counts, assigned to self._counts_d
+        :param total: assigned to self._total_count
+        :param ensmallen: Ensmallen graph object representing HPO
         """
         self._counts_d = counts_d
         self._total_count = total
@@ -26,6 +32,12 @@ class Resnik:
             self._mica_d[i] = self.calculate_mica_ic(i, ensmallen)
 
     def calculate_mica_ic(self, tp, ensmallen: HpoEnsmallen) -> TermPair:
+        """Calculate information content of the most informative common ancestor for two HPO terms
+
+        :param tp: TermPair object
+        :param ensmallen: Ensmallen graph object representing HPO
+        :return:
+        """
         t1 = tp[0]
         t2 = tp[1]
         t1ancs = ensmallen.get_ancestors(t1)
@@ -38,4 +50,8 @@ class Resnik:
         return max_ic
 
     def get_mica_d(self):
+        """Helper method to retrieve self._mica_d
+
+        :return: self._mica_d
+        """
         return self._mica_d
