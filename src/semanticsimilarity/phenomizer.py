@@ -70,8 +70,7 @@ class Phenomizer:
     def update_mica_d(self, new_mica_d: dict):
         """Replace self._mica_d with new_mica_d
 
-        :param new_mica_d: a dictionary containing the information content for the most
-        informative common ancestor for every pair of HPO terms
+        :param new_mica_d: a dictionary containing the information content for the most informative common ancestor for every pair of HPO terms
         :return: None
         """
         self._mica_d = new_mica_d
@@ -426,9 +425,7 @@ class Phenomizer:
         """Make a similarity matrix from long patient dataframe
 
         :param patient_df: dataframe with patient-patient similarity
-        :return: A dict with 'np' with a numpy array with patient-patient similarity and
-        'patient_list' that defines the ordering of the rows and columns in 'np' with
-        respect to patient IDs
+        :return: A dict with 'np' with a numpy array with patient-patient similarity and 'patient_list' that defines the ordering of the rows and columns in 'np' with respect to patient IDs
         """
 
         # construct an index map for patients
