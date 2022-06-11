@@ -10,6 +10,8 @@ Welcome to Semantic Similarity's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. mdinclude:: ../../README.md
+
   modules
 
 
