@@ -1,6 +1,13 @@
 class TermPair():
+    """A class to represent a pair of HPO terms
+    """
 
     def __init__(self, termA: str, termB: str):
+        """Constructor
+
+        :param termA: first HPO term
+        :param termB: second HPO term
+        """
         thisPair = [termA, termB]
         thisPair.sort()
         self._t1 = thisPair[0]
@@ -17,8 +24,16 @@ class TermPair():
 
     @property
     def t1(self):
+        """first HPO term
+
+        :return:
+        """
         return self._t1
 
     @property
     def t2(self):
+        """second HPO term
+
+        :return:
+        """
         return self._t2
