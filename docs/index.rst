@@ -6,11 +6,11 @@
 Welcome to Semantic Similarity's documentation!
 ===============================================
 
+.. include:: ../README.md
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-.. mdinclude:: ../../README.md
 
   modules
 
