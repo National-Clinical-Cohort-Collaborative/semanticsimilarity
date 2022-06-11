@@ -8,4 +8,5 @@ It also contains tools for applying statistical tests (chi squared and Fisher ex
 to determine overrepresentation of HPO terms in clustered data. 
 
 See here for more documentation of code:
+
 https://national-covid-cohort-collaborative.github.io/semanticsimilarity/index.html
