@@ -163,6 +163,132 @@ class Phenomizer:
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
+    def make_patient_disease_similarity_long_spark_df(self,
+                                              patient_df,
+                                              disease_df,
+                                              hpo_graph_edges_df,
+                                              person_id_col: str = 'person_id',
+                                              hpo_term_col: str = 'hpo_term',  # FOLLOW UP: same hpo term column label for both patient and disease df?
+                                              disease_id_col: str = 'disease_id'
+                                              ) -> DataFrame:
+        """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
+
+        Args:
+            patient_df: long table (spark dataframe) with person_id hpo_id for all patients
+            disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases
+            hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
+            person_id_col: name of person ID column [person_id]
+            hpo_term_col: name of hpo term column [hpo_id]
+            disease_id_col: name of disease ID column [disease_id]
+
+        Returns:
+            Spark dataframe with patient x disease similarity for all patient x disease pairings (ignoring ordering)
+
+        Details:
+
+        Take a long spark dataframe of patients (containing person_ids and hpo terms) like so:
+        person_id  hpo_term
+        patient1   HP:0001234
+        patient1   HP:0003456
+        patient2   HP:0006789
+        patient3   HP:0004567
+        ...
+
+        Take a long spark dataframe of diseases (containing disease_ids and hpo terms) like so:
+        disease_id  hpo_term
+        disease1   HP:0007489
+        disease1   HP:0006487
+        disease2   HP:0006789
+        disease3   HP:0004494
+        ...
+
+        and an HPO graph like so:
+        subject     edge_label   object
+        HP:0003456  subclass_of  HP:0003456
+        HP:0004567  subclass_of  HP:0006789
+        ...
+
+        and output a matrix of patient disease phenotypic semantic similarity like so:
+        patient     disease    similarity
+        patient1    disease1    2.566
+        patient1    disease2    0.523
+        patient1    disease3    0.039
+        patient2    disease1    0.935
+        patient2    disease2    2.934
+        patient2    disease3    0.349
+        ...
+
+        Phenotypic similarity between patients and diseases is calculated using similarity_score above.
+
+        HPO term frequency is calculated using the frequency of each HPO term in disease_df.
+        This frequency is used in the calculation of most informative common ancestor for
+        each possible pair of terms.
+
+        Note that this method updates self._mica_d using data in disease_df
+        """
+
+        # make HPO graph in the correct format
+        output_filename = "hpo_out.tsv"
+        hpo_graph_edges_df.toPandas().to_csv(output_filename)
+
+        # make an ensmallen object for HPO
+        hpo_ensmallen = HpoEnsmallen(output_filename)
+
+        # generate term counts
+        annotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
+
+        annots = []
+        for row in patient_df.rdd.toLocalIterator():
+            d = {'patient_id': row[person_id_col], 'hpo_id': row[hpo_term_col]}
+            annots.append(d)
+        df = pd.DataFrame(annots)
+        annotationCounter.add_counts(df)
+
+        # count patients
+        patient_count = patient_df.dropDuplicates([person_id_col]).count()
+        print(f"we have this many patient -> hpo assertions {patient_df.count()}")
+        print(f"we have this many patients {patient_count}")
+
+        # count diseases
+        disease_count = disease_df.dropDuplicates([disease_id_col]).count()
+        print(f"we have this many disease -> hpo assertions {disease_df.count()}")
+        print(f"we have this many diseases {disease_count}")
+
+        # make Resnik object with diseases instead of patients
+        resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
+                        total=disease_count,
+                        ensmallen=hpo_ensmallen)
+
+        # group by person_id to make all HPO terms for a given patient, put in a new df person_id: set([HPO terms])
+        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(hpo_term_col))).collect()  # noqa
+
+        # group by disease_id to make all HPO terms for a given disease, put in a new df disease_id: set([HPO terms])
+        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(hpo_term_col))).collect()  # noqa
+
+        # Update mica_d with appropriate mica info from disease annotations.
+        self.update_mica_d(resnik.get_mica_d())
+
+        # loop through hpo_terms_by_patient and hpo_terms_by_disease and compare every patient and disease combination
+        patient_disease_similarity_matrix = []  # list of lists
+
+        for i, prow in enumerate(hpo_terms_by_patient):
+            for j, drow in enumerate(hpo_terms_by_disease):
+                ss = self.similarity_score(hpo_terms_by_patient[i][1],
+                                           hpo_terms_by_disease[j][1])
+                patient_disease_similarity_matrix.append(
+                    [
+                        hpo_terms_by_patient[i][0],
+                        hpo_terms_by_disease[j][0],
+                        ss
+                    ]
+                )
+
+        patient_disease_similarity_matrix_pd = pd.DataFrame(patient_disease_similarity_matrix,
+                                                    columns=['patient', 'disease', 'similarity'])
+        spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
+        return spark.createDataFrame(patient_disease_similarity_matrix_pd)
+
+
     def center_to_cluster_generalizability(self,
                                            test_patients_hpo_terms:DataFrame,
                                            clustered_patient_hpo_terms: DataFrame,
