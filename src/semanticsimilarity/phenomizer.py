@@ -216,16 +216,6 @@ class Phenomizer:
             def add_score(self, cluster, score):
                 self.cluster_d[cluster].append(score)
 
-            def get_max_sim(self):
-                patient_scores = []
-                for cluster, scores in self.cluster_d.items():
-                    mean_score = np.mean(scores)
-                    patient_scores.append(mean_score)
-                total_scores = np.sum(patient_scores)
-                if total_scores == 0:
-                    return 0
-                max_score = np.max(patient_scores)/total_scores
-                return max_score
 
         patient_d = defaultdict(TestPt)
         for _, row in test_to_clustered_df.iterrows():
