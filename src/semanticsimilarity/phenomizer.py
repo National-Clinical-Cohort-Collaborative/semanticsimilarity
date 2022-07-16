@@ -1,4 +1,4 @@
-from typing import Dict, Set, Union
+from typing import Dict, Set, Union, Optional
 from warnings import warn
 from .term_pair import TermPair
 import numpy as np
@@ -10,6 +10,43 @@ from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 from semanticsimilarity.resnik import Resnik
 from semanticsimilarity.annotation_counter import AnnotationCounter
 from collections import defaultdict
+
+
+class TestPt:
+    """Helper class for average_max_similarity and max_similarity
+    """
+
+    def __init__(self, id):
+        self.id = id
+        self.cluster_d = defaultdict(list)
+
+    def add_score(self, cluster, score):
+        self.cluster_d[cluster].append(score)
+
+    def get_max_sim(self):
+        patient_scores = []
+        for cluster, scores in self.cluster_d.items():
+            mean_score = np.mean(scores)
+            patient_scores.append(mean_score)
+        total_scores = np.sum(patient_scores)
+        if total_scores == 0:
+            return 0
+        max_score = np.max(patient_scores)/total_scores
+
+        return max_score
+
+    def get_best_cluster_and_average_score(self) -> [Optional[str], float]:
+        best_cluster = None
+        best_average_score = -1000
+        patient_scores = []
+        for cluster, scores in self.cluster_d.items():
+            mean_score = np.mean(scores)
+            patient_scores.append(mean_score)
+            if mean_score > best_average_score:
+                best_cluster = cluster
+                best_average_score = mean_score
+        total_scores = np.sum(patient_scores)
+        return [best_cluster, best_average_score, best_average_score/total_scores]
 
 
 class Phenomizer:
@@ -205,33 +242,56 @@ class Phenomizer:
         d = {"mean.sim": mean_sim, "sd.sim": sd_sim, "observed": observed_max_sim, 'zscore':zscore}
         return pd.DataFrame([d])
 
-    def average_max_similarity(self, test_to_clustered_df: pd.DataFrame):
-        # group by test patient id
-        # d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
-        class TestPt:
-            def __init__(self, id):
-                self.id = id
-                self.cluster_d = defaultdict(list)
-
-            def add_score(self, cluster, score):
-                self.cluster_d[cluster].append(score)
-
-            def get_max_sim(self):
-                patient_scores = []
-                for cluster, scores in self.cluster_d.items():
-                    mean_score = np.mean(scores)
-                    patient_scores.append(mean_score)
-                total_scores = np.sum(patient_scores)
-                if total_scores == 0:
-                    return 0
-                max_score = np.max(patient_scores)/total_scores
-                return max_score
+    def max_similarity_cluster(self,
+                               test_to_clustered_df: pd.DataFrame,
+                               test_pt_col_name: str = 'test.id',
+                               cluster_col_name: str = 'cluster',
+                               sim_score_col_name: str = 'score') -> pd.DataFrame:
+        """For each test patient, determine the cluster to which the patient has the most similarity and also the 
+        average similarity of the test patient to patients in the cluster (and also a probability of the patient belonging to cluster)
+        """
+        for key in [test_pt_col_name, cluster_col_name, sim_score_col_name]:
+            if key not in test_to_clustered_df.columns:
+                raise KeyError(f"key {key} is not present in test_to_clustered_df!")
 
         patient_d = defaultdict(TestPt)
         for _, row in test_to_clustered_df.iterrows():
-            test_id = row['test.pt.id']
-            cluster = row['cluster']
-            score = row['score']
+            test_id = row[test_pt_col_name]
+            cluster = row[cluster_col_name]
+            score = row[sim_score_col_name]
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        pd_data = []
+        for pat_id, testPt in patient_d.items():
+            best_cluster, ave_score, prob = testPt.get_best_cluster_and_average_score()
+            d = {'test_patient_id': pat_id, 'max_cluster': best_cluster,
+                 'average_similarity': ave_score, 'probability': prob}
+            pd_data.append(d)
+        return pd.DataFrame(data=pd_data)
+
+    def average_max_similarity(self,
+                               test_to_clustered_df: pd.DataFrame,
+                               test_pt_col_name: str = 'test.pt.id',
+                               cluster_col_name: str = 'cluster',
+                               sim_score_col_name: str = 'score'
+                               ):
+        """Calculate the average of the semantic similarity of each test patient to patients in the cluster that the 
+        test patient matches best
+
+        That is, this calculates the average similarity of all test patients to the cluster to which they are most 
+        similar. This is used for testing the generalizability of the clusters using patients from "new" data partners.
+        """
+        for key in [test_pt_col_name, cluster_col_name, sim_score_col_name]:
+            if key not in test_to_clustered_df.columns:
+                raise KeyError(f"key {key} is not present in test_to_clustered_df!")
+
+        patient_d = defaultdict(TestPt)
+        for _, row in test_to_clustered_df.iterrows():
+            test_id = row[test_pt_col_name]
+            cluster = row[cluster_col_name]
+            score = row[sim_score_col_name]
             if test_id not in patient_d:
                 tp = TestPt(test_id)
                 patient_d[test_id] = tp
@@ -240,7 +300,6 @@ class Phenomizer:
         for pat_id, testPt in patient_d.items():
             max_sim.append(testPt.get_max_sim())
         return np.mean(max_sim)
-
 
     def patient_to_cluster_similarity(self,
                                       test_patient_hpo_terms: DataFrame,
