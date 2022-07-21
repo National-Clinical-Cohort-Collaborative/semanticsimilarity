@@ -59,7 +59,7 @@ class TestPhenomizer(TestCase):
         cls.annotationCounter.add_counts(cls.patient_pd)
 
         # make a fake disease set to generate term counts ***Do we need a separate annoation counter for diseases?
-        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
+        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_a_ensmallen)
         # create a very trivial list of diseases and features (subset of actual disease-phenotype annotations)
         # Abnormal nervous system physiology HP:0012638
         # Abnormality of the nervous system HP:0000707
