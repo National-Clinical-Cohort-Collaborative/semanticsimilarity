@@ -27,7 +27,7 @@ class TestPhenomizer(TestCase):
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make an ensmallen object for HPO-A
-        cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_annotations_path)
+        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
