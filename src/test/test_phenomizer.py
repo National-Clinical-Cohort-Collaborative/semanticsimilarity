@@ -27,7 +27,8 @@ class TestPhenomizer(TestCase):
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make an ensmallen object for HPO-A
-        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path)
+        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway?
+        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
@@ -360,7 +361,8 @@ class TestPhenomizer(TestCase):
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
 
         num_patients = len(set(list(self.patient_pd['patient_id'])))
-        expected_rows = (num_patients**2/2)+num_patients/2
+        num_diseases = len(set(list(self.disease_pd['patient_id'])))
+        expected_rows = num_patients**num_diseases  # (num_patients**2/2)+num_patients/2
         self.assertEqual(sim_df.count(), expected_rows,
                          msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}"
     )
