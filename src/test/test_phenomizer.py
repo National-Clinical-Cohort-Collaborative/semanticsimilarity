@@ -98,6 +98,10 @@ class TestPhenomizer(TestCase):
         cls.disease_sdf = cls.spark_obj.createDataFrame(cls.disease_pd)
         cls.diseaseAnnotationCounter.add_counts(cls.disease_pd)
 
+        # make Resnik object
+        cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
+                            total=13, ensmallen=cls.hpo_ensmallen)
+
         # make Resnik object ***Make new Resnik object for diseases?
         cls.diseaseResnik = Resnik(counts_d=cls.diseaseAnnotationCounter.get_counts_dict(),
                             total=26, ensmallen=cls.hpo_ensmallen)  # 26 or 2? Is this total diseases, total annotations?
