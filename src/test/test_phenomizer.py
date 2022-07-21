@@ -21,9 +21,13 @@ class TestPhenomizer(TestCase):
         dir = os.path.dirname(os.path.abspath(__file__))
         cls.hpo_path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
         cls.hpo_path_tiny = os.path.join(dir, "test_data/test_hpo_graph_tiny.tsv")
+        cls.hpo_annotations_path = os.path.join(dir, "test_data/test_hpo_annotations.tsv")
 
         # make an ensmallen object for HPO
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
+
+        # make an ensmallen object for HPO-A
+        cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_annotations_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
