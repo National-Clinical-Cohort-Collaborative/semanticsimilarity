@@ -54,9 +54,53 @@ class TestPhenomizer(TestCase):
         cls.patient_sdf = cls.spark_obj.createDataFrame(cls.patient_pd)
         cls.annotationCounter.add_counts(cls.patient_pd)
 
-        # make Resnik object
-        cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
-                            total=13, ensmallen=cls.hpo_ensmallen)
+        # make a fake disease set to generate term counts ***Do we need a separate annoation counter for diseases?
+        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
+        # create a very trivial list of diseases and features (subset of actual disease-phenotype annotations)
+        # Abnormal nervous system physiology HP:0012638
+        # Abnormality of the nervous system HP:0000707
+        # Phenotypic abnormality HP:0000118
+        # So adding HP:0012638 should give us one count for these three terms
+        disease_annots = []
+        for d in [  #NOTE: needing to use the 'patient_id' column name to no generate an error in other tests. Fix with additional code/tests?
+                  # MONDO:0019391: Fanconi Anemia
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0004322'},  # Short stature
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000252'},  # Microcephaly
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000175'},  # Cleft palate
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001903'},  # Anemia
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000492'},  # Abnormal eyelid morphology
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000324'},  # Facial asymmetry
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0012210'},  # Abnormal renal morphology
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000083'},  # Renal insufficiency
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001873'},  # Thrombocytopenia
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0002414'},  # Spina bifida
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0008572'},  # External ear malformation
+                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  # MONDO:0007523: Ehlers-Danlos syndrome, hypermobility type
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000963'},  # Thin skin
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0012378'},  # Fatigue
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0003042'},  # Elbow dislocation
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002829'},  # Arthralgia
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002827'},  # Hip dislocation
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002024'},  # Malabsorption
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000974'},  # Hyperextensible skin
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002650'},  # Scoliosis
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0001388'},  # Joint laxity
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0011675'},  # Arrhythmia
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000023'},  # Inguinal hernia
+                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000563'}]:  # Keratoconus
+
+            disease_annots.append(d)
+
+        cls.disease_pd = pd.DataFrame(disease_annots)
+        cls.disease_sdf = cls.spark_obj.createDataFrame(cls.disease_pd)
+        cls.diseaseAnnotationCounter.add_counts(cls.disease_pd)
+
+        # make Resnik object ***Make new Resnik object for diseases?
+        cls.diseaseResnik = Resnik(counts_d=cls.diseaseAnnotationCounter.get_counts_dict(),
+                            total=26, ensmallen=cls.hpo_ensmallen)  # 26 or 2? Is this total diseases, total annotations?
 
         # The above are for testing individual components needed to make phenomizer object
         # Below are things we are using to test make_patient_similarity_dataframe()
@@ -68,6 +112,9 @@ class TestPhenomizer(TestCase):
 
         # make patient_df spark dataframe
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
+
+        # make disease_df spark dataframe
+        cls.disease_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
         # make three held out patients
         holdout_annots = []
@@ -285,3 +332,36 @@ class TestPhenomizer(TestCase):
                                               clustered_patient_hpo_terms=self.patient_sdf,
                                               cluster_assignments=self.cluster_assignment)
         self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
+
+# Below are new test additions for patient-disease similarity testing
+
+    def test_has_make_patient_disease_similarity_long_spark_df(self):
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+        self.assertTrue(hasattr(p, 'make_patient_disease_similarity_long_spark_df'))
+
+    def test_make_patient_disease_similarity_long_spark_df(self):
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+
+        sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
+                                                         disease_df=self.disease_spark,
+                                                         hpo_graph_edges_df=self.hpo_spark,
+                                                         person_id_col='patient_id',
+                                                         hpo_term_col='hpo_id',
+                                                         disease_id_col='patient_id')
+        self.assertTrue(isinstance(sim_df, DataFrame))
+        self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
+
+        num_patients = len(set(list(self.patient_pd['patient_id'])))
+        expected_rows = (num_patients**2/2)+num_patients/2
+        self.assertEqual(sim_df.count(), expected_rows,
+                         msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}"
+    )
+
+
+'''
+patient x disease semantic similarity tests:
+output test: Provide a patient-phenotype list and a disease-phenotype list
+test to confirm that method returns correct file type:
+    columns: patient, disease, similarity score
+
+'''
