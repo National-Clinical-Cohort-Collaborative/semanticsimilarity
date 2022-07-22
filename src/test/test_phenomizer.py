@@ -27,7 +27,7 @@ class TestPhenomizer(TestCase):
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make an ensmallen object for HPO-A
-        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway?
+        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
         cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make a fake population to generate term counts
@@ -67,7 +67,7 @@ class TestPhenomizer(TestCase):
         # Phenotypic abnormality HP:0000118
         # So adding HP:0012638 should give us one count for these three terms
         disease_annots = []
-        for d in [  #NOTE: needing to use the 'patient_id' column name to no generate an error in other tests. Fix with additional code/tests?
+        for d in [  #NOTE: needing to use the 'patient_id' column name to not generate an error in other tests. Fix with additional code/tests?
                   # MONDO:0019391: Fanconi Anemia
                   {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0004322'},  # Short stature
                   {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
@@ -122,7 +122,7 @@ class TestPhenomizer(TestCase):
         # make patient_df spark dataframe
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
-        # make disease_df spark dataframe
+        # make disease_df spark dataframe for patient x disease similarity testing
         cls.disease_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
         # make three held out patients
