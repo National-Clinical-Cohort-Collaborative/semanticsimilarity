@@ -362,16 +362,6 @@ class TestPhenomizer(TestCase):
 
         num_patients = len(set(list(self.patient_pd['patient_id'])))
         num_diseases = len(set(list(self.disease_pd['patient_id'])))
-        expected_rows = num_patients**num_diseases  # (num_patients**2/2)+num_patients/2
+        expected_rows = num_patients**num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
         self.assertEqual(sim_df.count(), expected_rows,
-                         msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}"
-    )
-
-
-'''
-patient x disease semantic similarity tests:
-output test: Provide a patient-phenotype list and a disease-phenotype list
-test to confirm that method returns correct file type:
-    columns: patient, disease, similarity score
-
-'''
+                         msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}")
