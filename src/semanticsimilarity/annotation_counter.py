@@ -20,11 +20,16 @@ class AnnotationCounter:
             raise ValueError("hpo argument must be an object of type HpoEnsmallen")
         self._hpo = hpo
 
-    def add_counts(self, counts_df):
+    def add_counts(self,
+                   counts_df: pd.DataFrame,
+                   patient_id_col: str = 'patient_id',
+                   hpo_id_col: str = 'hpo_id'):
         """Given a Pandas dataframe with two columns, the first called patient_id and
         the second called hpo_id, add counts for each term and its ancestors
 
         :param counts_df:
+        :param patient_id_col what is the name of the column containg patient ID [patient_id]
+        :param hpo_id_col what is the name of the column containg hpo ID [hpo_id]
         :return: None
         """
         if isinstance(counts_df, pd.DataFrame):
@@ -32,11 +37,11 @@ class AnnotationCounter:
             # which is called patient_id and the second is called hpo_id
             if not len(counts_df.columns):
                 raise ValueError("DataFrame must have exactly two columns")
-            if 'patient_id' not in counts_df.columns or 'hpo_id' not in counts_df.columns:  # TODO: these column names should not be hard coded
+            if patient_id_col not in counts_df.columns or hpo_id_col not in counts_df.columns:
                 raise ValueError("Columns must be patient_id and hpo_id, but we got {}".format(";".join(counts_df.columns)))
             # Group by patient_id and create a dataframe with one row per patient_id
             # as well as a list of the hpo_id's for that patient id
-            df_by_patient_id = counts_df.groupby('patient_id')['hpo_id'].apply(list)
+            df_by_patient_id = counts_df.groupby(patient_id_col)[hpo_id_col].apply(list)
             print(df_by_patient_id)
             # now we can create a set that contains all of the ancestors of all terms
             # to which each patient is annotated and then we use this to increment

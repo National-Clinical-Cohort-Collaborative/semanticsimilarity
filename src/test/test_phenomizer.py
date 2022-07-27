@@ -69,39 +69,39 @@ class TestPhenomizer(TestCase):
         disease_annots = []
         for d in [  #NOTE: needing to use the 'patient_id' column name to not generate an error in other tests. Fix with additional code/tests?
                   # MONDO:0019391: Fanconi Anemia
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0004322'},  # Short stature
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000252'},  # Microcephaly
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000175'},  # Cleft palate
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001903'},  # Anemia
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000492'},  # Abnormal eyelid morphology
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000324'},  # Facial asymmetry
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0012210'},  # Abnormal renal morphology
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0000083'},  # Renal insufficiency
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001873'},  # Thrombocytopenia
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0002414'},  # Spina bifida
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0008572'},  # External ear malformation
-                  {'patient_id': "MONDO:0019391", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0004322'},  # Short stature
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0000252'},  # Microcephaly
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0000175'},  # Cleft palate
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0001903'},  # Anemia
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0000492'},  # Abnormal eyelid morphology
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0000324'},  # Facial asymmetry
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0012210'},  # Abnormal renal morphology
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0000083'},  # Renal insufficiency
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0001873'},  # Thrombocytopenia
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0002414'},  # Spina bifida
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0008572'},  # External ear malformation
+                  {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
                   # MONDO:0007523: Ehlers-Danlos syndrome, hypermobility type
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000963'},  # Thin skin
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0012378'},  # Fatigue
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0003042'},  # Elbow dislocation
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002829'},  # Arthralgia
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002827'},  # Hip dislocation
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002024'},  # Malabsorption
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000974'},  # Hyperextensible skin
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0002650'},  # Scoliosis
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0001388'},  # Joint laxity
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0011675'},  # Arrhythmia
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000023'},  # Inguinal hernia
-                  {'patient_id': "MONDO:0007523", 'hpo_id': 'HP:0000563'}]:  # Keratoconus
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0000963'},  # Thin skin
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0012378'},  # Fatigue
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0003042'},  # Elbow dislocation
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0002829'},  # Arthralgia
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0002827'},  # Hip dislocation
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0002024'},  # Malabsorption
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0000974'},  # Hyperextensible skin
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0002650'},  # Scoliosis
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0001388'},  # Joint laxity
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0011675'},  # Arrhythmia
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0000023'},  # Inguinal hernia
+                  {'disease_id': "MONDO:0007523", 'hpo_id': 'HP:0000563'}]:  # Keratoconus
 
             disease_annots.append(d)
 
         cls.disease_pd = pd.DataFrame(disease_annots)
         cls.disease_sdf = cls.spark_obj.createDataFrame(cls.disease_pd)
-        cls.diseaseAnnotationCounter.add_counts(cls.disease_pd)
+        cls.diseaseAnnotationCounter.add_counts(cls.disease_pd, patient_id_col='disease_id')
 
         # make Resnik object
         cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
@@ -109,7 +109,7 @@ class TestPhenomizer(TestCase):
 
         # make Resnik object ***Make new Resnik object for diseases?
         cls.diseaseResnik = Resnik(counts_d=cls.diseaseAnnotationCounter.get_counts_dict(),
-                            total=26, ensmallen=cls.hpo_ensmallen)  # 26 or 2? Is this total diseases, total annotations?
+                                   total=26, ensmallen=cls.hpo_ensmallen)  # 26 or 2? Is this total diseases, total annotations?
 
         # The above are for testing individual components needed to make phenomizer object
         # Below are things we are using to test make_patient_similarity_dataframe()
@@ -361,7 +361,7 @@ class TestPhenomizer(TestCase):
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
 
         num_patients = len(set(list(self.patient_pd['patient_id'])))
-        num_diseases = len(set(list(self.disease_pd['patient_id'])))
+        num_diseases = len(set(list(self.disease_pd['disease_id'])))
         expected_rows = num_patients**num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
         self.assertEqual(sim_df.count(), expected_rows,
                          msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}")
