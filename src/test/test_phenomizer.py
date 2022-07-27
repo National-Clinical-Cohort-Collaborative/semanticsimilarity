@@ -27,8 +27,8 @@ class TestPhenomizer(TestCase):
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make an ensmallen object for HPO-A
-        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
-        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
+        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
+        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
@@ -67,7 +67,7 @@ class TestPhenomizer(TestCase):
         # Phenotypic abnormality HP:0000118
         # So adding HP:0012638 should give us one count for these three terms
         disease_annots = []
-        for d in [  #NOTE: needing to use the 'patient_id' column name to not generate an error in other tests. Fix with additional code/tests?
+        for d in [
                   # MONDO:0019391: Fanconi Anemia
                   {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0004322'},  # Short stature
                   {'disease_id': "MONDO:0019391", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology

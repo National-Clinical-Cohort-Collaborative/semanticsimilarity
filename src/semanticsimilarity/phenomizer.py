@@ -249,13 +249,23 @@ class Phenomizer:
         print(f"we have this many patient -> hpo assertions {patient_df.count()}")
         print(f"we have this many patients {patient_count}")
 
+        # generate disease term counts
+        diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_a_ensmallen)
+
+        disease_annots = []
+        for row in disease_df.rdd.toLocalIterator():
+            d = {'disease_id': row[disease_id_col], 'hpo_id': row[hpo_term_col]}
+            disease_annots.append(d)
+        df = pd.DataFrame(disease_annots)
+        diseaseAnnotationCounter.add_counts(df)
+
         # count diseases
         disease_count = disease_df.dropDuplicates([disease_id_col]).count()
         print(f"we have this many disease -> hpo assertions {disease_df.count()}")
         print(f"we have this many diseases {disease_count}")
 
         # make Resnik object with diseases instead of patients
-        resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
+        resnik = Resnik(counts_d=diseaseAnnotationCounter.get_counts_dict(),
                         total=disease_count,
                         ensmallen=hpo_ensmallen)
 

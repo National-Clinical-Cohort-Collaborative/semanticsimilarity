@@ -1,4 +1,4 @@
-disease,phenotype
+subject,object
 OMIM:227650,HP:0003213
 OMIM:227650,HP:0003214
 OMIM:227650,HP:0000365
