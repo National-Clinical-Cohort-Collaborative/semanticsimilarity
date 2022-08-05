@@ -7,8 +7,11 @@ from pyspark.sql import SparkSession, DataFrame
 from parameterized import parameterized
 import os
 import pandas as pd
+from pandas.testing import assert_frame_equal
 import numpy as np
 from pyspark.sql import functions as F
+from semanticsimilarity.phenomizer import TestPt
+from collections import defaultdict
 
 
 class TestPhenomizer(TestCase):
@@ -165,6 +168,29 @@ class TestPhenomizer(TestCase):
             cluster_info.append(d)
         cls.cluster_assignment_pd = pd.DataFrame(cluster_info)
         cls.cluster_assignment = cls.spark_obj.createDataFrame(cls.cluster_assignment_pd)
+
+        # make some test to cluster similarity for average_max_similarity and max_similarity
+        test_cluster_similarity_list = []
+        for d in [
+                  # max sim for test_patient_id 1 is 30
+                  # max sim for test_patient_id 2 is 60
+                  # average max sim is 45
+                  {'test_patient_id': "1", 'clustered_patient_id': "3",  'cluster': '1', 'sim': 20},
+                  {'test_patient_id': "1", 'clustered_patient_id': "4",  'cluster': '1', 'sim': 30},
+                  {'test_patient_id': "1", 'clustered_patient_id': "5",  'cluster': '1', 'sim': 40},
+                  {'test_patient_id': "1", 'clustered_patient_id': "6",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "7",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "8",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "9",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "2", 'clustered_patient_id': "10", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "11", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "12", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "13", 'cluster': '2', 'sim': 50},
+                  {'test_patient_id': "2", 'clustered_patient_id': "14", 'cluster': '2', 'sim': 60},
+                  {'test_patient_id': "2", 'clustered_patient_id': "15", 'cluster': '2', 'sim': 70}]:
+            test_cluster_similarity_list.append(d)
+        cls.test_cluster_similarity_pd = pd.DataFrame(test_cluster_similarity_list)
+        cls.test_cluster_similarity = cls.spark_obj.createDataFrame(cls.test_cluster_similarity_pd)
 
     def test_phenomizer_simple(self):
         # make two patients
@@ -334,8 +360,8 @@ class TestPhenomizer(TestCase):
         p = Phenomizer(self.resnik.get_mica_d())
         heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 200)
         sim = p.patient_to_cluster_similarity_pd(test_patient_hpo_terms=heldout_patient,
-                                              clustered_patient_hpo_terms=self.patient_sdf,
-                                              cluster_assignments=self.cluster_assignment)
+                                                 clustered_patient_hpo_terms=self.patient_sdf,
+                                                 cluster_assignments=self.cluster_assignment)
         self.assertTrue(isinstance(sim, pd.DataFrame))
         self.assertEqual(len(sim), self.cluster_assignment.count())
 
@@ -346,11 +372,75 @@ class TestPhenomizer(TestCase):
                                               cluster_assignments=self.cluster_assignment)
         self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
 
-# Below are new test additions for patient-disease similarity testing
-
     def test_has_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
         self.assertTrue(hasattr(p, 'make_patient_disease_similarity_long_spark_df'))
+
+    def test_max_similarity_cluster(self):  # nb: this is NOT testing average_max_similarity (that is below)
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, "max_similarity_cluster"))
+        ams = p.max_similarity_cluster(self.test_cluster_similarity_pd,
+                                       test_pt_col_name='test_patient_id',
+                                       cluster_col_name='cluster',
+                                       sim_score_col_name='sim')
+        self.assertEqual(ams.__class__, pd.DataFrame)
+        self.assertCountEqual(ams.columns, ['test_patient_id', 'max_cluster', 'average_similarity', 'probability'])
+        pt_1 = ams.loc[ams['test_patient_id'] == '1']
+        pt_2 = ams.loc[ams['test_patient_id'] == '2']
+        self.assertEqual(len(pt_1), 1)
+        self.assertEqual(len(pt_2), 1)
+        #    test_patient_id max_cluster  average_similarity   probability
+        # 0               1           1                30.0          30/31
+        # 1               2           2                60.0          60/63
+        assert_frame_equal(ams.loc[ams['test_patient_id'] == '1'],
+                           pd.DataFrame(data={'test_patient_id': '1',
+                                              'max_cluster': '1',
+                                              'average_similarity': 30.0,
+                                              'probability': 30/31,
+                                              }, index=[0]))
+        assert_frame_equal(ams.loc[ams['test_patient_id'] == '2'],
+                           pd.DataFrame(data={'test_patient_id': '2',
+                                              'max_cluster': '2',
+                                              'average_similarity': 60.0,
+                                              'probability': 60/63,
+                                              }, index=[1]))
+
+    def test_average_max_similarity(self):
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, "average_max_similarity"))
+        ams = p.average_max_similarity(self.test_cluster_similarity_pd,
+                                       test_pt_col_name='test_patient_id',
+                                       cluster_col_name='cluster',
+                                       sim_score_col_name='sim')
+        self.assertEqual(ams, ((30/31)+(60/63))/2)
+
+    def test_get_max_sim(self):
+        patient_d = defaultdict(TestPt)
+        for _, row in self.test_cluster_similarity_pd.iterrows():
+            test_id = row['test_patient_id']
+            cluster = row['cluster']
+            score = row['sim']
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        self.assertAlmostEqual(patient_d['1'].get_max_sim(), 30/31)
+        self.assertAlmostEqual(patient_d['2'].get_max_sim(), 60/63)
+
+    def test_get_best_cluster_and_average_score(self):
+        patient_d = defaultdict(TestPt)
+        for _, row in self.test_cluster_similarity_pd.iterrows():
+            test_id = row['test_patient_id']
+            cluster = row['cluster']
+            score = row['sim']
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        self.assertEqual(patient_d['1'].get_best_cluster_and_average_score(), ['1', 30.0, 30/31])
+        self.assertEqual(patient_d['2'].get_best_cluster_and_average_score(), ['2', 60.0, 60/63])
+
+# Below are new test additions for patient-disease similarity testing
 
     def test_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself

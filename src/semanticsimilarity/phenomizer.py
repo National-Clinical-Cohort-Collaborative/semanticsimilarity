@@ -304,7 +304,7 @@ class Phenomizer:
 
         # count diseases
         disease_count = disease_df.dropDuplicates([disease_id_col]).count()
-        print(f"we have this many disease -> hpo assertions {disease_df.count()}")
+        print(f"we have this many disease -> hpo assertionsz {disease_df.count()}")
         print(f"we have this many diseases {disease_count}")
 
         # make Resnik object with diseases instead of patients
