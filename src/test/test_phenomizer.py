@@ -119,6 +119,10 @@ class TestPhenomizer(TestCase):
         cls.hpo_pd = pd.read_csv(cls.hpo_path)
         cls.hpo_spark = cls.spark_obj.createDataFrame(cls.hpo_pd)
 
+        # make HPO A spark df
+        cls.hpoa_pd = pd.read_csv(cls.hpo_annotations_path)
+        cls.hpoa_spark = cls.spark_obj.createDataFrame(cls.hpoa_pd)
+
         # make patient_df spark dataframe
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
@@ -354,6 +358,7 @@ class TestPhenomizer(TestCase):
         sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
                                                          disease_df=self.disease_spark,
                                                          hpo_graph_edges_df=self.hpo_spark,
+                                                         hpo_annotations_df=self.hpoa_spark,
                                                          person_id_col='patient_id',
                                                          hpo_term_col='hpo_id',
                                                          disease_id_col='patient_id')
