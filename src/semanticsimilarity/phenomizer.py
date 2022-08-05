@@ -289,11 +289,11 @@ class Phenomizer:
 
         # TODO: Need to add HPO Annotations as a dataframe or ensmallen object once HPO A is available
         # generate disease term counts
-        hpoa_output_filename = "hpoa_out.tsv
-        hpo_annotations_df.toPandas().to_csv(hpoa_output_filename)
-        hpoa_ensmallen = HpoEnsmallen(hpoa_output_filename)
-        diseaseAnnotationCounter = AnnotationCounter(hpo=hpoa_ensmallen)
-        # diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
+        # hpoa_output_filename = "hpoa_out.tsv
+        # hpo_annotations_df.toPandas().to_csv(hpoa_output_filename)
+        # hpoa_ensmallen = HpoEnsmallen(hpoa_output_filename)
+        # diseaseAnnotationCounter = AnnotationCounter(hpo=hpoa_ensmallen)
+        diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
 
         disease_annots = []
         for row in disease_df.rdd.toLocalIterator():
