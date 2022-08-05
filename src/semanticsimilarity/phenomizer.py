@@ -213,8 +213,9 @@ class Phenomizer:
 
         Args:
             patient_df: long table (spark dataframe) with person_id hpo_id for all patients
-            disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases
+            disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases being compared with patients
             hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
+            hpo_annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file, for determining annotation frequencies.
             person_id_col: name of person ID column [person_id]
             hpo_term_col: name of hpo term column [hpo_id]
             disease_id_col: name of disease ID column [disease_id]
