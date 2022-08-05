@@ -167,6 +167,7 @@ class Phenomizer:
                                               patient_df,
                                               disease_df,
                                               hpo_graph_edges_df,
+                                              hpo_annotations_df,
                                               person_id_col: str = 'person_id',
                                               hpo_term_col: str = 'hpo_term',  # FOLLOW UP: same hpo term column label for both patient and disease df?
                                               disease_id_col: str = 'disease_id'
@@ -249,8 +250,13 @@ class Phenomizer:
         print(f"we have this many patient -> hpo assertions {patient_df.count()}")
         print(f"we have this many patients {patient_count}")
 
+        # TODO: Need to add HPO Annotations as a dataframe or ensmallen object once HPO A is available
         # generate disease term counts
-        diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_a_ensmallen)
+        # hpoa_output_filename = "hpoa_out.tsv
+        # hpo_annotations_df.toPandas().to_csv(hpoa_output_filename)
+        # hpoa_ensmallen = HpoEnsmallen(hpoa_output_filename)
+        # diseaseAnnotationCounter = AnnotationCounter(hpo=hpoa_ensmallen)
+        diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
 
         disease_annots = []
         for row in disease_df.rdd.toLocalIterator():
