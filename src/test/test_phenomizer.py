@@ -130,7 +130,7 @@ class TestPhenomizer(TestCase):
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
 
         # make disease_df spark dataframe for patient x disease similarity testing
-        cls.disease_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
+        cls.disease_spark = cls.spark_obj.createDataFrame(cls.disease_pd)
 
         # make three held out patients
         holdout_annots = []
@@ -451,7 +451,7 @@ class TestPhenomizer(TestCase):
                                                          hpo_annotations_df=self.hpoa_spark,
                                                          person_id_col='patient_id',
                                                          hpo_term_col='hpo_id',
-                                                         disease_id_col='patient_id')
+                                                         disease_id_col='disease_id')
         self.assertTrue(isinstance(sim_df, DataFrame))
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
 
