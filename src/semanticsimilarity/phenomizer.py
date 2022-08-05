@@ -297,7 +297,7 @@ class Phenomizer:
 
         disease_annots = []
         for row in disease_df.rdd.toLocalIterator():
-            x = {'disease_id': row[disease_id_col], 'hpo_id': row[hpo_term_col]}
+            x = {'patient_id': row[disease_id_col], 'hpo_id': row[hpo_term_col]}
             disease_annots.append(x)
         df = pd.DataFrame(disease_annots)
         diseaseAnnotationCounter.add_counts(df)
