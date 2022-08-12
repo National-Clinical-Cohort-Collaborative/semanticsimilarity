@@ -454,7 +454,6 @@ class TestPhenomizer(TestCase):
                                                          disease_id_col='disease_id')
         self.assertTrue(isinstance(sim_df, DataFrame))
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
-
         num_patients = len(set(list(self.patient_pd['patient_id'])))
         num_diseases = len(set(list(self.disease_pd['disease_id'])))
         expected_rows = num_patients*num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
