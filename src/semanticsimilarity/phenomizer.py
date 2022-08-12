@@ -276,6 +276,7 @@ class Phenomizer:
         # generate term counts
         annotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
 
+        # *** Can this be removed? ***
         annots = []
         for row in patient_df.rdd.toLocalIterator():
             d = {'patient_id': row[person_id_col], 'hpo_id': row[hpo_term_col]}
@@ -296,6 +297,8 @@ class Phenomizer:
         diseaseAnnotationCounter = AnnotationCounter(hpo=hpoa_ensmallen)
         # diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
 
+        # *** Should the disease annotations be counted from the disease_df (a subset of HPO A) 
+        # or the full HPO A file? ***
         disease_annots = []
         for row in disease_df.rdd.toLocalIterator():
             d = {'patient_id': row[disease_id_col], 'hpo_id': row[hpo_term_col]}
