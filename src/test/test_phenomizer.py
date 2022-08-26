@@ -29,10 +29,6 @@ class TestPhenomizer(TestCase):
         # make an ensmallen object for HPO
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
-        # make an ensmallen object for HPO-A
-        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
-        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
-
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
         # create a very trivial list of patients and features
@@ -42,20 +38,20 @@ class TestPhenomizer(TestCase):
         # So adding HP:0012638 should give us one count for these three terms
         annots = []
         for d in [
-                  {'patient_id': "1", 'hpo_id': 'HP:0000118'}, # Phenotypic abnormality
-                  {'patient_id': "2", 'hpo_id': 'HP:0000707'}, #  Abnormality of the nervous system
-                  {'patient_id': "2", 'hpo_id': 'HP:0000818'}, #  Abnormality of the endocrine system
-                  {'patient_id': "3", 'hpo_id': 'HP:0000818'}, # Abnormality of the endocrine system
-                  {'patient_id': "4", 'hpo_id': 'HP:0000834'}, #  Abnormality of the adrenal glands
-                  {'patient_id': "5", 'hpo_id': 'HP:0000873'}, #  Diabetes insipidus
-                  {'patient_id': "6", 'hpo_id': 'HP:0003549'}, #  Abnormality of connective tissue
-                  {'patient_id': "7", 'hpo_id': 'HP:0009025'}, # Increased connective tissue 
-                  {'patient_id': "8", 'hpo_id': 'HP:0009124'}, # Abnormal adipose tissue morphology 
-                  {'patient_id': "9", 'hpo_id': 'HP:0012638'}, # Abnormal nervous system physiology
-                  {'patient_id': "10", 'hpo_id': 'HP:0012639'}, # Abnormal nervous system morphology
-                  {'patient_id': "11", 'hpo_id': 'HP:0100568'}, # Neoplasm of the endocrine system
-                  {'patient_id': "12", 'hpo_id': 'HP:0100881'}, # Congenital mesoblastic nephroma (child of Abn connective!) 
-                  {'patient_id': "13", 'hpo_id': 'HP:0410008'}]: # Abnormality of the peripheral nervous system 
+                  {'patient_id': "1", 'hpo_id': 'HP:0000118'},  # Phenotypic abnormality
+                  {'patient_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'patient_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'patient_id': "3", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'patient_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'patient_id': "5", 'hpo_id': 'HP:0000873'},  # Diabetes insipidus
+                  {'patient_id': "6", 'hpo_id': 'HP:0003549'},  # Abnormality of connective tissue
+                  {'patient_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue 
+                  {'patient_id': "8", 'hpo_id': 'HP:0009124'},  # Abnormal adipose tissue morphology 
+                  {'patient_id': "9", 'hpo_id': 'HP:0012638'},  # Abnormal nervous system physiology
+                  {'patient_id': "10", 'hpo_id': 'HP:0012639'},  # Abnormal nervous system morphology
+                  {'patient_id': "11", 'hpo_id': 'HP:0100568'},  # Neoplasm of the endocrine system
+                  {'patient_id': "12", 'hpo_id': 'HP:0100881'},  # Congenital mesoblastic nephroma (child of Abn connective!)
+                  {'patient_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
             annots.append(d)
 
         cls.patient_pd = pd.DataFrame(annots)
@@ -109,10 +105,6 @@ class TestPhenomizer(TestCase):
         # make Resnik object
         cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
                             total=13, ensmallen=cls.hpo_ensmallen)
-
-        # make Resnik object ***Make new Resnik object for diseases?
-        cls.diseaseResnik = Resnik(counts_d=cls.diseaseAnnotationCounter.get_counts_dict(),
-                                   total=26, ensmallen=cls.hpo_ensmallen)  # 26 or 2? Is this total diseases, total annotations?
 
         # The above are for testing individual components needed to make phenomizer object
         # Below are things we are using to test make_patient_similarity_dataframe()
