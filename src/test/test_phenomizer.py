@@ -452,7 +452,7 @@ class TestPhenomizer(TestCase):
                                                                  person_id_col='patient_id',
                                                                  person_hpo_term_col='hpo_term',
                                                                  disease_id_col='disease_id',
-                                                                 disease_hpo_term_col='hpo_term',
+                                                                 disease_hpo_term_col='hpo_id',
                                                                  hpoa_or_patient_annotation_counts='hpoa')
         self.assertTrue(isinstance(sim_df, DataFrame))
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])

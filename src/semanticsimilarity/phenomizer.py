@@ -301,7 +301,7 @@ class Phenomizer:
                 d = {'patient_id': row[disease_id_col], 'hpo_id': row[disease_hpo_term_col]}
                 annots.append(d)
             df = pd.DataFrame(annots)
-            AnnotationCounter.add_counts(df)
+            annotationCounter.add_counts(df)
             total_count = disease_count
             # make Resnik object with diseases instead of patients
         elif hpoa_or_patient_annotation_counts == 'patient':
