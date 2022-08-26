@@ -208,7 +208,9 @@ class Phenomizer:
                                                       person_id_col: str = 'person_id',
                                                       person_hpo_term_col: str = 'hpo_id',
                                                       disease_id_col: str = 'disease_id',
-                                                      disease_hpo_term_col: str = 'hpo_id'
+                                                      disease_hpo_term_col: str = 'hpo_id',
+                                                      annot_subject_col: str = 'subject',
+                                                      annot_object_col: str = 'object'
                                                       ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
 
@@ -307,7 +309,7 @@ class Phenomizer:
         # assemble annotations from annotations_df (HPO annotations or patient annotations file)
         annots = []
         for row in annotations_df.rdd.toLocalIterator():
-            d = {'patient_id': row['subject'], 'hpo_id': row['object']}
+            d = {'patient_id': row[annot_subject_col], 'hpo_id': row[annot_object_col]}
             annots.append(d)
         df = pd.DataFrame(annots)
         annotationCounter.add_counts(df)
