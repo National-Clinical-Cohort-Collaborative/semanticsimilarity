@@ -204,12 +204,12 @@ class Phenomizer:
                                                       patient_df,
                                                       disease_df,
                                                       hpo_graph_edges_df,
-                                                      hpo_annotations_df,
+                                                      annotations_df,
                                                       person_id_col: str = 'person_id',
                                                       person_hpo_term_col: str = 'hpo_id',
                                                       disease_id_col: str = 'disease_id',
-                                                      disease_hpo_term_col: str = 'hpo_id',
-                                                      hpoa_or_patient_annotation_counts: str = 'hpoa'  # 'hpoa' or 'patient'
+                                                      disease_hpo_term_col: str = 'hpo_id'
+                                                      # hpoa_or_patient_annotation_counts: str = 'hpoa'  # 'hpoa' or 'patient'
                                                       ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
 
@@ -217,7 +217,7 @@ class Phenomizer:
             patient_df: long table (spark dataframe) with person_id hpo_id for all patients
             disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases being compared with patients
             hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
-            hpo_annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file.
+            annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file.
             person_id_col: name of person ID column [person_id]
             person_hpo_term_col: name of hpo term column in the patient_df [hpo_id]
             disease_id_col: name of disease ID column [disease_id]
@@ -250,10 +250,17 @@ class Phenomizer:
         HP:0004567  subclass_of  HP:0006789
         ...
 
-        and the HPO annotations file formatted as following:
-        disease_id      hpo_id
+        and an "annotations" file consisting of either the HPO annotations file
+        or a patient annotations file formatted as following:
+        subject         object
         OMIM:619426     HP:0001385
         OMIM:619340     HP:0001789
+
+        or:
+
+        subject         object
+        patient1     HP:0001385
+        patient2     HP:0001789
         ...
 
         and output a matrix of patient disease phenotypic semantic similarity like so:
@@ -268,8 +275,7 @@ class Phenomizer:
 
         Phenotypic similarity between patients and diseases is calculated using similarity_score above.
 
-        HPO term frequency is calculated using the frequency of each HPO term in patient_df or hpo_annotations_df, 
-        depending on selected input in hpoa_or_patient_annotation_counts.
+        HPO term frequency is calculated using the frequency of each HPO term in annotations_df.
         This frequency is used in the calculation of most informative common ancestor for
         each possible pair of terms.
         """
@@ -294,26 +300,19 @@ class Phenomizer:
         print(f"we have this many disease -> hpo assertions {disease_df.count()}")
         print(f"we have this many diseases {disease_count}")
 
-        # assemble annotations based on hpoa_or_patient_annotation_counts input: "hpoa" or "patient"
+        # count annotations
+        annotation_count = annotations_df.dropDuplicates('subject').count()
+        print(f"we have this many subject -> object assertions {annotations_df.count()}")
+        print(f"we have this many annotations {annotation_count}")
+
+        # assemble annotations from annotations_df (HPO annotations or patient annotations file)
         annots = []
-        if hpoa_or_patient_annotation_counts == 'hpoa':
-            for row in hpo_annotations_df.rdd.toLocalIterator():
-                d = {'patient_id': row[disease_id_col], 'hpo_id': row[disease_hpo_term_col]}
-                annots.append(d)
-            df = pd.DataFrame(annots)
-            annotationCounter.add_counts(df)
-            total_count = disease_count
-            # make Resnik object with diseases instead of patients
-        elif hpoa_or_patient_annotation_counts == 'patient':
-            for row in patient_df.rdd.toLocalIterator():
-                d = {'patient_id': row[person_id_col], 'hpo_id': row[person_hpo_term_col]}
-                annots.append(d)
-            df = pd.DataFrame(annots)
-            annotationCounter.add_counts(df)
-            total_count = patient_count
-        else:
-            print("must include either 'hpoa' or 'patient' for the hpoa_or_patient_annotation_counts input variable")
-            return
+        for row in annotations_df.rdd.toLocalIterator():
+            d = {'patient_id': row['subject'], 'hpo_id': row['object']}
+            annots.append(d)
+        df = pd.DataFrame(annots)
+        annotationCounter.add_counts(df)
+        total_count = annotation_count
 
         # make Resnik object
         resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
