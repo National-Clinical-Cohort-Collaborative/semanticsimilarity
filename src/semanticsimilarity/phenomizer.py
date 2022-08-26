@@ -206,9 +206,9 @@ class Phenomizer:
                                                       hpo_graph_edges_df,
                                                       hpo_annotations_df,
                                                       person_id_col: str = 'person_id',
-                                                      person_hpo_term_col: str = 'hpo_term',
+                                                      person_hpo_term_col: str = 'hpo_id',
                                                       disease_id_col: str = 'disease_id',
-                                                      disease_hpo_term_col: str = 'hpo_term',
+                                                      disease_hpo_term_col: str = 'hpo_id',
                                                       hpoa_or_patient_annotation_counts: str = 'hpoa'  # 'hpoa' or 'patient'
                                                       ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
@@ -237,7 +237,7 @@ class Phenomizer:
         ...
 
         Take a long spark dataframe of diseases (containing disease_ids and hpo terms) like so:
-        disease_id  hpo_term
+        disease_id  hpo_id
         disease1   HP:0007489
         disease1   HP:0006487
         disease2   HP:0006789
@@ -251,7 +251,7 @@ class Phenomizer:
         ...
 
         and the HPO annotations file formatted as following:
-        disease_id      hpo_term
+        disease_id      hpo_id
         OMIM:619426     HP:0001385
         OMIM:619340     HP:0001789
         ...
