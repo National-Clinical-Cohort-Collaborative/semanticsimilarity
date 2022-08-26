@@ -201,24 +201,27 @@ class Phenomizer:
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
     def make_patient_disease_similarity_long_spark_df(self,
-                                              patient_df,
-                                              disease_df,
-                                              hpo_graph_edges_df,
-                                              hpo_annotations_df,
-                                              person_id_col: str = 'person_id',
-                                              hpo_term_col: str = 'hpo_term',  # FOLLOW UP: same hpo term column label for both patient and disease df?
-                                              disease_id_col: str = 'disease_id'
-                                              ) -> DataFrame:
+                                                      patient_df,
+                                                      disease_df,
+                                                      hpo_graph_edges_df,
+                                                      hpo_annotations_df,
+                                                      person_id_col: str = 'person_id',
+                                                      person_hpo_term_col: str = 'hpo_term',
+                                                      disease_id_col: str = 'disease_id',
+                                                      disease_hpo_term_col: str = 'hpo_id',
+                                                      hpoa_or_patient_annotation_counts: str = 'hpoa'  # 'hpoa' or 'patient'
+                                                      ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
 
         Args:
             patient_df: long table (spark dataframe) with person_id hpo_id for all patients
             disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases being compared with patients
             hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
-            hpo_annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file, for determining annotation frequencies.
+            hpo_annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file.
             person_id_col: name of person ID column [person_id]
-            hpo_term_col: name of hpo term column [hpo_id]
+            person_hpo_term_col: name of hpo term column in the patient_df [hpo_id]
             disease_id_col: name of disease ID column [disease_id]
+            disease_hpo_term_col: name of hpo term column in the disease_df [hpo_id]
 
         Returns:
             Spark dataframe with patient x disease similarity for all patient x disease pairings (ignoring ordering)
@@ -247,6 +250,12 @@ class Phenomizer:
         HP:0004567  subclass_of  HP:0006789
         ...
 
+        and the HPO annotations file formatted as following:
+        disease_id      hpo_id
+        OMIM:619426     HP:0001385
+        OMIM:619340     HP:0001789
+        ...
+
         and output a matrix of patient disease phenotypic semantic similarity like so:
         patient     disease    similarity
         patient1    disease1    2.566
@@ -259,11 +268,10 @@ class Phenomizer:
 
         Phenotypic similarity between patients and diseases is calculated using similarity_score above.
 
-        HPO term frequency is calculated using the frequency of each HPO term in disease_df.
+        HPO term frequency is calculated using the frequency of each HPO term in patient_df or hpo_annotations_df, 
+        depending on selected input in hpoa_or_patient_annotation_counts.
         This frequency is used in the calculation of most informative common ancestor for
         each possible pair of terms.
-
-        Note that this method updates self._mica_d using data in disease_df
         """
 
         # make HPO graph in the correct format
@@ -276,51 +284,47 @@ class Phenomizer:
         # generate term counts
         annotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
 
-        # *** Can this be removed? ***
-        annots = []
-        for row in patient_df.rdd.toLocalIterator():
-            d = {'patient_id': row[person_id_col], 'hpo_id': row[hpo_term_col]}
-            annots.append(d)
-        df = pd.DataFrame(annots)
-        annotationCounter.add_counts(df)
-
         # count patients
         patient_count = patient_df.dropDuplicates([person_id_col]).count()
         print(f"we have this many patient -> hpo assertions {patient_df.count()}")
         print(f"we have this many patients {patient_count}")
-
-        # TODO: Need to add HPO Annotations as a dataframe or ensmallen object once HPO A is available
-        # generate disease term counts
-        hpoa_output_filename = "hpoa_out.tsv"
-        hpo_annotations_df.toPandas().to_csv(hpoa_output_filename)
-        hpoa_ensmallen = HpoEnsmallen(hpoa_output_filename)
-        diseaseAnnotationCounter = AnnotationCounter(hpo=hpoa_ensmallen)
-        # diseaseAnnotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
-
-        # *** Should the disease annotations be counted from the disease_df (a subset of HPO A) 
-        # or the full HPO A file? ***
-        disease_annots = []
-        for row in disease_df.rdd.toLocalIterator():
-            d = {'patient_id': row[disease_id_col], 'hpo_id': row[hpo_term_col]}
-            disease_annots.append(d)
-        df = pd.DataFrame(disease_annots)
-        diseaseAnnotationCounter.add_counts(df)
 
         # count diseases
         disease_count = disease_df.dropDuplicates([disease_id_col]).count()
         print(f"we have this many disease -> hpo assertions {disease_df.count()}")
         print(f"we have this many diseases {disease_count}")
 
-        # make Resnik object with diseases instead of patients
-        resnik = Resnik(counts_d=diseaseAnnotationCounter.get_counts_dict(),
-                        total=disease_count,
+        # assemble annotations based on hpoa_or_patient_annotation_counts input: "hpoa" or "patient"
+        annots = []
+        if hpoa_or_patient_annotation_counts == 'hpoa':
+            for row in hpo_annotations_df.rdd.toLocalIterator():
+                d = {'patient_id': row[disease_id_col], 'hpo_id': row[disease_hpo_term_col]}
+                annots.append(d)
+            df = pd.DataFrame(annots)
+            AnnotationCounter.add_counts(df)
+            total_count = disease_count
+            # make Resnik object with diseases instead of patients
+        elif hpoa_or_patient_annotation_counts == 'patient':
+            for row in patient_df.rdd.toLocalIterator():
+                d = {'patient_id': row[person_id_col], 'hpo_id': row[person_hpo_term_col]}
+                annots.append(d)
+            df = pd.DataFrame(annots)
+            annotationCounter.add_counts(df)
+            total_count = patient_count
+        else:
+            print("must include either 'hpoa' or 'patient' for the hpoa_or_patient_annotation_counts input variable")
+            return
+
+        # make Resnik object
+        resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
+                        total=total_count,
                         ensmallen=hpo_ensmallen)
 
         # group by person_id to make all HPO terms for a given patient, put in a new df person_id: set([HPO terms])
-        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(hpo_term_col))).collect()  # noqa
+        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(person_hpo_term_col))).collect()  # noqa
 
         # group by disease_id to make all HPO terms for a given disease, put in a new df disease_id: set([HPO terms])
-        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(hpo_term_col))).collect()  # noqa
+        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(disease_hpo_term_col))).collect()  # noqa
 
         # Update mica_d with appropriate mica info from disease annotations.
         self.update_mica_d(resnik.get_mica_d())
@@ -341,10 +345,9 @@ class Phenomizer:
                 )
 
         patient_disease_similarity_matrix_pd = pd.DataFrame(patient_disease_similarity_matrix,
-                                                    columns=['patient', 'disease', 'similarity'])
+                                                            columns=['patient', 'disease', 'similarity'])
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_disease_similarity_matrix_pd)
-
 
     def center_to_cluster_generalizability(self,
                                            test_patients_hpo_terms:DataFrame,

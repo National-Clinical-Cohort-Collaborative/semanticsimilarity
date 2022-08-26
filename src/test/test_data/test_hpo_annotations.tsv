@@ -1,4 +1,4 @@
-subject,object
+disease_id,hpo_id
 OMIM:227650,HP:0003213
 OMIM:227650,HP:0003214
 OMIM:227650,HP:0000365
