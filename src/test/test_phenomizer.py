@@ -372,10 +372,6 @@ class TestPhenomizer(TestCase):
                                               cluster_assignments=self.cluster_assignment)
         self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
 
-    def test_has_make_patient_disease_similarity_long_spark_df(self):
-        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
-        self.assertTrue(hasattr(p, 'make_patient_disease_similarity_long_spark_df'))
-
     def test_max_similarity_cluster(self):  # nb: this is NOT testing average_max_similarity (that is below)
         p = Phenomizer(self.resnik.get_mica_d())
         self.assertTrue(hasattr(p, "max_similarity_cluster"))
@@ -441,6 +437,10 @@ class TestPhenomizer(TestCase):
         self.assertEqual(patient_d['2'].get_best_cluster_and_average_score(), ['2', 60.0, 60/63])
 
 # Below are new test additions for patient-disease similarity testing
+
+    def test_has_make_patient_disease_similarity_long_spark_df(self):
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+        self.assertTrue(hasattr(p, 'make_patient_disease_similarity_long_spark_df'))
 
     def test_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
