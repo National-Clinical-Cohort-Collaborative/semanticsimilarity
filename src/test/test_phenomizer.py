@@ -450,7 +450,7 @@ class TestPhenomizer(TestCase):
                                                                  hpo_graph_edges_df=self.hpo_spark,
                                                                  hpo_annotations_df=self.hpoa_spark,
                                                                  person_id_col='patient_id',
-                                                                 person_hpo_term_col='hpo_term',
+                                                                 person_hpo_term_col='hpo_id',
                                                                  disease_id_col='disease_id',
                                                                  disease_hpo_term_col='hpo_id',
                                                                  hpoa_or_patient_annotation_counts='hpoa')
