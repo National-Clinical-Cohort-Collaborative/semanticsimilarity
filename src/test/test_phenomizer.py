@@ -442,38 +442,18 @@ class TestPhenomizer(TestCase):
 
 # Below are new test additions for patient-disease similarity testing
 
-    def test_make_patient_disease_similarity_long_spark_df_hpoa_annots(self):
+    def test_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
 
         sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
                                                                  disease_df=self.disease_spark,
                                                                  hpo_graph_edges_df=self.hpo_spark,
-                                                                 hpo_annotations_df=self.hpoa_spark,
+                                                                 annotations_df=self.hpoa_spark,
                                                                  person_id_col='patient_id',
                                                                  person_hpo_term_col='hpo_id',
                                                                  disease_id_col='disease_id',
-                                                                 disease_hpo_term_col='hpo_id',
-                                                                 hpoa_or_patient_annotation_counts='hpoa')
-        self.assertTrue(isinstance(sim_df, DataFrame))
-        self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
-        num_patients = len(set(list(self.patient_pd['patient_id'])))
-        num_diseases = len(set(list(self.disease_pd['disease_id'])))
-        expected_rows = num_patients*num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
-        self.assertEqual(sim_df.count(), expected_rows,
-                         msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}")
-
-    def test_make_patient_disease_similarity_long_spark_df_patient_annots(self):
-        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
-
-        sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
-                                                                 disease_df=self.disease_spark,
-                                                                 hpo_graph_edges_df=self.hpo_spark,
-                                                                 hpo_annotations_df=self.hpoa_spark,
-                                                                 person_id_col='patient_id',
-                                                                 person_hpo_term_col='hpo_id',
-                                                                 disease_id_col='disease_id',
-                                                                 disease_hpo_term_col='hpo_id',
-                                                                 hpoa_or_patient_annotation_counts='patient')
+                                                                 disease_hpo_term_col='hpo_id'
+                                                                 )
         self.assertTrue(isinstance(sim_df, DataFrame))
         self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
         num_patients = len(set(list(self.patient_pd['patient_id'])))

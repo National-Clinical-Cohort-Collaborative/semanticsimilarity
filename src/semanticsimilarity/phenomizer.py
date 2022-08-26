@@ -301,7 +301,7 @@ class Phenomizer:
         print(f"we have this many diseases {disease_count}")
 
         # count annotations
-        annotation_count = annotations_df.dropDuplicates('subject').count()
+        annotation_count = annotations_df.dropDuplicates(['subject']).count()
         print(f"we have this many subject -> object assertions {annotations_df.count()}")
         print(f"we have this many annotations {annotation_count}")
 
