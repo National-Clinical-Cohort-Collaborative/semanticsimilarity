@@ -360,9 +360,9 @@ class TestPhenomizer(TestCase):
     def test_generalizability(self):
         p = Phenomizer(self.resnik.get_mica_d())
         df = p.center_to_cluster_generalizability(test_patients_hpo_terms=self.holdout_patients,
-                                              clustered_patient_hpo_terms=self.patient_sdf,
-                                              cluster_assignments=self.cluster_assignment)
-        self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
+                                                  clustered_patient_hpo_terms=self.patient_sdf,
+                                                  cluster_assignments=self.cluster_assignment)
+        self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim', 'observed', 'zscore'])
 
     def test_max_similarity_cluster(self):  # nb: this is NOT testing average_max_similarity (that is below)
         p = Phenomizer(self.resnik.get_mica_d())
