@@ -428,7 +428,7 @@ class TestPhenomizer(TestCase):
         self.assertEqual(patient_d['1'].get_best_cluster_and_average_score(), ['1', 30.0, 30/31])
         self.assertEqual(patient_d['2'].get_best_cluster_and_average_score(), ['2', 60.0, 60/63])
 
-# Below are new test additions for patient-disease similarity testing
+    # New test additions for patient-disease similarity testing
 
     def test_has_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
