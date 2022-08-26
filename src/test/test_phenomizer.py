@@ -72,33 +72,33 @@ class TestPhenomizer(TestCase):
         disease_annots = []
         for d in [
                   # ORPHA:84: Fanconi Anemia
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0004322'},  # Short stature
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0002823'},  # Abnormality of femur morphology
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0000252'},  # Microcephaly
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0000175'},  # Cleft palate
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0001903'},  # Anemia
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0000492'},  # Abnormal eyelid morphology
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0000324'},  # Facial asymmetry
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0012210'},  # Abnormal renal morphology
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0000083'},  # Renal insufficiency
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0001873'},  # Thrombocytopenia
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0002414'},  # Spina bifida
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0008572'},  # External ear malformation
-                  {'disease_id': "ORPHA:84", 'hpo_term': 'HP:0001760'},  # Abnormal foot morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0004322'},  # Short stature
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000252'},  # Microcephaly
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000175'},  # Cleft palate
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001903'},  # Anemia
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000492'},  # Abnormal eyelid morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000324'},  # Facial asymmetry
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0012210'},  # Abnormal renal morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000083'},  # Renal insufficiency
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001873'},  # Thrombocytopenia
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0002414'},  # Spina bifida
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0008572'},  # External ear malformation
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
                   # OMIM:130020: Ehlers-Danlos syndrome, hypermobility type
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0000963'},  # Thin skin
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0012378'},  # Fatigue
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0003042'},  # Elbow dislocation
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0002829'},  # Arthralgia
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0002827'},  # Hip dislocation
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0001760'},  # Abnormal foot morphology
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0002024'},  # Malabsorption
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0000974'},  # Hyperextensible skin
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0002650'},  # Scoliosis
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0001388'},  # Joint laxity
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0011675'},  # Arrhythmia
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0000023'},  # Inguinal hernia
-                  {'disease_id': "OMIM:130020", 'hpo_term': 'HP:0000563'}]:  # Keratoconus
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000963'},  # Thin skin
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0012378'},  # Fatigue
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0003042'},  # Elbow dislocation
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002829'},  # Arthralgia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002827'},  # Hip dislocation
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002024'},  # Malabsorption
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000974'},  # Hyperextensible skin
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002650'},  # Scoliosis
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0001388'},  # Joint laxity
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0011675'},  # Arrhythmia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000023'},  # Inguinal hernia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000563'}]:  # Keratoconus
 
             disease_annots.append(d)
 
