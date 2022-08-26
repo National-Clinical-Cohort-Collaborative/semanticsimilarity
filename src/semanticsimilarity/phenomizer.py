@@ -208,7 +208,7 @@ class Phenomizer:
                                                       person_id_col: str = 'person_id',
                                                       person_hpo_term_col: str = 'hpo_term',
                                                       disease_id_col: str = 'disease_id',
-                                                      disease_hpo_term_col: str = 'hpo_id',
+                                                      disease_hpo_term_col: str = 'hpo_term',
                                                       hpoa_or_patient_annotation_counts: str = 'hpoa'  # 'hpoa' or 'patient'
                                                       ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
@@ -251,7 +251,7 @@ class Phenomizer:
         ...
 
         and the HPO annotations file formatted as following:
-        disease_id      hpo_id
+        disease_id      hpo_term
         OMIM:619426     HP:0001385
         OMIM:619340     HP:0001789
         ...

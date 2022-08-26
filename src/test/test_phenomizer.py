@@ -30,7 +30,7 @@ class TestPhenomizer(TestCase):
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make an ensmallen object for HPO-A
-        cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
+        # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_annotations_path) # This doesn't work, might be wrong format. Is this the right spot anyway? ***
         # cls.hpo_a_ensmallen = HpoEnsmallen(cls.hpo_path)
 
         # make a fake population to generate term counts
@@ -63,7 +63,7 @@ class TestPhenomizer(TestCase):
         cls.annotationCounter.add_counts(cls.patient_pd)
 
         # make a fake disease set to generate term counts ***Do we need a separate annoation counter for diseases?
-        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_a_ensmallen)
+        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
         # create a very trivial list of diseases and features (subset of actual disease-phenotype annotations)
         # Abnormal nervous system physiology HP:0012638
         # Abnormality of the nervous system HP:0000707
