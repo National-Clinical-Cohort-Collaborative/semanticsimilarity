@@ -201,16 +201,16 @@ class Phenomizer:
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
     def make_patient_disease_similarity_long_spark_df(self,
-                                                      patient_df,
-                                                      disease_df,
-                                                      hpo_graph_edges_df,
-                                                      annotations_df,
+                                                      patient_df: DataFrame,
+                                                      disease_df: DataFrame,
+                                                      hpo_graph_edges_df: DataFrame,
+                                                      annotations_df: DataFrame,
                                                       person_id_col: str = 'person_id',
                                                       person_hpo_term_col: str = 'hpo_id',
                                                       disease_id_col: str = 'disease_id',
                                                       disease_hpo_term_col: str = 'hpo_id',
-                                                      annot_subject_col: str = 'subject',
-                                                      annot_object_col: str = 'object'
+                                                      annot_subject_col: str = 'patient_id',
+                                                      annot_object_col: str = 'hpo_id'
                                                       ) -> DataFrame:
         """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
 
@@ -223,6 +223,8 @@ class Phenomizer:
             person_hpo_term_col: name of hpo term column in the patient_df [hpo_id]
             disease_id_col: name of disease ID column [disease_id]
             disease_hpo_term_col: name of hpo term column in the disease_df [hpo_id]
+            annot_subject_col: name of the subject column from the annotation file (likely patient_id or disease_id)
+            annot_object_col: name of the object column from the annotation file (likely hpo_id)
 
         Returns:
             Spark dataframe with patient x disease similarity for all patient x disease pairings (ignoring ordering)
@@ -253,13 +255,13 @@ class Phenomizer:
 
         and an "annotations" file consisting of either the HPO annotations file
         or a patient annotations file formatted as following:
-        subject         object
+        disease_id         hpo_id
         OMIM:619426     HP:0001385
         OMIM:619340     HP:0001789
 
         or:
 
-        subject         object
+        patient_id         hpo_id
         patient1     HP:0001385
         patient2     HP:0001789
         ...
@@ -302,7 +304,7 @@ class Phenomizer:
         print(f"we have this many diseases {disease_count}")
 
         # count annotations
-        annotation_count = annotations_df.dropDuplicates([annot_subject_col]).count()
+        annotation_count = annotations_df.dropDuplicates([annot_subject_col]).count()  # subject is either disease or patient
         print(f"we have this many subject -> object assertions {annotations_df.count()}")
         print(f"we have this many annotations {annotation_count}")
 
@@ -313,11 +315,10 @@ class Phenomizer:
             annots.append(d)
         df = pd.DataFrame(annots)
         annotationCounter.add_counts(df)
-        total_count = annotation_count
 
         # make Resnik object
         resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
-                        total=total_count,
+                        total=annotation_count,
                         ensmallen=hpo_ensmallen)
 
         # group by person_id to make all HPO terms for a given patient, put in a new df person_id: set([HPO terms])
