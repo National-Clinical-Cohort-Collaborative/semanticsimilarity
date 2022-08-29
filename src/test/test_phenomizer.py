@@ -25,9 +25,13 @@ class TestPhenomizer(TestCase):
         cls.hpo_path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
         cls.hpo_path_tiny = os.path.join(dir, "test_data/test_hpo_graph_tiny.tsv")
         cls.hpo_annotations_path = os.path.join(dir, "test_data/test_hpo_annotations.tsv")
+        cls.hpo_disease_path = os.path.join(dir, "test_data/test_hpo_disease_graph.tsv")
 
         # make an ensmallen object for HPO
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
+
+        # make an ensmallen object for HPO disease graph
+        cls.hpo_disease_ensmallen = HpoEnsmallen(cls.hpo_disease_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
@@ -59,7 +63,7 @@ class TestPhenomizer(TestCase):
         cls.annotationCounter.add_counts(cls.patient_pd)
 
         # make a fake disease set to generate term counts ***Do we need a separate annoation counter for diseases?
-        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
+        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_disease_ensmallen)
         # create a very trivial list of diseases and features (subset of actual disease-phenotype annotations)
         # Abnormal nervous system physiology HP:0012638
         # Abnormality of the nervous system HP:0000707
@@ -113,6 +117,10 @@ class TestPhenomizer(TestCase):
         # make HPO spark df
         cls.hpo_pd = pd.read_csv(cls.hpo_path)
         cls.hpo_spark = cls.spark_obj.createDataFrame(cls.hpo_pd)
+
+        # make HPO disease spark df
+        cls.hpo_disease_pd = pd.read_csv(cls.hpo_disease_path)
+        cls.hpo_disease_spark = cls.spark_obj.createDataFrame(cls.hpo_disease_pd)
 
         # make HPO A spark df
         cls.hpoa_pd = pd.read_csv(cls.hpo_annotations_path)
@@ -439,7 +447,7 @@ class TestPhenomizer(TestCase):
 
         sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
                                                                  disease_df=self.disease_spark,
-                                                                 hpo_graph_edges_df=self.hpo_spark,
+                                                                 hpo_graph_edges_df=self.hpo_disease_spark,
                                                                  annotations_df=self.hpoa_spark,
                                                                  person_id_col='patient_id',
                                                                  person_hpo_term_col='hpo_id',
