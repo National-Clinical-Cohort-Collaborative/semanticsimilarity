@@ -23,6 +23,8 @@ env:
     uri-role: conda-installer8-py3
   ORG_GRADLE_PROJECT_condaInstallerUriPy3Mamba:
     uri-role: conda-installer8-py3mamba
+  ORG_GRADLE_PROJECT_mambaInstaller:
+    uri-role: mamba-installer
   ORG_GRADLE_PROJECT_jemmaLogReceiverUri:
     uri-role: log-receiver-api-jemma-alias
   ORG_GRADLE_PROJECT_mavenProxyRepoUri:
@@ -51,8 +53,8 @@ jobs:
       export JAVA_OPTS="-Xmx512m -Djavax.net.ssl.trustStore=${STEMMA_DEFAULT_TRUST_STORE_PATH} -Djavax.net.ssl.trustStorePassword=${STEMMA_DEFAULT_TRUST_STORE_PASSWORD}"
       export ORG_GRADLE_PROJECT_transformsTrustStore="${STEMMA_DEFAULT_TRUST_STORE_PATH}"
       export ORG_GRADLE_PROJECT_bearerToken="${JOB_TOKEN}"
-      export ORG_GRADLE_PROJECT_transformsRepoRid="${STEMMA_REPO_RID}"
-      export ORG_GRADLE_PROJECT_mavenProxyRepoUri="${ORG_GRADLE_PROJECT_artifactsUri}/repositories/${STEMMA_REPO_RID}/contents/migration/maven"
+      export ORG_GRADLE_PROJECT_transformsRepoRid="${REPOSITORY_RID}"
+      export ORG_GRADLE_PROJECT_mavenProxyRepoUri="${ORG_GRADLE_PROJECT_artifactsUri}/repositories/${REPOSITORY_RID}/contents/migration/maven"
       
       if ! grep -q condaSolveImplementation gradle.properties;
       then
