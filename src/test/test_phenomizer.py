@@ -106,6 +106,20 @@ class TestPhenomizer(TestCase):
         cls.disease_sdf = cls.spark_obj.createDataFrame(cls.disease_pd)
         cls.diseaseAnnotationCounter.add_counts(cls.disease_pd, patient_id_col='disease_id')
 
+        # make another disease spark dataframe containing diseases for which we know what the correct 
+        # disease <-> patient Resnik similarity will be
+        # these are the same similarities that we are testing for patient <-> patient Resnik similarities
+        disease_annots_2 = []
+        for d in [
+                  {'disease_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            disease_annots_2.append(d)
+        cls.disease2_pd = pd.DataFrame(disease_annots_2)
+        cls.disease2_sdf = cls.spark_obj.createDataFrame(cls.disease2_pd)
+
         # make Resnik object
         cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
                             total=13, ensmallen=cls.hpo_ensmallen)
@@ -444,7 +458,6 @@ class TestPhenomizer(TestCase):
 
     def test_make_patient_disease_similarity_long_spark_df(self):
         p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
-
         sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
                                                                  disease_df=self.disease_spark,
                                                                  hpo_graph_edges_df=self.hpo_disease_spark,
@@ -463,3 +476,34 @@ class TestPhenomizer(TestCase):
         expected_rows = num_patients*num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
         self.assertEqual(sim_df.count(), expected_rows,
                          msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}")
+
+
+    @parameterized.expand([
+        ['13', '13', 2.564949],  # test symmetry
+        ['7', '8', 1.178655],
+        ['4', '5', 0.955512],
+        ['2', '5', 0.7166335],  # test patient with >1 term (pt2) and another with 1 term (pt5)
+    ])
+    def test_specific_pairs_in_make_patient_disease_similarity_long_spark_df(self, this_disease, this_patient, sim):
+        dec_places = 5
+
+        # test contents of patient_similarity_long_spark_df to make sure it's exactly what we want
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+
+        sim_df = p.make_patient_disease_similarity_long_spark_df(
+                                                                patient_df=self.patient_spark,
+                                                                disease_df=self.disease2_sdf,
+                                                                hpo_graph_edges_df=self.hpo_spark,
+                                                                annotations_df=self.patient_spark,
+                                                                person_id_col='patient_id',
+                                                                person_hpo_term_col='hpo_id',
+                                                                disease_id_col='disease_id',
+                                                                disease_hpo_term_col='hpo_id',
+                                                                annot_subject_col='patient_id',
+                                                                annot_object_col='hpo_id'
+                                                                )
+        sim_pd = sim_df.toPandas()
+
+        self.assertAlmostEqual(sim,
+                               sim_pd.loc[(sim_pd['disease'] == this_disease) & (sim_pd['patient'] == this_patient)].iloc[0][2],
+                               dec_places)

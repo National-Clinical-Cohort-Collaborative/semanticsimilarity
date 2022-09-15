@@ -2,6 +2,8 @@ from collections import defaultdict
 from semanticsimilarity import HpoEnsmallen
 import pandas as pd
 from warnings import warn
+from typing import Union
+from pyspark.sql import DataFrame
 
 
 class AnnotationCounter:
@@ -21,15 +23,17 @@ class AnnotationCounter:
         self._hpo = hpo
 
     def add_counts(self,
-                   counts_df: pd.DataFrame,
+                   counts_df: Union[pd.DataFrame, DataFrame],
                    patient_id_col: str = 'patient_id',
-                   hpo_id_col: str = 'hpo_id'):
-        """Given a Pandas dataframe with two columns, the first called patient_id and
+                   hpo_id_col: str = 'hpo_id',
+                   verbose=False):
+        """Given a Pandas dataframe or Spark Dataframe with two columns, by default called patient_id and
         the second called hpo_id, add counts for each term and its ancestors
 
         :param counts_df:
         :param patient_id_col what is the name of the column containg patient ID [patient_id]
         :param hpo_id_col what is the name of the column containg hpo ID [hpo_id]
+        :param verbose chatty? [False]
         :return: None
         """
         if isinstance(counts_df, pd.DataFrame):
@@ -62,14 +66,15 @@ class AnnotationCounter:
                         ancs = self._hpo.get_ancestors(hpo_id)
                         induced_ancestor_graph.update(ancs)
                     else:
-                        warn(f"Couldn't find {hpo_id} in self._hpo graph")
+                        if verbose:
+                            warn(f"Couldn't find {hpo_id} in self._hpo graph")
                 self._total_patients += 1
                 for hpo_id in induced_ancestor_graph:
                     self._termcounts[hpo_id] += 1
-        # TODO elif pyspark: do appropriate stuff
-
+        elif isinstance(counts_df, DataFrame):  # do appropriate stuff
+            pass
         else:
-            raise ValueError("counts_df argument must be of type pd.DataFrame (TODO or spark")
+            raise ValueError(f"counts_df argument must be of type pd.DataFrame or spark (recevied {type(counts_df)})")
 
     def get_total_patient_count(self):
         """Get the total count of patients

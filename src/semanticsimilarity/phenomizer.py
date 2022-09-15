@@ -4,12 +4,14 @@ from .term_pair import TermPair
 import numpy as np
 import pandas as pd
 from pyspark.sql import functions as F
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, pandas_udf
+from pyspark.sql.types import FloatType, ArrayType
 from pyspark.sql import SparkSession, DataFrame
 from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 from semanticsimilarity.resnik import Resnik
 from semanticsimilarity.annotation_counter import AnnotationCounter
 from collections import defaultdict
+from typing import Iterator, Tuple
 
 
 class TestPt:
@@ -89,8 +91,8 @@ class Phenomizer:
             return 0
         return 0.5 * sum(a_to_b_sim)/len(a_to_b_sim) + 0.5 * sum(b_to_a_sim)/len(b_to_a_sim)
 
-    def check_term_pair_in_mica_d(self, tp: TermPair):
-        if (tp._t1, tp._t2) not in self._mica_d:
+    def check_term_pair_in_mica_d(self, tp: TermPair, verbose=False):
+        if (tp._t1, tp._t2) not in self._mica_d and verbose:
             print(f"Warning, could not find tp in self._mica_d: {(tp._t1, tp._t2)}")
 
     def update_mica_d(self, new_mica_d: dict):
@@ -322,36 +324,47 @@ class Phenomizer:
                         ensmallen=hpo_ensmallen)
 
         # group by person_id to make all HPO terms for a given patient, put in a new df person_id: set([HPO terms])
-        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(person_hpo_term_col))).collect()  # noqa
+        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(person_hpo_term_col)))
 
         # group by disease_id to make all HPO terms for a given disease, put in a new df disease_id: set([HPO terms])
-        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(disease_hpo_term_col))).collect()  # noqa
+        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(disease_hpo_term_col)))
 
-        # Update mica_d with appropriate mica info from disease annotations.
-        self.update_mica_d(resnik.get_mica_d())
 
-        # loop through hpo_terms_by_patient and hpo_terms_by_disease and compare every patient and disease combination
-        patient_disease_similarity_matrix = []  # list of lists
+        # in make_patient_disease_similarity_long_spark_df, do this:
 
-        for i, prow in enumerate(hpo_terms_by_patient):
-            for j, drow in enumerate(hpo_terms_by_disease):
-                ss = self.similarity_score(hpo_terms_by_patient[i][1],
-                                           hpo_terms_by_disease[j][1])
-                patient_disease_similarity_matrix.append(
-                    [
-                        hpo_terms_by_patient[i][0],
-                        hpo_terms_by_disease[j][0],
-                        ss
-                    ]
-                )
+        # make a (very) long spark df that looks like this:
+        # disease    disease_HPO_ids    patient    patient_HPO_ids
+        # d1234      [HP:1234, HP:4567]   p4689      [HP:4567, HP: 9876]
+        # ...
+        #
+        # where HPO term columns are vectors
+        hpo_terms_by_patient = hpo_terms_by_patient.withColumnRenamed(
+            "collect_set(" + person_hpo_term_col + ")",
+            "patient_hpo_ids"
+        )
+        hpo_terms_by_disease = hpo_terms_by_disease.withColumnRenamed(
+            "collect_set(" + disease_hpo_term_col + ")",
+            "disease_hpo_ids")
+        hpo_terms_all_diseases_all_pts = hpo_terms_by_patient.crossJoin(hpo_terms_by_disease)
 
-        patient_disease_similarity_matrix_pd = pd.DataFrame(patient_disease_similarity_matrix,
-                                                            columns=['patient', 'disease', 'similarity'])
-        spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
-        return spark.createDataFrame(patient_disease_similarity_matrix_pd)
+        # need to run p.similarity_score on each row of disease v. patients
+        @pandas_udf("float")
+        def run_phenomizer(a: pd.Series, b: pd.Series) -> pd.Series:
+            p = Phenomizer(resnik.get_mica_d())
+            return pd.Series([p.similarity_score(a_i, b_i) for a_i, b_i in zip(a, b)])
+
+        hpo_terms_all_diseases_all_pts = \
+            hpo_terms_all_diseases_all_pts.withColumn("similarity", run_phenomizer(F.col("patient_hpo_ids"),
+                                                                                   F.col("disease_hpo_ids")))
+
+        # return only the expected columns
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('disease_id', 'disease')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select("patient", "disease", "similarity")
+        return hpo_terms_all_diseases_all_pts
 
     def center_to_cluster_generalizability(self,
-                                           test_patients_hpo_terms:DataFrame,
+                                           test_patients_hpo_terms: DataFrame,
                                            clustered_patient_hpo_terms: DataFrame,
                                            cluster_assignments: DataFrame,
                                            test_patient_id_col_name: str = 'patient_id',
