@@ -366,10 +366,11 @@ class Phenomizer:
         logger.error("test error!")
 
         # return only the expected columns
-        hpo_terms_all_diseases_all_pts2 = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
-        hpo_terms_all_diseases_all_pts3 = hpo_terms_all_diseases_all_pts2.withColumnRenamed('disease_id', 'disease')
-        hpo_terms_all_diseases_all_pts4 = hpo_terms_all_diseases_all_pts3.select("patient", "disease", "similarity")
-        return hpo_terms_all_diseases_all_pts4
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select("patient_id", "disease_id", "similarity")
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('disease_id', 'disease')
+        
+        return hpo_terms_all_diseases_all_pts
 
     def center_to_cluster_generalizability(self,
                                            test_patients_hpo_terms: DataFrame,
