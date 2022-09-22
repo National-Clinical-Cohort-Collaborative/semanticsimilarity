@@ -366,9 +366,9 @@ class Phenomizer:
         logger.error("test error!")
 
         # return only the expected columns
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select("patient_id", "disease_id", "similarity")
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('disease_id', 'disease')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select(person_id_col, disease_id_col, 'similarity')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed(person_id_col, 'patient')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed(disease_id_col, 'disease')
         
         return hpo_terms_all_diseases_all_pts
 
