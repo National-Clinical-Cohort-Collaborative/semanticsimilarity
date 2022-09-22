@@ -12,7 +12,8 @@ from semanticsimilarity.resnik import Resnik
 from semanticsimilarity.annotation_counter import AnnotationCounter
 from collections import defaultdict
 from typing import Iterator, Tuple
-
+import logging
+import sys
 
 class TestPt:
     """Helper class for average_max_similarity and max_similarity
@@ -357,11 +358,18 @@ class Phenomizer:
             hpo_terms_all_diseases_all_pts.withColumn("similarity", run_phenomizer(F.col("patient_hpo_ids"),
                                                                                    F.col("disease_hpo_ids")))
 
+        logger = logging.getLogger("log_example")
+        logger.setLevel(logging.WARNING)
+        ch = logging.StreamHandler(sys.stderr)
+        ch.setLevel(logging.ERROR)
+        logger.addHandler(ch)
+        logger.error("test error!")
+
         # return only the expected columns
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed('disease_id', 'disease')
-        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select("patient", "disease", "similarity")
-        return hpo_terms_all_diseases_all_pts
+        hpo_terms_all_diseases_all_pts2 = hpo_terms_all_diseases_all_pts.withColumnRenamed('patient_id', 'patient')
+        hpo_terms_all_diseases_all_pts3 = hpo_terms_all_diseases_all_pts2.withColumnRenamed('disease_id', 'disease')
+        hpo_terms_all_diseases_all_pts4 = hpo_terms_all_diseases_all_pts3.select("patient", "disease", "similarity")
+        return hpo_terms_all_diseases_all_pts4
 
     def center_to_cluster_generalizability(self,
                                            test_patients_hpo_terms: DataFrame,
