@@ -507,3 +507,50 @@ class TestPhenomizer(TestCase):
         self.assertAlmostEqual(sim,
                                sim_pd.loc[(sim_pd['disease'] == this_disease) & (sim_pd['patient'] == this_patient)].iloc[0][2],
                                dec_places)
+
+    def test_different_column_names(self):
+        p = Phenomizer({})
+
+        # make demonstrative patient_df
+        annots = []
+        for d in [
+                  {'person_id': "1", 'hpo_term_id': 'HP:0000118'},  # Phenotypic abnormality
+                  {'person_id': "2", 'hpo_term_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'person_id': "2", 'hpo_term_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'person_id': "3", 'hpo_term_id': 'HP:0000818'}]:  # Abnormality of the endocrine system
+            annots.append(d)
+        patient_df = self.spark_obj.createDataFrame(pd.DataFrame(annots))
+
+        # make demonstrative disease df
+        disease_annots = []
+        for d in [
+                  {'disease_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            disease_annots.append(d)
+        disease_df = self.spark_obj.createDataFrame(disease_annots)
+
+        # make demonstrative annotation df 
+        annots_for_annots_df = []
+        for d in [
+                  {'disease_id': "5", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "6", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "7", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "8", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "9", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            annots_for_annots_df.append(d)
+        annotations_df = self.spark_obj.createDataFrame(annots_for_annots_df)
+
+        sim_long_df = p.make_patient_disease_similarity_long_spark_df(patient_df=patient_df,
+                                                                      disease_df=disease_df,
+                                                                      hpo_graph_edges_df=self.hpo_spark,
+                                                                      annotations_df=annotations_df,
+                                                                      person_id_col='person_id',
+                                                                      person_hpo_term_col='hpo_term_id',
+                                                                      disease_id_col='disease_id',
+                                                                      disease_hpo_term_col='hpo_id',
+                                                                      annot_subject_col='disease_id',
+                                                                      annot_object_col='hpo_id')
+        sim_long_df

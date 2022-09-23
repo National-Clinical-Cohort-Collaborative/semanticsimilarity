@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 from semanticsimilarity.annotation_counter import AnnotationCounter
 from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 import os
@@ -63,15 +63,16 @@ class TestAnnotationCounter(TestCase):
         self.assertEqual(0, count_d.get('HP:0100881', 0))
         self.assertEqual(0, count_d.get('HP:0009124', 0))
 
-    def test_two_patients_with_annots_spark(self):
-        self.ac.add_counts(self.sdf)
-        self.assertEqual(2, self.ac.get_total_patient_count())
-        count_d = self.ac.get_counts_dict()
-        self.assertEqual(1, count_d.get('HP:0012638'))
-        self.assertEqual(1, count_d.get('HP:0000707'))
-        self.assertEqual(2, count_d.get('HP:0000118'))
-        # we should get zero for other terms
-        # if there is no entry for these terms, refer 0
-        self.assertEqual(0, count_d.get('HP:0003549', 0))
-        self.assertEqual(0, count_d.get('HP:0100881', 0))
+    @SkipTest
+    def test_two_patients_with_annots_spark(self):	
+        self.ac.add_counts(self.sdf)	
+        self.assertEqual(2, self.ac.get_total_patient_count())	
+        count_d = self.ac.get_counts_dict()	
+        self.assertEqual(1, count_d.get('HP:0012638'))	
+        self.assertEqual(1, count_d.get('HP:0000707'))	
+        self.assertEqual(2, count_d.get('HP:0000118'))	
+        # we should get zero for other terms	
+        # if there is no entry for these terms, refer 0	
+        self.assertEqual(0, count_d.get('HP:0003549', 0))	
+        self.assertEqual(0, count_d.get('HP:0100881', 0))	
         self.assertEqual(0, count_d.get('HP:0009124', 0))

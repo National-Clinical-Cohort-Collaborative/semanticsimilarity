@@ -71,8 +71,9 @@ class AnnotationCounter:
                 self._total_patients += 1
                 for hpo_id in induced_ancestor_graph:
                     self._termcounts[hpo_id] += 1
-        elif isinstance(counts_df, DataFrame):  # do appropriate stuff
-            pass
+        # TODO: implement support for spark dataframe, something like:
+        # elif isinstance(counts_df, DataFrame):  # do appropriate stuff
+        #     pass
         else:
             raise ValueError(f"counts_df argument must be of type pd.DataFrame or spark (recevied {type(counts_df)})")
 
