@@ -312,12 +312,13 @@ class Phenomizer:
         print(f"we have this many annotations {annotation_count}")
 
         # assemble annotations from annotations_df (HPO annotations or patient annotations file)
-        annots = []
-        for row in annotations_df.rdd.toLocalIterator():
-            d = {'patient_id': row[annot_subject_col], 'hpo_id': row[annot_object_col]}
-            annots.append(d)
-        df = pd.DataFrame(annots)
-        annotationCounter.add_counts(df)
+        annotations_df = annotations_df.select([annot_subject_col, annot_object_col])
+        df = annotations_df.toPandas()
+
+        annotationCounter.add_counts(df,
+                                     patient_id_col=annot_subject_col,
+                                     hpo_id_col=annot_object_col
+        )
 
         # make Resnik object
         resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
