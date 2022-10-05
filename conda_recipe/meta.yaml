@@ -21,6 +21,7 @@ requirements:
     - parameterized
     - setuptools
     - scipy
+    - pyarrow
     # need these packages to deploy documenation: sphinx sphinx_rtd_theme recommonmark sphinx_click
 
 build:

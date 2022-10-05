@@ -7,8 +7,11 @@ from pyspark.sql import SparkSession, DataFrame
 from parameterized import parameterized
 import os
 import pandas as pd
+from pandas.testing import assert_frame_equal
 import numpy as np
 from pyspark.sql import functions as F
+from semanticsimilarity.phenomizer import TestPt
+from collections import defaultdict
 
 
 class TestPhenomizer(TestCase):
@@ -21,9 +24,14 @@ class TestPhenomizer(TestCase):
         dir = os.path.dirname(os.path.abspath(__file__))
         cls.hpo_path = os.path.join(dir, "test_data/test_hpo_graph.tsv")
         cls.hpo_path_tiny = os.path.join(dir, "test_data/test_hpo_graph_tiny.tsv")
+        cls.hpo_annotations_path = os.path.join(dir, "test_data/test_hpo_annotations.tsv")
+        cls.hpo_disease_path = os.path.join(dir, "test_data/test_hpo_disease_graph.tsv")
 
         # make an ensmallen object for HPO
         cls.hpo_ensmallen = HpoEnsmallen(cls.hpo_path)
+
+        # make an ensmallen object for HPO disease graph
+        cls.hpo_disease_ensmallen = HpoEnsmallen(cls.hpo_disease_path)
 
         # make a fake population to generate term counts
         cls.annotationCounter = AnnotationCounter(hpo=cls.hpo_ensmallen)
@@ -34,25 +42,83 @@ class TestPhenomizer(TestCase):
         # So adding HP:0012638 should give us one count for these three terms
         annots = []
         for d in [
-                  {'patient_id': "1", 'hpo_id': 'HP:0000118'}, # Phenotypic abnormality
-                  {'patient_id': "2", 'hpo_id': 'HP:0000707'}, #  Abnormality of the nervous system
-                  {'patient_id': "2", 'hpo_id': 'HP:0000818'}, #  Abnormality of the endocrine system
-                  {'patient_id': "3", 'hpo_id': 'HP:0000818'}, # Abnormality of the endocrine system
-                  {'patient_id': "4", 'hpo_id': 'HP:0000834'}, #  Abnormality of the adrenal glands
-                  {'patient_id': "5", 'hpo_id': 'HP:0000873'}, #  Diabetes insipidus
-                  {'patient_id': "6", 'hpo_id': 'HP:0003549'}, #  Abnormality of connective tissue
-                  {'patient_id': "7", 'hpo_id': 'HP:0009025'}, # Increased connective tissue 
-                  {'patient_id': "8", 'hpo_id': 'HP:0009124'}, # Abnormal adipose tissue morphology 
-                  {'patient_id': "9", 'hpo_id': 'HP:0012638'}, # Abnormal nervous system physiology
-                  {'patient_id': "10", 'hpo_id': 'HP:0012639'}, # Abnormal nervous system morphology
-                  {'patient_id': "11", 'hpo_id': 'HP:0100568'}, # Neoplasm of the endocrine system
-                  {'patient_id': "12", 'hpo_id': 'HP:0100881'}, # Congenital mesoblastic nephroma (child of Abn connective!) 
-                  {'patient_id': "13", 'hpo_id': 'HP:0410008'}]: # Abnormality of the peripheral nervous system 
+                  {'patient_id': "1", 'hpo_id': 'HP:0000118'},  # Phenotypic abnormality
+                  {'patient_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'patient_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'patient_id': "3", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'patient_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'patient_id': "5", 'hpo_id': 'HP:0000873'},  # Diabetes insipidus
+                  {'patient_id': "6", 'hpo_id': 'HP:0003549'},  # Abnormality of connective tissue
+                  {'patient_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue 
+                  {'patient_id': "8", 'hpo_id': 'HP:0009124'},  # Abnormal adipose tissue morphology 
+                  {'patient_id': "9", 'hpo_id': 'HP:0012638'},  # Abnormal nervous system physiology
+                  {'patient_id': "10", 'hpo_id': 'HP:0012639'},  # Abnormal nervous system morphology
+                  {'patient_id': "11", 'hpo_id': 'HP:0100568'},  # Neoplasm of the endocrine system
+                  {'patient_id': "12", 'hpo_id': 'HP:0100881'},  # Congenital mesoblastic nephroma (child of Abn connective!)
+                  {'patient_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
             annots.append(d)
 
         cls.patient_pd = pd.DataFrame(annots)
         cls.patient_sdf = cls.spark_obj.createDataFrame(cls.patient_pd)
         cls.annotationCounter.add_counts(cls.patient_pd)
+
+        # make a fake disease set to generate term counts ***Do we need a separate annoation counter for diseases?
+        cls.diseaseAnnotationCounter = AnnotationCounter(hpo=cls.hpo_disease_ensmallen)
+        # create a very trivial list of diseases and features (subset of actual disease-phenotype annotations)
+        # Abnormal nervous system physiology HP:0012638
+        # Abnormality of the nervous system HP:0000707
+        # Phenotypic abnormality HP:0000118
+        # So adding HP:0012638 should give us one count for these three terms
+        disease_annots = []
+        for d in [
+                  # ORPHA:84: Fanconi Anemia
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0004322'},  # Short stature
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0002823'},  # Abnormality of femur morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000252'},  # Microcephaly
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000175'},  # Cleft palate
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001903'},  # Anemia
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000492'},  # Abnormal eyelid morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000324'},  # Facial asymmetry
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0012210'},  # Abnormal renal morphology
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0000083'},  # Renal insufficiency
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001873'},  # Thrombocytopenia
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0002414'},  # Spina bifida
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0008572'},  # External ear malformation
+                  {'disease_id': "ORPHA:84", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  # OMIM:130020: Ehlers-Danlos syndrome, hypermobility type
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000963'},  # Thin skin
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0012378'},  # Fatigue
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0003042'},  # Elbow dislocation
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002829'},  # Arthralgia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002827'},  # Hip dislocation
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0001760'},  # Abnormal foot morphology
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002024'},  # Malabsorption
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000974'},  # Hyperextensible skin
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0002650'},  # Scoliosis
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0001388'},  # Joint laxity
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0011675'},  # Arrhythmia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000023'},  # Inguinal hernia
+                  {'disease_id': "OMIM:130020", 'hpo_id': 'HP:0000563'}]:  # Keratoconus
+
+            disease_annots.append(d)
+
+        cls.disease_pd = pd.DataFrame(disease_annots)
+        cls.disease_sdf = cls.spark_obj.createDataFrame(cls.disease_pd)
+        cls.diseaseAnnotationCounter.add_counts(cls.disease_pd, patient_id_col='disease_id')
+
+        # make another disease spark dataframe containing diseases for which we know what the correct 
+        # disease <-> patient Resnik similarity will be
+        # these are the same similarities that we are testing for patient <-> patient Resnik similarities
+        disease_annots_2 = []
+        for d in [
+                  {'disease_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            disease_annots_2.append(d)
+        cls.disease2_pd = pd.DataFrame(disease_annots_2)
+        cls.disease2_sdf = cls.spark_obj.createDataFrame(cls.disease2_pd)
 
         # make Resnik object
         cls.resnik = Resnik(counts_d=cls.annotationCounter.get_counts_dict(),
@@ -66,8 +132,19 @@ class TestPhenomizer(TestCase):
         cls.hpo_pd = pd.read_csv(cls.hpo_path)
         cls.hpo_spark = cls.spark_obj.createDataFrame(cls.hpo_pd)
 
+        # make HPO disease spark df
+        cls.hpo_disease_pd = pd.read_csv(cls.hpo_disease_path)
+        cls.hpo_disease_spark = cls.spark_obj.createDataFrame(cls.hpo_disease_pd)
+
+        # make HPO A spark df
+        cls.hpoa_pd = pd.read_csv(cls.hpo_annotations_path)
+        cls.hpoa_spark = cls.spark_obj.createDataFrame(cls.hpoa_pd)
+
         # make patient_df spark dataframe
         cls.patient_spark = cls.spark_obj.createDataFrame(cls.patient_pd)
+
+        # make disease_df spark dataframe for patient x disease similarity testing
+        cls.disease_spark = cls.spark_obj.createDataFrame(cls.disease_pd)
 
         # make three held out patients
         holdout_annots = []
@@ -105,6 +182,29 @@ class TestPhenomizer(TestCase):
             cluster_info.append(d)
         cls.cluster_assignment_pd = pd.DataFrame(cluster_info)
         cls.cluster_assignment = cls.spark_obj.createDataFrame(cls.cluster_assignment_pd)
+
+        # make some test to cluster similarity for average_max_similarity and max_similarity
+        test_cluster_similarity_list = []
+        for d in [
+                  # max sim for test_patient_id 1 is 30
+                  # max sim for test_patient_id 2 is 60
+                  # average max sim is 45
+                  {'test_patient_id': "1", 'clustered_patient_id': "3",  'cluster': '1', 'sim': 20},
+                  {'test_patient_id': "1", 'clustered_patient_id': "4",  'cluster': '1', 'sim': 30},
+                  {'test_patient_id': "1", 'clustered_patient_id': "5",  'cluster': '1', 'sim': 40},
+                  {'test_patient_id': "1", 'clustered_patient_id': "6",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "7",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "8",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "1", 'clustered_patient_id': "9",  'cluster': '2', 'sim': 1},
+                  {'test_patient_id': "2", 'clustered_patient_id': "10", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "11", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "12", 'cluster': '1', 'sim': 3},
+                  {'test_patient_id': "2", 'clustered_patient_id': "13", 'cluster': '2', 'sim': 50},
+                  {'test_patient_id': "2", 'clustered_patient_id': "14", 'cluster': '2', 'sim': 60},
+                  {'test_patient_id': "2", 'clustered_patient_id': "15", 'cluster': '2', 'sim': 70}]:
+            test_cluster_similarity_list.append(d)
+        cls.test_cluster_similarity_pd = pd.DataFrame(test_cluster_similarity_list)
+        cls.test_cluster_similarity = cls.spark_obj.createDataFrame(cls.test_cluster_similarity_pd)
 
     def test_phenomizer_simple(self):
         # make two patients
@@ -274,14 +374,183 @@ class TestPhenomizer(TestCase):
         p = Phenomizer(self.resnik.get_mica_d())
         heldout_patient = self.holdout_patients.filter(F.col("patient_id") == 200)
         sim = p.patient_to_cluster_similarity_pd(test_patient_hpo_terms=heldout_patient,
-                                              clustered_patient_hpo_terms=self.patient_sdf,
-                                              cluster_assignments=self.cluster_assignment)
+                                                 clustered_patient_hpo_terms=self.patient_sdf,
+                                                 cluster_assignments=self.cluster_assignment)
         self.assertTrue(isinstance(sim, pd.DataFrame))
         self.assertEqual(len(sim), self.cluster_assignment.count())
 
     def test_generalizability(self):
         p = Phenomizer(self.resnik.get_mica_d())
         df = p.center_to_cluster_generalizability(test_patients_hpo_terms=self.holdout_patients,
-                                              clustered_patient_hpo_terms=self.patient_sdf,
-                                              cluster_assignments=self.cluster_assignment)
-        self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim','observed','zscore'])
+                                                  clustered_patient_hpo_terms=self.patient_sdf,
+                                                  cluster_assignments=self.cluster_assignment)
+        self.assertCountEqual(df.columns, ['mean.sim', 'sd.sim', 'observed', 'zscore'])
+
+    def test_max_similarity_cluster(self):  # nb: this is NOT testing average_max_similarity (that is below)
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, "max_similarity_cluster"))
+        ams = p.max_similarity_cluster(self.test_cluster_similarity_pd,
+                                       test_pt_col_name='test_patient_id',
+                                       cluster_col_name='cluster',
+                                       sim_score_col_name='sim')
+        self.assertEqual(ams.__class__, pd.DataFrame)
+        self.assertCountEqual(ams.columns, ['test_patient_id', 'max_cluster', 'average_similarity', 'probability'])
+        pt_1 = ams.loc[ams['test_patient_id'] == '1']
+        pt_2 = ams.loc[ams['test_patient_id'] == '2']
+        self.assertEqual(len(pt_1), 1)
+        self.assertEqual(len(pt_2), 1)
+        #    test_patient_id max_cluster  average_similarity   probability
+        # 0               1           1                30.0          30/31
+        # 1               2           2                60.0          60/63
+        assert_frame_equal(ams.loc[ams['test_patient_id'] == '1'],
+                           pd.DataFrame(data={'test_patient_id': '1',
+                                              'max_cluster': '1',
+                                              'average_similarity': 30.0,
+                                              'probability': 30/31,
+                                              }, index=[0]))
+        assert_frame_equal(ams.loc[ams['test_patient_id'] == '2'],
+                           pd.DataFrame(data={'test_patient_id': '2',
+                                              'max_cluster': '2',
+                                              'average_similarity': 60.0,
+                                              'probability': 60/63,
+                                              }, index=[1]))
+
+    def test_average_max_similarity(self):
+        p = Phenomizer(self.resnik.get_mica_d())
+        self.assertTrue(hasattr(p, "average_max_similarity"))
+        ams = p.average_max_similarity(self.test_cluster_similarity_pd,
+                                       test_pt_col_name='test_patient_id',
+                                       cluster_col_name='cluster',
+                                       sim_score_col_name='sim')
+        self.assertEqual(ams, ((30/31)+(60/63))/2)
+
+    def test_get_max_sim(self):
+        patient_d = defaultdict(TestPt)
+        for _, row in self.test_cluster_similarity_pd.iterrows():
+            test_id = row['test_patient_id']
+            cluster = row['cluster']
+            score = row['sim']
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        self.assertAlmostEqual(patient_d['1'].get_max_sim(), 30/31)
+        self.assertAlmostEqual(patient_d['2'].get_max_sim(), 60/63)
+
+    def test_get_best_cluster_and_average_score(self):
+        patient_d = defaultdict(TestPt)
+        for _, row in self.test_cluster_similarity_pd.iterrows():
+            test_id = row['test_patient_id']
+            cluster = row['cluster']
+            score = row['sim']
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        self.assertEqual(patient_d['1'].get_best_cluster_and_average_score(), ['1', 30.0, 30/31])
+        self.assertEqual(patient_d['2'].get_best_cluster_and_average_score(), ['2', 60.0, 60/63])
+
+    # New test additions for patient-disease similarity testing
+
+    def test_has_make_patient_disease_similarity_long_spark_df(self):
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+        self.assertTrue(hasattr(p, 'make_patient_disease_similarity_long_spark_df'))
+
+    def test_make_patient_disease_similarity_long_spark_df(self):
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+        sim_df = p.make_patient_disease_similarity_long_spark_df(patient_df=self.patient_spark,
+                                                                 disease_df=self.disease_spark,
+                                                                 hpo_graph_edges_df=self.hpo_disease_spark,
+                                                                 annotations_df=self.hpoa_spark,
+                                                                 person_id_col='patient_id',
+                                                                 person_hpo_term_col='hpo_id',
+                                                                 disease_id_col='disease_id',
+                                                                 disease_hpo_term_col='hpo_id',
+                                                                 annot_subject_col='disease_id',
+                                                                 annot_object_col='hpo_id'
+                                                                 )
+        self.assertTrue(isinstance(sim_df, DataFrame))
+        self.assertEqual(sim_df.columns, ['patient', 'disease', 'similarity'])
+        num_patients = len(set(list(self.patient_pd['patient_id'])))
+        num_diseases = len(set(list(self.disease_pd['disease_id'])))
+        expected_rows = num_patients*num_diseases  # Expected to have a similarity score for each pairwise patient x disease combination.
+        self.assertEqual(sim_df.count(), expected_rows,
+                         msg=f"Didn't get expected number of rows in similarity df sim_df.count() {sim_df.count()} != expected_rows {expected_rows}")
+
+
+    @parameterized.expand([
+        ['13', '13', 2.564949],  # test symmetry
+        ['7', '8', 1.178655],
+        ['4', '5', 0.955512],
+        ['2', '5', 0.7166335],  # test patient with >1 term (pt2) and another with 1 term (pt5)
+    ])
+    def test_specific_pairs_in_make_patient_disease_similarity_long_spark_df(self, this_disease, this_patient, sim):
+        dec_places = 5
+
+        # test contents of patient_similarity_long_spark_df to make sure it's exactly what we want
+        p = Phenomizer({})  # initialize with empty mica_d - make_patient_similarity_dataframe will populate it itself
+
+        sim_df = p.make_patient_disease_similarity_long_spark_df(
+                                                                patient_df=self.patient_spark,
+                                                                disease_df=self.disease2_sdf,
+                                                                hpo_graph_edges_df=self.hpo_spark,
+                                                                annotations_df=self.patient_spark,
+                                                                person_id_col='patient_id',
+                                                                person_hpo_term_col='hpo_id',
+                                                                disease_id_col='disease_id',
+                                                                disease_hpo_term_col='hpo_id',
+                                                                annot_subject_col='patient_id',
+                                                                annot_object_col='hpo_id'
+                                                                )
+        sim_pd = sim_df.toPandas()
+
+        self.assertAlmostEqual(sim,
+                               sim_pd.loc[(sim_pd['disease'] == this_disease) & (sim_pd['patient'] == this_patient)].iloc[0][2],
+                               dec_places)
+
+    def test_different_column_names(self):
+        p = Phenomizer({})
+
+        # make demonstrative patient_df
+        annots = []
+        for d in [
+                  {'person_id': "1", 'hpo_term_id': 'HP:0000118'},  # Phenotypic abnormality
+                  {'person_id': "2", 'hpo_term_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'person_id': "2", 'hpo_term_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'person_id': "3", 'hpo_term_id': 'HP:0000818'}]:  # Abnormality of the endocrine system
+            annots.append(d)
+        patient_df = self.spark_obj.createDataFrame(pd.DataFrame(annots))
+
+        # make demonstrative disease df
+        disease_annots = []
+        for d in [
+                  {'disease_id': "2", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "2", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "4", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "7", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "13", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            disease_annots.append(d)
+        disease_df = self.spark_obj.createDataFrame(disease_annots)
+
+        # make demonstrative annotation df 
+        annots_for_annots_df = []
+        for d in [
+                  {'disease_id': "5", 'hpo_id': 'HP:0000707'},  # Abnormality of the nervous system
+                  {'disease_id': "6", 'hpo_id': 'HP:0000818'},  # Abnormality of the endocrine system
+                  {'disease_id': "7", 'hpo_id': 'HP:0000834'},  # Abnormality of the adrenal glands
+                  {'disease_id': "8", 'hpo_id': 'HP:0009025'},  # Increased connective tissue
+                  {'disease_id': "9", 'hpo_id': 'HP:0410008'}]:  # Abnormality of the peripheral nervous system
+            annots_for_annots_df.append(d)
+        annotations_df = self.spark_obj.createDataFrame(annots_for_annots_df)
+
+        sim_long_df = p.make_patient_disease_similarity_long_spark_df(patient_df=patient_df,
+                                                                      disease_df=disease_df,
+                                                                      hpo_graph_edges_df=self.hpo_spark,
+                                                                      annotations_df=annotations_df,
+                                                                      person_id_col='person_id',
+                                                                      person_hpo_term_col='hpo_term_id',
+                                                                      disease_id_col='disease_id',
+                                                                      disease_hpo_term_col='hpo_id',
+                                                                      annot_subject_col='disease_id',
+                                                                      annot_object_col='hpo_id')
+        sim_long_df

@@ -1,15 +1,55 @@
-from typing import Dict, Set, Union
+from typing import Dict, Set, Union, Optional
 from warnings import warn
 from .term_pair import TermPair
 import numpy as np
 import pandas as pd
 from pyspark.sql import functions as F
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, pandas_udf
+from pyspark.sql.types import FloatType, ArrayType
 from pyspark.sql import SparkSession, DataFrame
 from semanticsimilarity.hpo_ensmallen import HpoEnsmallen
 from semanticsimilarity.resnik import Resnik
 from semanticsimilarity.annotation_counter import AnnotationCounter
 from collections import defaultdict
+from typing import Iterator, Tuple
+import logging
+import sys
+
+class TestPt:
+    """Helper class for average_max_similarity and max_similarity
+    """
+
+    def __init__(self, id):
+        self.id = id
+        self.cluster_d = defaultdict(list)
+
+    def add_score(self, cluster, score):
+        self.cluster_d[cluster].append(score)
+
+    def get_max_sim(self):
+        patient_scores = []
+        for cluster, scores in self.cluster_d.items():
+            mean_score = np.mean(scores)
+            patient_scores.append(mean_score)
+        total_scores = np.sum(patient_scores)
+        if total_scores == 0:
+            return 0
+        max_score = np.max(patient_scores)/total_scores
+
+        return max_score
+
+    def get_best_cluster_and_average_score(self) -> [Optional[str], float]:
+        best_cluster = None
+        best_average_score = -1000
+        patient_scores = []
+        for cluster, scores in self.cluster_d.items():
+            mean_score = np.mean(scores)
+            patient_scores.append(mean_score)
+            if mean_score > best_average_score:
+                best_cluster = cluster
+                best_average_score = mean_score
+        total_scores = np.sum(patient_scores)
+        return [best_cluster, best_average_score, best_average_score/total_scores]
 
 
 class Phenomizer:
@@ -58,13 +98,13 @@ class Phenomizer:
             return 0
         return 0.5 * sum(a_to_b_sim)/len(a_to_b_sim) + 0.5 * sum(b_to_a_sim)/len(b_to_a_sim)
 
-    def check_term_pair_in_mica_d(self, tp: TermPair):
+    def check_term_pair_in_mica_d(self, tp: TermPair, verbose=False):
         """Helper method to check whether a given term pair is in self._mica_d
 
         :param tp: A TermPair object representing the pair of HPO terms to be checked
         :return: None
         """
-        if (tp._t1, tp._t2) not in self._mica_d:
+        if (tp._t1, tp._t2) not in self._mica_d and verbose:
             print(f"Warning, could not find tp in self._mica_d: {(tp._t1, tp._t2)}")
 
     def update_mica_d(self, new_mica_d: dict):
@@ -209,8 +249,170 @@ class Phenomizer:
         spark = SparkSession.builder.appName("pandas to spark").getOrCreate()
         return spark.createDataFrame(patient_similarity_matrix_pd)
 
+    def make_patient_disease_similarity_long_spark_df(self,
+                                                      patient_df: DataFrame,
+                                                      disease_df: DataFrame,
+                                                      hpo_graph_edges_df: DataFrame,
+                                                      annotations_df: DataFrame,
+                                                      person_id_col: str = 'person_id',
+                                                      person_hpo_term_col: str = 'hpo_id',
+                                                      disease_id_col: str = 'disease_id',
+                                                      disease_hpo_term_col: str = 'hpo_id',
+                                                      annot_subject_col: str = 'patient_id',
+                                                      annot_object_col: str = 'hpo_id'
+                                                      ) -> DataFrame:
+        """Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df
+
+        Args:
+            patient_df: long table (spark dataframe) with person_id hpo_id for all patients
+            disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases being compared with patients
+            hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
+            annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file.
+            person_id_col: name of person ID column [person_id]
+            person_hpo_term_col: name of hpo term column in the patient_df [hpo_id]
+            disease_id_col: name of disease ID column [disease_id]
+            disease_hpo_term_col: name of hpo term column in the disease_df [hpo_id]
+            annot_subject_col: name of the subject column from the annotation file (likely patient_id or disease_id)
+            annot_object_col: name of the object column from the annotation file (likely hpo_id)
+
+        Returns:
+            Spark dataframe with patient x disease similarity for all patient x disease pairings (ignoring ordering)
+
+        Details:
+
+        Take a long spark dataframe of patients (containing person_ids and hpo terms) like so:
+        person_id  hpo_term
+        patient1   HP:0001234
+        patient1   HP:0003456
+        patient2   HP:0006789
+        patient3   HP:0004567
+        ...
+
+        Take a long spark dataframe of diseases (containing disease_ids and hpo terms) like so:
+        disease_id  hpo_id
+        disease1   HP:0007489
+        disease1   HP:0006487
+        disease2   HP:0006789
+        disease3   HP:0004494
+        ...
+
+        and an HPO graph like so:
+        subject     edge_label   object
+        HP:0003456  subclass_of  HP:0003456
+        HP:0004567  subclass_of  HP:0006789
+        ...
+
+        and an "annotations" file consisting of either the HPO annotations file
+        or a patient annotations file formatted as following:
+        disease_id         hpo_id
+        OMIM:619426     HP:0001385
+        OMIM:619340     HP:0001789
+
+        or:
+
+        patient_id         hpo_id
+        patient1     HP:0001385
+        patient2     HP:0001789
+        ...
+
+        and output a matrix of patient disease phenotypic semantic similarity like so:
+        patient     disease    similarity
+        patient1    disease1    2.566
+        patient1    disease2    0.523
+        patient1    disease3    0.039
+        patient2    disease1    0.935
+        patient2    disease2    2.934
+        patient2    disease3    0.349
+        ...
+
+        Phenotypic similarity between patients and diseases is calculated using similarity_score above.
+
+        HPO term frequency is calculated using the frequency of each HPO term in annotations_df.
+        This frequency is used in the calculation of most informative common ancestor for
+        each possible pair of terms.
+        """
+
+        # make HPO graph in the correct format
+        output_filename = "hpo_out.tsv"
+        hpo_graph_edges_df.toPandas().to_csv(output_filename)
+
+        # make an ensmallen object for HPO
+        hpo_ensmallen = HpoEnsmallen(output_filename)
+
+        # generate term counts
+        annotationCounter = AnnotationCounter(hpo=hpo_ensmallen)
+
+        # count patients
+        patient_count = patient_df.dropDuplicates([person_id_col]).count()
+        print(f"we have this many patient -> hpo assertions {patient_df.count()}")
+        print(f"we have this many patients {patient_count}")
+
+        # count diseases
+        disease_count = disease_df.dropDuplicates([disease_id_col]).count()
+        print(f"we have this many disease -> hpo assertions {disease_df.count()}")
+        print(f"we have this many diseases {disease_count}")
+
+        # count annotations
+        annotation_count = annotations_df.dropDuplicates([annot_subject_col]).count()  # subject is either disease or patient
+        print(f"we have this many subject -> object assertions {annotations_df.count()}")
+        print(f"we have this many annotations {annotation_count}")
+
+        # assemble annotations from annotations_df (HPO annotations or patient annotations file)
+        annotations_df = annotations_df.select([annot_subject_col, annot_object_col])
+        df = annotations_df.toPandas()
+
+        annotationCounter.add_counts(df,
+                                     patient_id_col=annot_subject_col,
+                                     hpo_id_col=annot_object_col
+        )
+
+        # make Resnik object
+        resnik = Resnik(counts_d=annotationCounter.get_counts_dict(),
+                        total=annotation_count,
+                        ensmallen=hpo_ensmallen)
+
+        # group by person_id to make all HPO terms for a given patient, put in a new df person_id: set([HPO terms])
+        hpo_terms_by_patient = patient_df.groupBy(person_id_col).agg(F.collect_set(col(person_hpo_term_col)))
+
+        # group by disease_id to make all HPO terms for a given disease, put in a new df disease_id: set([HPO terms])
+        hpo_terms_by_disease = disease_df.groupBy(disease_id_col).agg(F.collect_set(col(disease_hpo_term_col)))
+
+
+        # in make_patient_disease_similarity_long_spark_df, do this:
+
+        # make a (very) long spark df that looks like this:
+        # disease    disease_HPO_ids    patient    patient_HPO_ids
+        # d1234      [HP:1234, HP:4567]   p4689      [HP:4567, HP: 9876]
+        # ...
+        #
+        # where HPO term columns are vectors
+        hpo_terms_by_patient = hpo_terms_by_patient.withColumnRenamed(
+            "collect_set(" + person_hpo_term_col + ")",
+            "patient_hpo_ids"
+        )
+        hpo_terms_by_disease = hpo_terms_by_disease.withColumnRenamed(
+            "collect_set(" + disease_hpo_term_col + ")",
+            "disease_hpo_ids")
+        hpo_terms_all_diseases_all_pts = hpo_terms_by_patient.crossJoin(hpo_terms_by_disease)
+
+        # need to run p.similarity_score on each row of disease v. patients
+        @pandas_udf("float")
+        def run_phenomizer(a: pd.Series, b: pd.Series) -> pd.Series:
+            p = Phenomizer(resnik.get_mica_d())
+            return pd.Series([p.similarity_score(a_i, b_i) for a_i, b_i in zip(a, b)])
+
+        hpo_terms_all_diseases_all_pts = \
+            hpo_terms_all_diseases_all_pts.withColumn("similarity", run_phenomizer(F.col("patient_hpo_ids"),
+                                                                                   F.col("disease_hpo_ids")))
+
+        # return only the expected columns
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed(person_id_col, 'patient')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.withColumnRenamed(disease_id_col, 'disease')
+        hpo_terms_all_diseases_all_pts = hpo_terms_all_diseases_all_pts.select("patient", "disease", "similarity")
+        return hpo_terms_all_diseases_all_pts
+
     def center_to_cluster_generalizability(self,
-                                           test_patients_hpo_terms:DataFrame,
+                                           test_patients_hpo_terms: DataFrame,
                                            clustered_patient_hpo_terms: DataFrame,
                                            cluster_assignments: DataFrame,
                                            test_patient_id_col_name: str = 'patient_id',
@@ -265,38 +467,56 @@ class Phenomizer:
         d = {"mean.sim": mean_sim, "sd.sim": sd_sim, "observed": observed_max_sim, 'zscore':zscore}
         return pd.DataFrame([d])
 
-    def average_max_similarity(self, test_to_clustered_df: pd.DataFrame):
-        """Helper method to measure average similarity
-
-        :param test_to_clustered_df: pandas dataframe
-        :return: average sim
+    def max_similarity_cluster(self,
+                               test_to_clustered_df: pd.DataFrame,
+                               test_pt_col_name: str = 'test.id',
+                               cluster_col_name: str = 'cluster',
+                               sim_score_col_name: str = 'score') -> pd.DataFrame:
+        """For each test patient, determine the cluster to which the patient has the most similarity and also the 
+        average similarity of the test patient to patients in the cluster (and also a probability of the patient belonging to cluster)
         """
-        # group by test patient id
-        # d = {'test.id':p, 'clustered.id': clustered_pat_id, 'cluster': k, 'score': ss}
-        class TestPt:
-            def __init__(self, id):
-                self.id = id
-                self.cluster_d = defaultdict(list)
-
-            def add_score(self, cluster, score):
-                self.cluster_d[cluster].append(score)
-
-            def get_max_sim(self):
-                patient_scores = []
-                for cluster, scores in self.cluster_d.items():
-                    mean_score = np.mean(scores)
-                    patient_scores.append(mean_score)
-                total_scores = np.sum(patient_scores)
-                if total_scores == 0:
-                    return 0
-                max_score = np.max(patient_scores)/total_scores
-                return max_score
+        for key in [test_pt_col_name, cluster_col_name, sim_score_col_name]:
+            if key not in test_to_clustered_df.columns:
+                raise KeyError(f"key {key} is not present in test_to_clustered_df!")
 
         patient_d = defaultdict(TestPt)
         for _, row in test_to_clustered_df.iterrows():
-            test_id = row['test.pt.id']
-            cluster = row['cluster']
-            score = row['score']
+            test_id = row[test_pt_col_name]
+            cluster = row[cluster_col_name]
+            score = row[sim_score_col_name]
+            if test_id not in patient_d:
+                tp = TestPt(test_id)
+                patient_d[test_id] = tp
+            patient_d[test_id].add_score(cluster, score)
+        pd_data = []
+        for pat_id, testPt in patient_d.items():
+            best_cluster, ave_score, prob = testPt.get_best_cluster_and_average_score()
+            d = {'test_patient_id': pat_id, 'max_cluster': best_cluster,
+                 'average_similarity': ave_score, 'probability': prob}
+            pd_data.append(d)
+        return pd.DataFrame(data=pd_data)
+
+    def average_max_similarity(self,
+                               test_to_clustered_df: pd.DataFrame,
+                               test_pt_col_name: str = 'test.pt.id',
+                               cluster_col_name: str = 'cluster',
+                               sim_score_col_name: str = 'score'
+                               ):
+        """Calculate the average of the semantic similarity of each test patient to patients in the cluster that the 
+        test patient matches best
+
+        That is, this calculates the average similarity of all test patients to the cluster to which they are most 
+        similar. This is used for testing the generalizability of the clusters using patients from "new" data partners.
+        """
+        for key in [test_pt_col_name, cluster_col_name, sim_score_col_name]:
+            if key not in test_to_clustered_df.columns:
+                raise KeyError(f"key {key} is not present in test_to_clustered_df!")
+
+        patient_d = defaultdict(TestPt)
+        for _, row in test_to_clustered_df.iterrows():
+            test_id = row[test_pt_col_name]
+            cluster = row[cluster_col_name]
+            score = row[sim_score_col_name]
             if test_id not in patient_d:
                 tp = TestPt(test_id)
                 patient_d[test_id] = tp
