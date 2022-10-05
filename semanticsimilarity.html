@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,13 +42,36 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Semantic Similarity</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">semanticsimilarity package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_cluster_analyzer">semanticsimilarity.hpo_cluster_analyzer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.phenomizer">semanticsimilarity.phenomizer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.resnik">semanticsimilarity.resnik module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.term_pair">semanticsimilarity.term_pair module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.annotation_counter.AnnotationCounter"><code class="docutils literal notranslate"><span class="pre">AnnotationCounter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_cluster_analyzer">semanticsimilarity.hpo_cluster_analyzer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.hpo_cluster_analyzer.add_true_counts_by_cluster"><code class="docutils literal notranslate"><span class="pre">add_true_counts_by_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><code class="docutils literal notranslate"><span class="pre">HpoEnsmallen</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser"><code class="docutils literal notranslate"><span class="pre">Hpo2EnsmallenParser</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.phenomizer">semanticsimilarity.phenomizer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.phenomizer.Phenomizer"><code class="docutils literal notranslate"><span class="pre">Phenomizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.phenomizer.TestPt"><code class="docutils literal notranslate"><span class="pre">TestPt</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.resnik">semanticsimilarity.resnik module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.resnik.Resnik"><code class="docutils literal notranslate"><span class="pre">Resnik</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity.term_pair">semanticsimilarity.term_pair module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#semanticsimilarity.term_pair.TermPair"><code class="docutils literal notranslate"><span class="pre">TermPair</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-semanticsimilarity">Module contents</a></li>
 </ul>
 </li>
@@ -95,17 +119,18 @@
 that term).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.annotation_counter.AnnotationCounter.add_counts">
-<span class="sig-name descname"><span class="pre">add_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.add_counts" title="Permalink to this definition"></a></dt>
-<dd><p>Given a Pandas dataframe with two columns, the first called patient_id and
+<span class="sig-name descname"><span class="pre">add_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patient_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpo_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.annotation_counter.AnnotationCounter.add_counts" title="Permalink to this definition"></a></dt>
+<dd><p>Given a Pandas dataframe or Spark Dataframe with two columns, by default called patient_id and
 the second called hpo_id, add counts for each term and its ancestors</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>counts_df</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
 </dl>
+<p>:param patient_id_col what is the name of the column containg patient ID [patient_id]
+:param hpo_id_col what is the name of the column containg hpo ID [hpo_id]
+:param verbose chatty? [False]
+:return: None</p>
 </dd></dl>
 
 <dl class="py method">
@@ -392,16 +417,11 @@ with edges reversed.</p>
 <p>Phenomizer class for measuring semantic similarity between patients using phenotype data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.phenomizer.Phenomizer.average_max_similarity">
-<span class="sig-name descname"><span class="pre">average_max_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_to_clustered_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.average_max_similarity" title="Permalink to this definition"></a></dt>
-<dd><p>Helper method to measure average similarity</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>test_to_clustered_df</strong> – pandas dataframe</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>average sim</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">average_max_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_to_clustered_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_pt_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'test.pt.id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cluster'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_score_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'score'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.average_max_similarity" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the average of the semantic similarity of each test patient to patients in the cluster that the 
+test patient matches best</p>
+<p>That is, this calculates the average similarity of all test patients to the cluster to which they are most 
+similar. This is used for testing the generalizability of the clusters using patients from “new” data partners.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -431,7 +451,7 @@ system</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.phenomizer.Phenomizer.check_term_pair_in_mica_d">
-<span class="sig-name descname"><span class="pre">check_term_pair_in_mica_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.term_pair.TermPair" title="semanticsimilarity.term_pair.TermPair"><span class="pre">TermPair</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.check_term_pair_in_mica_d" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_term_pair_in_mica_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#semanticsimilarity.term_pair.TermPair" title="semanticsimilarity.term_pair.TermPair"><span class="pre">TermPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.check_term_pair_in_mica_d" title="Permalink to this definition"></a></dt>
 <dd><p>Helper method to check whether a given term pair is in self._mica_d</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -441,6 +461,70 @@ system</p>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.Phenomizer.make_patient_disease_similarity_long_spark_df">
+<span class="sig-name descname"><span class="pre">make_patient_disease_similarity_long_spark_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disease_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpo_graph_edges_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">person_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'person_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">person_hpo_term_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disease_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'disease_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disease_hpo_term_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_subject_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_object_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.make_patient_disease_similarity_long_spark_df" title="Permalink to this definition"></a></dt>
+<dd><p>Produce long spark dataframe with similarity between all patients in patient_df and diseases in disease_df</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>patient_df: long table (spark dataframe) with person_id hpo_id for all patients
+disease_df: long table  (spark dataframe) with disease_id hpo_id for all diseases being compared with patients
+hpo_graph_edges_df: HPO graph spark dataframe (with three cols: subject subclass_of object)
+annotations_df: long table (spark dataframe) containing the full HPO annotations disease:hpo term file.
+person_id_col: name of person ID column [person_id]
+person_hpo_term_col: name of hpo term column in the patient_df [hpo_id]
+disease_id_col: name of disease ID column [disease_id]
+disease_hpo_term_col: name of hpo term column in the disease_df [hpo_id]
+annot_subject_col: name of the subject column from the annotation file (likely patient_id or disease_id)
+annot_object_col: name of the object column from the annotation file (likely hpo_id)</p>
+</dd>
+<dt>Returns:</dt><dd><p>Spark dataframe with patient x disease similarity for all patient x disease pairings (ignoring ordering)</p>
+</dd>
+</dl>
+<p>Details:</p>
+<p>Take a long spark dataframe of patients (containing person_ids and hpo terms) like so:
+person_id  hpo_term
+patient1   HP:0001234
+patient1   HP:0003456
+patient2   HP:0006789
+patient3   HP:0004567
+…</p>
+<p>Take a long spark dataframe of diseases (containing disease_ids and hpo terms) like so:
+disease_id  hpo_id
+disease1   HP:0007489
+disease1   HP:0006487
+disease2   HP:0006789
+disease3   HP:0004494
+…</p>
+<p>and an HPO graph like so:
+subject     edge_label   object
+HP:0003456  subclass_of  HP:0003456
+HP:0004567  subclass_of  HP:0006789
+…</p>
+<p>and an “annotations” file consisting of either the HPO annotations file
+or a patient annotations file formatted as following:
+disease_id         hpo_id
+OMIM:619426     HP:0001385
+OMIM:619340     HP:0001789</p>
+<p>or:</p>
+<p>patient_id         hpo_id
+patient1     HP:0001385
+patient2     HP:0001789
+…</p>
+<p>and output a matrix of patient disease phenotypic semantic similarity like so:
+patient     disease    similarity
+patient1    disease1    2.566
+patient1    disease2    0.523
+patient1    disease3    0.039
+patient2    disease1    0.935
+patient2    disease2    2.934
+patient2    disease3    0.349
+…</p>
+<p>Phenotypic similarity between patients and diseases is calculated using similarity_score above.</p>
+<p>HPO term frequency is calculated using the frequency of each HPO term in annotations_df.
+This frequency is used in the calculation of most informative common ancestor for
+each possible pair of terms.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -569,6 +653,13 @@ each possible pair of terms.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.Phenomizer.max_similarity_cluster">
+<span class="sig-name descname"><span class="pre">max_similarity_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_to_clustered_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_pt_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'test.id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cluster'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_score_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'score'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.max_similarity_cluster" title="Permalink to this definition"></a></dt>
+<dd><p>For each test patient, determine the cluster to which the patient has the most similarity and also the 
+average similarity of the test patient to patients in the cluster (and also a probability of the patient belonging to cluster)</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity">
 <span class="sig-name descname"><span class="pre">patient_to_cluster_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_patient_hpo_terms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clustered_patient_hpo_terms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_assignments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_patient_id_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_patient_hpo_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_assignment_patient_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_assignment_cluster_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cluster'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clustered_patient_id_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'patient_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clustered_patient_hpo_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hpo_id'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity" title="Permalink to this definition"></a></dt>
 <dd><p>Measure similarity of patient to cluster
@@ -664,6 +755,28 @@ Note that we have k clusters. Each of the rows has one of the clusters</p>
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.TestPt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">semanticsimilarity.phenomizer.</span></span><span class="sig-name descname"><span class="pre">TestPt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.TestPt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class for average_max_similarity and max_similarity</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.TestPt.add_score">
+<span class="sig-name descname"><span class="pre">add_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.TestPt.add_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.TestPt.get_best_cluster_and_average_score">
+<span class="sig-name descname"><span class="pre">get_best_cluster_and_average_score</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">[typing.Optional[str],</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;]</span></span></span><a class="headerlink" href="#semanticsimilarity.phenomizer.TestPt.get_best_cluster_and_average_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="semanticsimilarity.phenomizer.TestPt.get_max_sim">
+<span class="sig-name descname"><span class="pre">get_max_sim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#semanticsimilarity.phenomizer.TestPt.get_max_sim" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -75,13 +76,82 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="semanticsimilarity.html">semanticsimilarity package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_cluster_analyzer">semanticsimilarity.hpo_cluster_analyzer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.phenomizer">semanticsimilarity.phenomizer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.resnik">semanticsimilarity.resnik module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.term_pair">semanticsimilarity.term_pair module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.annotation_counter">semanticsimilarity.annotation_counter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.annotation_counter.AnnotationCounter"><code class="docutils literal notranslate"><span class="pre">AnnotationCounter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.annotation_counter.AnnotationCounter.add_counts"><code class="docutils literal notranslate"><span class="pre">AnnotationCounter.add_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.annotation_counter.AnnotationCounter.get_counts_dict"><code class="docutils literal notranslate"><span class="pre">AnnotationCounter.get_counts_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.annotation_counter.AnnotationCounter.get_total_patient_count"><code class="docutils literal notranslate"><span class="pre">AnnotationCounter.get_total_patient_count()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_cluster_analyzer">semanticsimilarity.hpo_cluster_analyzer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.add_counts"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer.add_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi2"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer.do_chi2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_chi_square_on_covariates"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer.do_chi_square_on_covariates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.HpoClusterAnalyzer.do_fisher_exact"><code class="docutils literal notranslate"><span class="pre">HpoClusterAnalyzer.do_fisher_exact()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_cluster_analyzer.add_true_counts_by_cluster"><code class="docutils literal notranslate"><span class="pre">add_true_counts_by_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen">semanticsimilarity.hpo_ensmallen module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen.HpoEnsmallen"><code class="docutils literal notranslate"><span class="pre">HpoEnsmallen</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_ancestors"><code class="docutils literal notranslate"><span class="pre">HpoEnsmallen.get_ancestors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.get_descendents"><code class="docutils literal notranslate"><span class="pre">HpoEnsmallen.get_descendents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen.HpoEnsmallen.node_exists"><code class="docutils literal notranslate"><span class="pre">HpoEnsmallen.node_exists()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.hpo_ensmallen_parser">semanticsimilarity.hpo_ensmallen_parser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser"><code class="docutils literal notranslate"><span class="pre">Hpo2EnsmallenParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph"><code class="docutils literal notranslate"><span class="pre">Hpo2EnsmallenParser.graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.hpo_ensmallen_parser.Hpo2EnsmallenParser.graph_reversed_edges"><code class="docutils literal notranslate"><span class="pre">Hpo2EnsmallenParser.graph_reversed_edges</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.phenomizer">semanticsimilarity.phenomizer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer"><code class="docutils literal notranslate"><span class="pre">Phenomizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.average_max_similarity"><code class="docutils literal notranslate"><span class="pre">Phenomizer.average_max_similarity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.center_to_cluster_generalizability"><code class="docutils literal notranslate"><span class="pre">Phenomizer.center_to_cluster_generalizability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.check_term_pair_in_mica_d"><code class="docutils literal notranslate"><span class="pre">Phenomizer.check_term_pair_in_mica_d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.make_patient_disease_similarity_long_spark_df"><code class="docutils literal notranslate"><span class="pre">Phenomizer.make_patient_disease_similarity_long_spark_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.make_patient_similarity_long_spark_df"><code class="docutils literal notranslate"><span class="pre">Phenomizer.make_patient_similarity_long_spark_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.make_similarity_matrix"><code class="docutils literal notranslate"><span class="pre">Phenomizer.make_similarity_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.max_similarity_cluster"><code class="docutils literal notranslate"><span class="pre">Phenomizer.max_similarity_cluster()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity"><code class="docutils literal notranslate"><span class="pre">Phenomizer.patient_to_cluster_similarity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.patient_to_cluster_similarity_pd"><code class="docutils literal notranslate"><span class="pre">Phenomizer.patient_to_cluster_similarity_pd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.similarity_score"><code class="docutils literal notranslate"><span class="pre">Phenomizer.similarity_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.Phenomizer.update_mica_d"><code class="docutils literal notranslate"><span class="pre">Phenomizer.update_mica_d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.TestPt"><code class="docutils literal notranslate"><span class="pre">TestPt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.TestPt.add_score"><code class="docutils literal notranslate"><span class="pre">TestPt.add_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.TestPt.get_best_cluster_and_average_score"><code class="docutils literal notranslate"><span class="pre">TestPt.get_best_cluster_and_average_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.phenomizer.TestPt.get_max_sim"><code class="docutils literal notranslate"><span class="pre">TestPt.get_max_sim()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.resnik">semanticsimilarity.resnik module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.resnik.Resnik"><code class="docutils literal notranslate"><span class="pre">Resnik</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.resnik.Resnik.calculate_mica_ic"><code class="docutils literal notranslate"><span class="pre">Resnik.calculate_mica_ic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.resnik.Resnik.get_mica_d"><code class="docutils literal notranslate"><span class="pre">Resnik.get_mica_d()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity.term_pair">semanticsimilarity.term_pair module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.term_pair.TermPair"><code class="docutils literal notranslate"><span class="pre">TermPair</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.term_pair.TermPair.t1"><code class="docutils literal notranslate"><span class="pre">TermPair.t1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="semanticsimilarity.html#semanticsimilarity.term_pair.TermPair.t2"><code class="docutils literal notranslate"><span class="pre">TermPair.t2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="semanticsimilarity.html#module-semanticsimilarity">Module contents</a></li>
 </ul>
 </li>
